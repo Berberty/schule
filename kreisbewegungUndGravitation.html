@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kreisbewegung und Gravitation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: ein Projektor-Bildschirm pro Folie – links Text, rechts lebendes Experiment; Pfeilfarben wie im Schulbuch (v blau, F_Z grün) */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --fg:#17202c; --muted:#5a6777; --line:#d5dce5;
+  --v:#1f6fd1; --fz:#1d9a54; --fg-grav:#c4561b; --accent:#c4561b; --mass:#e2a400; --soft:#e7edf5;
+  --font-display:"Space Grotesk","Segoe UI",system-ui,sans-serif;
+  --font-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"Consolas",monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10161f; --surface:#18212d; --fg:#e8edf3; --muted:#9aa8b8; --line:#2c3847;
+  --v:#5aa2ff; --fz:#45c97c; --fg-grav:#f08a4b; --accent:#f08a4b; --mass:#f2c230; --soft:#1f2a38; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10161f; --surface:#18212d; --fg:#e8edf3; --muted:#9aa8b8; --line:#2c3847;
+  --v:#5aa2ff; --fz:#45c97c; --fg-grav:#f08a4b; --accent:#f08a4b; --mass:#f2c230; --soft:#1f2a38; color-scheme:dark}
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:19px;line-height:1.42;overflow:hidden}
+.frame{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px))}
+.deck{width:1600px;height:900px;flex:none;transform:scale(var(--k,1));transform-origin:center center;display:flex;flex-direction:column;padding:14px 18px;box-sizing:border-box;gap:10px}
+.topbar{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;font-size:.75em;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.topbar b{color:var(--fg);font-family:var(--font-display);letter-spacing:.02em}
+.stage{flex:1;min-height:0;position:relative}
+.slide{position:absolute;inset:0;display:none;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:34px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px 30px;box-sizing:border-box;overflow:auto}
+.slide.active{display:grid}
+.slide{grid-template-rows:minmax(0,1fr);overflow:hidden}
+.slide>.txt{overflow-y:auto;min-height:0;padding-right:.3em}
+.slide>.vis{min-height:0}
+.slide.wide{grid-template-columns:minmax(0,1fr)}
+.txt{min-width:0;display:flex;flex-direction:column;gap:.6em}
+.vis{min-width:0;display:flex;flex-direction:column;gap:.6em;min-height:16rem}
+.vis canvas{flex:1;width:100%;min-height:15rem;display:block;border-radius:10px;background:var(--soft)}
+h1,h2{font-family:var(--font-display);font-weight:700;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:2.1em}
+h2{font-size:1.65em}
+.eyebrow{font-size:.72em;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);font-weight:700}
+p{margin:0;max-width:34em}
+ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:.3em}
+.formula{font-family:var(--font-display);font-size:1.35em;font-weight:500;display:flex;align-items:center;gap:.35em;flex-wrap:wrap}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.05;font-size:.92em}
+.frac>span:first-child{border-bottom:2px solid currentColor;padding:0 .2em .08em}
+.frac>span:last-child{padding:.08em .2em 0}
+.merke{border-left:4px solid var(--fz);background:var(--soft);padding:.6em .9em;border-radius:0 8px 8px 0}
+.merke.grav{border-color:var(--fg-grav)}
+.merke.v{border-color:var(--v)}
+.c-v{color:var(--v);font-weight:700}.c-fz{color:var(--fz);font-weight:700}.c-g{color:var(--fg-grav);font-weight:700}
+.controls{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.35em .8em;align-items:center;font-size:.85em}
+.controls label{white-space:nowrap}
+.controls output{font-family:var(--font-mono);min-width:4.5em;text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.readout{display:flex;flex-wrap:wrap;gap:.5em}
+.chip{font-family:var(--font-mono);font-size:.82em;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:.25em .55em;font-variant-numeric:tabular-nums}
+.chip b{font-family:var(--font-body)}
+button{font:inherit;font-size:.85em;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:.35em .8em;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:700}
+.btnrow{display:flex;flex-wrap:wrap;gap:.5em}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7em}
+.eval{display:grid;grid-template-columns:minmax(0,22rem) minmax(0,1fr);gap:34px;min-height:0;flex:1}
+.bigscore{font-family:var(--font-display);font-size:4.2em;font-weight:700;line-height:1}
+.bar{height:16px;border-radius:8px;background:var(--soft);border:1px solid var(--line);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--fz);width:0}
+.elist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.3em 1.2em;align-content:start;overflow:auto;min-height:0;font-size:.85em}
+.elist li{display:grid;grid-template-columns:1.6em minmax(0,1fr) auto;gap:.5em;align-items:center;border-bottom:1px solid var(--line);padding:.25em 0}
+.elist .st{font-weight:700}
+.elist li.ok .st{color:var(--fz)} .elist li.open .st{color:var(--fg-grav)}
+.elist li span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.elist button{font-size:.8em;padding:.15em .55em}
+.card{border:1px solid var(--line);border-radius:10px;padding:.7em .9em;background:var(--surface);text-align:left;display:flex;flex-direction:column;gap:.3em;font-size:1em}
+.card .q{font-weight:700}
+.card .a{color:var(--muted)}
+.card.open .a{color:var(--fz);font-weight:700}
+.agenda{list-style:none;padding:0;display:grid;gap:.3em;font-size:.9em}
+.agenda li{display:grid;grid-template-columns:2.2em minmax(0,1fr) auto;gap:.6em;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:.35em}
+.agenda .n{font-family:var(--font-display);color:var(--accent);font-weight:700}
+.agenda .t{font-family:var(--font-mono);font-size:.8em;color:var(--muted)}
+.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5em;font-size:.92em}
+.fcard{border:1px solid var(--line);border-radius:10px;padding:.55em .7em;display:flex;flex-direction:column;gap:.2em;background:var(--surface)}
+.fcard small{hyphens:manual;color:var(--muted);font-size:.78em;line-height:1.2}
+.fcard .formula{font-size:1.1em}
+.asks{display:grid;gap:.5em}
+.ask{border:1px solid var(--line);border-radius:10px;padding:.45em .7em;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:.25em .6em;align-items:center;background:var(--surface)}
+.ask .q{font-weight:700;font-size:.95em}
+.ask .pt{font-family:var(--font-mono);font-size:.75em;color:var(--muted);white-space:nowrap}
+.ask.ok .pt{color:var(--fz)}
+.asks.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mc .q{grid-column:1/-1}
+.ask .row{display:flex;gap:.45em;align-items:center;flex-wrap:wrap}
+.ask input{font:inherit;font-family:var(--font-mono);width:5.5em;padding:.25em .45em;border:1.5px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+.ask .unit{color:var(--muted)}
+.ask .fb{grid-column:1/-1;font-size:.84em;min-height:1.25em;color:var(--muted)}
+.ask.ok{border-color:var(--fz)} .ask.ok .fb{color:var(--fz);font-weight:700}
+.ask.no .fb{color:var(--fg-grav);font-weight:700}
+.ask.ok input{border-color:var(--fz)}
+.mc .opts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:.4em}
+.mc .opts button.right{border-color:var(--fz);background:var(--fz);color:var(--surface)}
+.mc .opts button.wrong{border-color:var(--fg-grav);color:var(--fg-grav);text-decoration:line-through}
+.score{font-family:var(--font-mono)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.nav{display:flex;align-items:center;gap:.8rem;justify-content:space-between}
+.dots{display:flex;gap:.4rem;flex-wrap:wrap}
+.dots button{width:.85rem;height:.85rem;padding:0;border-radius:50%;background:var(--line);border:none}
+.dots button.on{background:var(--accent)}
+.time{font-family:var(--font-mono);font-size:.75em;color:var(--muted)}
+@media (max-width:760px){
+  body{overflow:auto;font-size:16px}
+  .frame{position:static;display:block;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .deck{width:auto;height:auto;transform:none;padding:10px 0}
+  .stage{flex:none}
+  .slide{position:static;grid-template-columns:minmax(0,1fr);grid-template-rows:auto;overflow:visible;padding:16px}
+  .slide>.txt{overflow:visible}
+  .slide>.vis{height:20rem}
+  .fgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cards,.asks.two{grid-template-columns:minmax(0,1fr)}
+  .ask{grid-template-columns:minmax(0,1fr) auto}
+  .ask .q{grid-column:1/-1}
+  h1{font-size:1.8em}
+}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto}}
+</style>
+<style>html,body{margin:0}</style>
+</head>
+<body>
+
+<div class="frame">
+<div class="deck">
+  <div class="topbar"><b>Kreisbewegung &amp; Gravitation</b><span><span class="score" id="score">0 richtig</span> · <span id="pos">1 / 9</span></span></div>
+  <div class="stage" id="stage">
+
+    <!-- 1 Einstieg -->
+    <section class="slide" data-min="1">
+      <div class="txt">
+        <div class="eyebrow">Physik 11 · Einstieg</div>
+        <h1>Warum fällt der Mond nicht auf die Erde?</h1>
+        <p>Der Apfel fällt. Der Mond „fällt“ auch – aber er fliegt so schnell seitlich weiter, dass er die Erde immer wieder verfehlt. Heute klären wir, welche Kraft dahintersteckt und wie man Kreisbewegungen beschreibt.</p>
+        <ol class="agenda">
+          <li><span class="n">1</span><span>Das Gravitationsgesetz und seine Proportionalitäten</span><span class="t">5 min</span></li>
+          <li><span class="n">2</span><span>Kreisbewegung: Umlaufdauer, Frequenz, Formeln</span><span class="t">8 min</span></li>
+          <li><span class="n">3</span><span>Die Zentripetalkraft</span><span class="t">4 min</span></li>
+          <li><span class="n">4</span><span>Vom Kreis zur Schwingung</span><span class="t">3 min</span></li>
+        </ol>
+      </div>
+      <div class="vis"><canvas id="cv1" aria-label="Erde mit kreisendem Mond und fallendem Apfel"></canvas></div>
+    </section>
+
+    <!-- 2 Gravitationsgesetz -->
+    <section class="slide" data-min="3">
+      <div class="txt">
+        <div class="eyebrow">1 · Gravitation</div>
+        <h2>Jede Masse zieht jede andere Masse an</h2>
+        <div class="formula"><span class="c-g">F<sub>G</sub></span> = G · <span class="frac"><span>m<sub>1</sub> · m<sub>2</sub></span><span>r<sup>2</sup></span></span></div>
+        <p>G = 6,67 · 10<sup>−11</sup> N m²/kg² ist winzig. Spürbar wird die Gravitation erst, wenn eine Masse riesig ist – zum Beispiel die Erde.</p>
+        <div class="merke grav">Erst vorhersagen, dann mit den Reglern prüfen. Die Pfeile zeigen die Kraft, die beide Körper <b>gleich stark</b> aufeinander ausüben.</div>
+<div class="asks"><div class="ask" data-ans="3" data-tol="0.03" data-sol="F ~ m₁: dreifache Masse, dreifache Kraft."><span class="q">m<sub>1</sub> = 3 m₀, m<sub>2</sub> = m₀, r = r₀: F = ? · F₀</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">· F₀</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div><div class="ask" data-ans="0.25" data-tol="0.03" data-sol="F ~ 1/r²: 1/2² = 1/4."><span class="q">m<sub>1</sub> = m<sub>2</sub> = m₀, r = 2 r₀: F = ? · F₀</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">· F₀</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div></div>
+        <div class="controls">
+          <label for="g-m1">Masse m<sub>1</sub></label><input id="g-m1" type="range" min="1" max="4" step="1" value="1"><output id="o-m1">1 · m₀</output>
+          <label for="g-m2">Masse m<sub>2</sub></label><input id="g-m2" type="range" min="1" max="4" step="1" value="1"><output id="o-m2">1 · m₀</output>
+          <label for="g-r">Abstand r</label><input id="g-r" type="range" min="1" max="4" step="1" value="1"><output id="o-r">1 · r₀</output>
+        </div>
+        <div class="readout"><span class="chip" id="g-res">F = 1 · F₀</span></div>
+      </div>
+      <div class="vis"><canvas id="cv2" aria-label="Zwei Massen mit Kraftpfeilen"></canvas></div>
+    </section>
+
+    <!-- 3 Proportionalitäten -->
+    <section class="slide" data-min="2">
+      <div class="txt">
+        <div class="eyebrow">1 · Gravitation</div>
+        <h2>Je-desto: Was passiert mit F<sub>G</sub>?</h2>
+        <p>Gib jeweils an, das Wievielfache von F<sub>0</sub> entsteht (z. B. 2 oder 1/4).</p>
+<div class="asks"><div class="ask" data-ans="2" data-tol="0.03" data-sol="F ~ m: doppelte Kraft."><span class="q">Eine Masse wird verdoppelt.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">· F₀</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div><div class="ask" data-ans="4" data-tol="0.03" data-sol="2 · 2 = 4."><span class="q">Beide Massen werden verdoppelt.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">· F₀</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div><div class="ask" data-ans="0.25" data-tol="0.03" data-sol="1/2² = 1/4."><span class="q">Der Abstand wird verdoppelt.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">· F₀</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div><div class="ask" data-ans="0.111111" data-tol="0.03" data-sol="1/3² = 1/9."><span class="q">Der Abstand wird verdreifacht.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">· F₀</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div></div>
+        <div class="merke grav"><b>F ~ m</b> für jede der beiden Massen, <b>F ~ 1/r²</b> für den Abstand. Der Abstand wird vom <b>Mittelpunkt</b> zum Mittelpunkt gemessen.</div>
+      </div>
+      <div class="vis"><canvas id="cv3" aria-label="Diagramm: Kraft fällt mit 1 durch r Quadrat"></canvas></div>
+    </section>
+
+    <!-- 4 Kreisbewegung -->
+    <section class="slide" data-min="2">
+      <div class="txt">
+        <div class="eyebrow">2 · Kreisbewegung</div>
+        <h2>Gleich schnell – und trotzdem beschleunigt</h2>
+        <p>Bei der gleichförmigen Kreisbewegung bleibt der <b>Betrag</b> der Bahngeschwindigkeit konstant. Ihre <b>Richtung</b> ändert sich aber in jedem Augenblick.</p>
+        <div class="merke v">Die <span class="c-v">Geschwindigkeit v</span> zeigt immer tangential, also senkrecht zum Radius. Jede Richtungsänderung ist eine Beschleunigung.</div>
+        <div class="btnrow"><button type="button" id="b4">Pfeile an mehreren Stellen zeigen</button></div>
+<div class="asks"><div class="ask mc" data-right="0" data-sol="Ja: Die Richtung von v ändert sich ständig – das ist eine Beschleunigung."><span class="q">Der Körper läuft mit konstantem Betrag der Geschwindigkeit im Kreis. Ist er beschleunigt?</span><div class="opts"><button type="button" data-i="0">Ja</button><button type="button" data-i="1">Nein</button></div><span class="fb"></span></div><div class="ask mc" data-right="1" data-sol="Zum Kreismittelpunkt (Zentripetalbeschleunigung)."><span class="q">Wohin zeigt die Beschleunigung?</span><div class="opts"><button type="button" data-i="0">tangential</button><button type="button" data-i="1">zum Mittelpunkt</button><button type="button" data-i="2">nach außen</button></div><span class="fb"></span></div></div>
+      </div>
+      <div class="vis"><canvas id="cv4" aria-label="Punkt auf Kreisbahn mit Geschwindigkeitspfeil"></canvas></div>
+    </section>
+
+    <!-- 5 Umlaufdauer und Frequenz -->
+    <section class="slide" data-min="3">
+      <div class="txt">
+        <div class="eyebrow">2 · Kreisbewegung</div>
+        <h2>Umlaufdauer T und Frequenz f</h2>
+        <p><b>T</b> ist die Zeit für eine Umdrehung. <b>f</b> zählt die Umdrehungen pro Sekunde. Beide hängen zusammen:</p>
+        <div class="formula">f = <span class="frac"><span>1</span><span>T</span></span> <span style="color:var(--muted);font-size:.8em">bzw.</span> f = <span class="frac"><span>n</span><span>t</span></span> <span style="color:var(--muted);font-size:.6em">(n Umdrehungen in der Zeit t)</span></div>
+        <div class="controls">
+          <label for="t5">Umlaufdauer T</label><input id="t5" type="range" min="0.5" max="4" step="0.5" value="2"><output id="o5">2,0 s</output>
+        </div>
+        <div class="readout"><span class="chip" id="r5a">f = 0,50 Hz</span><span class="chip" id="r5b">ω = 3,14 1/s</span></div>
+        <div class="btnrow"><button type="button" class="primary" id="sw5">Stoppuhr starten</button><button type="button" id="rs5">Zurücksetzen</button></div>
+        <div class="readout"><span class="chip" id="m5">t = 0,0 s · n = 0 Umdrehungen</span></div>
+<div class="asks"><div class="ask" data-ans="2" data-tol="0.03" data-sol="f = 1/T = 1/0,5 s = 2 Hz."><span class="q">T = 0,5 s. Berechne f.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">Hz</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div><div class="ask" data-ans="4" data-tol="0.03" data-sol="T = 1/f = 1/0,25 Hz = 4 s."><span class="q">f = 0,25 Hz. Berechne T.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">s</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div><div class="ask" data-ans="0.5" data-tol="0.03" data-sol="f = n/t = 10/20 s = 0,5 Hz."><span class="q">10 Umdrehungen in 20 s. Berechne f.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">Hz</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div></div>
+      </div>
+      <div class="vis"><canvas id="cv5" aria-label="Rotierender Zeiger mit Umdrehungszähler"></canvas></div>
+    </section>
+
+    <!-- 6 Formeln -->
+    <section class="slide" data-min="3">
+      <div class="txt">
+        <div class="eyebrow">2 · Kreisbewegung</div>
+        <h2>Alle Formeln auf einen Blick</h2>
+        <div class="fgrid">
+          <div class="fcard"><small>Bahn&shy;geschwindigkeit</small><div class="formula">v = <span class="frac"><span>2πr</span><span>T</span></span></div></div>
+          <div class="fcard"><small>Winkel&shy;geschwindigkeit</small><div class="formula">ω = <span class="frac"><span>2π</span><span>T</span></span></div></div>
+          <div class="fcard"><small>Zusammenhang</small><div class="formula">v = ω · r</div></div>
+          <div class="fcard"><small>Frequenz</small><div class="formula">f = <span class="frac"><span>1</span><span>T</span></span></div></div>
+          <div class="fcard"><small>Zentripetal&shy;beschleunigung</small><div class="formula"><span>a<sub>Z</sub></span> = <span class="frac"><span>v²</span><span>r</span></span> = ω²r</div></div>
+          <div class="fcard"><small>Zentripetal&shy;kraft</small><div class="formula"><span class="c-fz">F<sub>Z</sub></span> = <span class="frac"><span>m v²</span><span>r</span></span></div></div>
+        </div>
+        <div class="controls">
+          <label for="r6">Radius r</label><input id="r6" type="range" min="0.5" max="3" step="0.5" value="2"><output id="or6">2,0 m</output>
+          <label for="t6">Umlaufdauer T</label><input id="t6" type="range" min="1" max="6" step="0.5" value="3"><output id="ot6">3,0 s</output>
+          <label for="m6">Masse m</label><input id="m6" type="range" min="1" max="5" step="1" value="2"><output id="om6">2 kg</output>
+        </div>
+        <div class="readout" id="ro6"></div>
+<div class="asks"><div class="ask" data-ans="4" data-tol="0.06" data-sol="v = 2πr/T ≈ 2·3·2 m / 3 s = 4 m/s (genau 4,19 m/s)."><span class="q">r = 2 m, T = 3 s. Berechne v (π ≈ 3).</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">m/s</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div><div class="ask" data-ans="4" data-tol="0.03" data-sol="T halb → v doppelt → F<sub>Z</sub> ~ v² vierfach."><span class="q">Gleicher Radius, T wird halbiert. F<sub>Z</sub> wird ?-fach.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">-fach</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div></div>
+      </div>
+      <div class="vis"><canvas id="cv6" aria-label="Kreisbahn mit Pfeilen für v und Zentripetalkraft"></canvas></div>
+    </section>
+
+    <!-- 7 Zentripetalkraft -->
+    <section class="slide" data-min="2">
+      <div class="txt">
+        <div class="eyebrow">3 · Zentripetalkraft</div>
+        <h2>Ohne Kraft zur Mitte keine Kreisbahn</h2>
+        <p>Die <span class="c-fz">Zentripetalkraft</span> zeigt immer zum Kreismittelpunkt. Sie ist keine neue Kraftart: Eine vorhandene Kraft übernimmt diese Rolle.</p>
+        <ul>
+          <li>Stein an der Schnur: die <b>Seilkraft</b></li>
+          <li>Auto in der Kurve: die <b>Haftreibung</b></li>
+          <li>Mond und Satellit: die <b class="c-g">Gravitationskraft</b></li>
+        </ul>
+        <div class="merke">Was passiert ohne F<sub>Z</sub>? Antworte zuerst, dann schneide die Schnur durch.</div>
+        <div class="asks"><div class="ask mc" data-right="1" data-sol="Tangential: Ohne Kraft zur Mitte bewegt er sich geradlinig weiter (Trägheit)."><span class="q">Erst tippen: Wohin fliegt der Stein, wenn die Schnur reißt?</span><div class="opts"><button type="button" data-i="0">nach außen</button><button type="button" data-i="1">tangential geradeaus</button><button type="button" data-i="2">zur Mitte</button></div><span class="fb"></span></div></div>
+        <div class="btnrow"><button type="button" class="primary" id="cut7" disabled>Schnur durchschneiden</button><button type="button" id="rs7">Neu starten</button></div>
+      </div>
+      <div class="vis"><canvas id="cv7" aria-label="Stein an einer Schnur"></canvas></div>
+    </section>
+
+    <!-- 8 Check -->
+    <section class="slide wide" data-min="2">
+      <div class="txt">
+        <div class="eyebrow">Kurzer Check</div>
+        <h2>Im Kopf rechnen</h2>
+<p>Jede richtige Antwort bringt einen Punkt. Du kannst so oft prüfen, wie du willst.</p>
+<div class="asks two"><div class="ask" data-ans="5" data-tol="0.03" data-sol="T = 60 s : 12 = 5 s."><span class="q">Ein Karussell dreht sich 12-mal pro Minute. Berechne T.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">s</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div><div class="ask" data-ans="0.2" data-tol="0.03" data-sol="f = 1/T = 1/5 s = 0,2 Hz."><span class="q">Dasselbe Karussell: Berechne f.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">Hz</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div><div class="ask" data-ans="0.25" data-tol="0.03" data-sol="T = 1/f = 0,25 s."><span class="q">Ein Rad dreht sich mit f = 4 Hz. Berechne T.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">s</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div><div class="ask" data-ans="2" data-tol="0.03" data-sol="F<sub>Z</sub> = mω²r ~ r: doppelt."><span class="q">Gleiche Umlaufdauer, doppelter Radius. F<sub>Z</sub> wird ?-fach.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">-fach</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div><div class="ask" data-ans="4" data-tol="0.03" data-sol="F<sub>Z</sub> ~ v²: vierfach."><span class="q">Gleicher Radius, doppelte Geschwindigkeit. F<sub>Z</sub> wird ?-fach.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">-fach</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div><div class="ask" data-ans="24" data-tol="0.03" data-sol="F<sub>Z</sub> = m v²/r = 2·36/3 N = 24 N."><span class="q">r = 3 m, v = 6 m/s, m = 2 kg. Berechne F<sub>Z</sub>.</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">N</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div></div>
+      </div>
+    </section>
+
+    <!-- 9 Projektion -->
+    <section class="slide" data-min="3">
+      <div class="txt">
+        <div class="eyebrow">4 · Ausblick</div>
+        <h2>Der Schatten an der Wand schwingt</h2>
+        <p>Licht fällt von der Seite auf den kreisenden Körper. Sein Schatten an der Wand bewegt sich nur noch auf und ab. Zeichnet man diese Bewegung über der Zeit auf, entsteht eine <b>Sinuskurve</b>.</p>
+        <div class="formula">y(t) = r · sin(ω t)</div>
+        <div class="merke">Die Projektion einer gleichförmigen Kreisbewegung ist eine <b>harmonische Schwingung</b>. Amplitude = Radius r, und T, f und ω bleiben dieselben.</div>
+        <div class="controls"><label for="t9">Umlaufdauer T</label><input id="t9" type="range" min="1" max="5" step="0.5" value="3"><output id="o9">3,0 s</output></div>
+        <div class="btnrow"><button type="button" id="sp9">Federpendel an die Wand hängen</button></div>
+<div class="asks"><div class="ask" data-ans="5" data-tol="0.03" data-sol="Amplitude = Radius = 5 cm."><span class="q">Der Kreis hat r = 5 cm. Wie groß ist die Amplitude des Schattens?</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">cm</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div><div class="ask" data-ans="3" data-tol="0.03" data-sol="Nach einer Umlaufdauer: 3 s."><span class="q">T = 3 s. Nach welcher Zeit ist der Schatten wieder ganz oben?</span><div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Antwort"><span class="unit">s</span></div><button type="button" class="chk">Prüfen</button><span class="fb"></span></div></div>
+        <p style="color:var(--muted)"><b style="color:var(--fg)">Frage für die nächste Stunde:</b> Welche Kraft muss auf einen Körper wirken, damit er sich genau wie der Schatten bewegt?</p>
+      </div>
+      <div class="vis"><canvas id="cv9" aria-label="Kreisbewegung, Schatten an der Wand und Sinuskurve"></canvas></div>
+    </section>
+
+    <!-- 10 Auswertung -->
+    <section class="slide wide" data-min="2">
+      <div class="txt">
+        <div class="eyebrow">Auswertung</div>
+        <h2>Deine Punkte</h2>
+        <div class="eval">
+          <div style="display:flex;flex-direction:column;gap:.7em">
+            <div class="bigscore"><span id="e-pts">0</span><span style="font-size:.45em;color:var(--muted)"> / <span id="e-max">0</span></span></div>
+            <div class="bar"><span id="e-bar"></span></div>
+            <p id="e-msg"></p>
+            <p style="color:var(--muted);font-size:.85em" id="e-first"></p>
+            <div class="btnrow"><button type="button" class="primary" id="e-next">Zur nächsten offenen Aufgabe</button></div>
+            <div class="btnrow"><button type="button" id="e-reset">Alles zurücksetzen</button></div>
+          </div>
+          <ul class="elist" id="e-list"></ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="nav">
+    <button type="button" id="prev" aria-label="Vorige Folie">← Zurück</button>
+    <div class="dots" id="dots"></div>
+    <span class="time" id="time">ca. 1 min</span>
+    <button type="button" id="next" class="primary" aria-label="Nächste Folie">Weiter →</button>
+  </div>
+</div>
+</div>
+
+<script>
+(function(){
+const deck=document.querySelector('.deck');let K=1;
+function fit(){
+  if(window.matchMedia('(max-width:760px)').matches){K=1;deck.style.setProperty('--k',1);return}
+  K=Math.min(window.innerWidth/1600,window.innerHeight/900);deck.style.setProperty('--k',K);
+}
+window.addEventListener('resize',fit);fit();
+const slides=[...document.querySelectorAll('.slide')];
+let cur=0;
+const dots=document.getElementById('dots');
+slides.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Folie '+(i+1));b.onclick=()=>go(i);dots.appendChild(b);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dots.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('pos').textContent=(cur+1)+' / '+slides.length;
+  document.getElementById('time').textContent='ca. '+slides[cur].dataset.min+' min';
+  try{localStorage.setItem('kb-slide',cur)}catch(e){}
+  if(cur===slides.length-1)renderEval();
+}
+document.getElementById('prev').onclick=()=>go(cur-1);
+document.getElementById('next').onclick=()=>go(cur+1);
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON'&&e.key===' ')return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();go(cur+1)}
+  if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1)}
+});
+
+// Antworten prüfen – beliebig viele Versuche, Tipps statt Lösungen
+const HINTS=[
+ 'F ~ m₁: Wie ändert sich F, wenn m₁ dreimal so groß ist?','Der Abstand steht im Quadrat im Nenner: 1/2² = ?',
+ 'F ist proportional zu jeder der beiden Massen.','Jede Masse bringt einen Faktor 2.','Der Abstand steht im Quadrat im Nenner.','Rechne 1/3².',
+ 'Beschleunigt heißt: Die Geschwindigkeit ändert sich – im Betrag oder in der Richtung.','Die Kraft, die den Körper auf der Bahn hält, zieht ihn in Richtung …?',
+ 'f = 1/T','T = 1/f','f = n/t (Umdrehungen durch Zeit)',
+ 'v = 2πr/T, setze π ≈ 3.','T halb → v doppelt. F_Z ~ v².',
+ 'Ohne Kraft bewegt sich ein Körper geradlinig mit gleicher Geschwindigkeit weiter.',
+ '12 Umdrehungen dauern 60 s. Wie lange dauert eine?','f = 1/T','T = 1/f','Gleiche Umlaufdauer heißt gleiches ω. F_Z = m ω² r.','F_Z = m v²/r: v steht im Quadrat.','v² = 36 m²/s². Setze in F_Z = m v²/r ein.',
+ 'Wie weit kommt der Schatten höchstens vom Mittelpunkt weg?','Nach einem vollen Umlauf ist alles wie am Anfang.'];
+const asks=[...document.querySelectorAll('.ask')];
+const state={};let saved={};try{saved=JSON.parse(localStorage.getItem('kb-pts')||'{}')}catch(e){}
+function save(){try{localStorage.setItem('kb-pts',JSON.stringify(state))}catch(e){}}
+function slideOf(el){return slides.indexOf(el.closest('.slide'))}
+function score(){const n=asks.filter((b,i)=>state[i]&&state[i].done).length;document.getElementById('score').textContent='Punkte: '+n+' / '+asks.length}
+function parseNum(t){
+  t=t.trim().replace(/\s/g,'').replace(',','.').replace('¼','1/4').replace('½','1/2').replace('¾','3/4').replace('⅓','1/3').replace('⅛','1/8');
+  t=t.replace(/[^0-9.\/\-]/g,'');
+  if(t.includes('/')){const [a,b]=t.split('/').map(Number);return b?a/b:NaN}
+  return t===''?NaN:Number(t);
+}
+asks.forEach((box,i)=>{
+  state[i]=saved[i]||{done:false,wrong:0,val:''};
+  const fb=box.querySelector('.fb'),hint=HINTS[i]||'Lies die Aufgabe noch einmal genau.';
+  const pt=document.createElement('span');pt.className='pt';pt.textContent='0/1 P';
+  const win=()=>{state[i].done=true;box.classList.remove('no');box.classList.add('ok');pt.textContent=' · 1/1 P';fb.innerHTML='Richtig. '+box.dataset.sol;score();save()};
+  const miss=()=>{state[i].wrong++;box.classList.add('no');fb.innerHTML='Noch nicht. Tipp: '+hint;save()};
+  if(!box.classList.contains('mc')){
+    pt.textContent=' · 0/1 P';box.querySelector('.q').appendChild(pt);
+    const inp=box.querySelector('input'),ans=+box.dataset.ans,tol=+box.dataset.tol;
+    inp.id='ans'+i;
+    const check=()=>{
+      if(state[i].done)return;const x=parseNum(inp.value);state[i].val=inp.value;
+      if(isNaN(x)){fb.textContent='Bitte eine Zahl eingeben (auch 1/4 oder 0,25).';return}
+      if(Math.abs(x-ans)<=Math.abs(ans)*tol+1e-9){win();inp.readOnly=true}else miss();
+    };
+    box.querySelector('.chk').addEventListener('click',check);
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();check()}});
+    if(state[i].done){inp.value=state[i].val;inp.readOnly=true;win()}
+  }else{
+    box.querySelector('.q').appendChild(Object.assign(document.createElement('span'),{className:'pt',textContent:'  '}));
+    const tag=box.querySelector('.q .pt');tag.textContent=' · 0/1 P';
+    const right=+box.dataset.right,btns=[...box.querySelectorAll('.opts button')];
+    const winMc=()=>{btns[right].classList.add('right');btns.forEach(b=>b.disabled=b!==btns[right]);state[i].done=true;box.classList.remove('no');box.classList.add('ok');tag.textContent=' · 1/1 P';fb.innerHTML='Richtig. '+box.dataset.sol;score();save()};
+    btns.forEach(b=>b.addEventListener('click',()=>{
+      if(state[i].done)return;
+      if(+b.dataset.i===right)winMc();else{b.classList.add('wrong');b.disabled=true;state[i].wrong++;box.classList.add('no');fb.innerHTML='Noch nicht. Tipp: '+hint;save()}
+      box.dispatchEvent(new CustomEvent('answered'));
+    }));
+    if(state[i].done){winMc();box.dispatchEvent(new CustomEvent('answered'))}
+  }
+});
+const mc7=document.getElementById('cut7').closest('.txt').querySelector('.mc');
+const unlock7=()=>{document.getElementById('cut7').disabled=false};
+mc7.addEventListener('answered',unlock7);if(state[asks.indexOf(mc7)].done)unlock7();
+score();
+
+function renderEval(){
+  const n=asks.filter((b,i)=>state[i].done).length,N=asks.length,first=asks.filter((b,i)=>state[i].done&&state[i].wrong===0).length;
+  document.getElementById('e-pts').textContent=n;document.getElementById('e-max').textContent=N;
+  document.getElementById('e-bar').style.width=(100*n/N)+'%';
+  document.getElementById('e-msg').innerHTML=n===N?'<b>Volle Punktzahl.</b> Alle Aufgaben sind gelöst.':'Noch <b>'+(N-n)+'</b> Aufgabe'+(N-n===1?'':'n')+' offen. Verbessere sie – die volle Punktzahl ist für jeden erreichbar.';
+  document.getElementById('e-first').textContent='Beim ersten Versuch richtig: '+first+' von '+N;
+  document.getElementById('e-next').hidden=n===N;
+  const ul=document.getElementById('e-list');ul.innerHTML='';
+  asks.forEach((b,i)=>{
+    const li=document.createElement('li');const ok=state[i].done;li.className=ok?'ok':'open';
+    const q=b.querySelector('.q').cloneNode(true);q.querySelectorAll('.pt').forEach(x=>x.remove());
+    li.innerHTML='<span class="st">'+(ok?'✓':state[i].wrong?'✗':'○')+'</span><span title="">F'+(slideOf(b)+1)+': '+q.textContent.trim()+'</span>';
+    if(!ok){const bt=document.createElement('button');bt.type='button';bt.textContent=state[i].wrong?'Verbessern':'Bearbeiten';bt.onclick=()=>jump(i);li.appendChild(bt)}else{li.appendChild(document.createElement('span'))}
+    ul.appendChild(li);
+  });
+}
+function jump(i){go(slideOf(asks[i]));const inp=asks[i].querySelector('input')||asks[i].querySelector('.opts button:not(:disabled)');setTimeout(()=>{inp&&inp.focus();asks[i].scrollIntoView({block:'nearest'})},30)}
+document.getElementById('e-next').onclick=()=>{const i=asks.findIndex((b,k)=>!state[k].done);if(i>=0)jump(i)};
+let resetArm=false;
+document.getElementById('e-reset').onclick=e=>{
+  if(!resetArm){resetArm=true;e.target.textContent='Wirklich alles löschen? Nochmal klicken';setTimeout(()=>{resetArm=false;e.target.textContent='Alles zurücksetzen'},4000);return}
+  try{localStorage.removeItem('kb-pts');localStorage.removeItem('kb-slide')}catch(err){}location.reload();
+};
+let start=0;try{start=+localStorage.getItem('kb-slide')||0}catch(e){}
+go(start);
+
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt=(x,d)=>x.toFixed(d).replace('.',',');
+function prep(cv){
+  const dpr=(window.devicePixelRatio||1)*K;
+  const w=Math.max(10,cv.clientWidth),h=Math.max(10,cv.clientHeight);
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr)}
+  const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,w,h);
+  c.font='600 '+Math.max(12,Math.min(18,w/40))+'px '+css('--font-body');
+  return {c,w,h};
+}
+function arrow(c,x1,y1,x2,y2,col,lw){
+  const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1);if(L<2)return;
+  const hl=Math.min(14,L*.45);lw=lw||3;
+  c.strokeStyle=col;c.fillStyle=col;c.lineWidth=lw;c.lineCap='round';
+  c.beginPath();c.moveTo(x1,y1);c.lineTo(x2-Math.cos(a)*hl*.6,y2-Math.sin(a)*hl*.6);c.stroke();
+  c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-hl*Math.cos(a-.45),y2-hl*Math.sin(a-.45));c.lineTo(x2-hl*Math.cos(a+.45),y2-hl*Math.sin(a+.45));c.closePath();c.fill();
+}
+function vlab(c,base,sub,x,y,col){
+  c.save();const fs=Math.max(15,Math.min(22,c.canvas.clientWidth/32));
+  c.font='italic 700 '+fs+'px '+css('--font-body');c.fillStyle=col;c.strokeStyle=col;c.textAlign='left';c.textBaseline='alphabetic';
+  const wb=c.measureText(base).width;c.fillText(base,x,y);let wt=wb;
+  if(sub){c.font='700 '+(fs*.62)+'px '+css('--font-body');c.fillText(sub,x+wb+1,y+fs*.25);wt=wb+1+c.measureText(sub).width}
+  const ay=y-fs*.92;c.lineWidth=1.6;c.beginPath();c.moveTo(x,ay);c.lineTo(x+wb+2,ay);c.stroke();
+  c.beginPath();c.moveTo(x+wb+3,ay);c.lineTo(x+wb-2,ay-3);c.lineTo(x+wb-2,ay+3);c.closePath();c.fill();c.restore();
+}
+function tipLab(c,x1,y1,x2,y2,base,sub,col){const a=Math.atan2(y2-y1,x2-x1);const nx=-Math.sin(a),ny=Math.cos(a);vlab(c,base,sub,x2+Math.cos(a)*8+nx*12-6,y2+Math.sin(a)*8+ny*12+8,col)}
+function dot(c,x,y,r,col){c.fillStyle=col;c.beginPath();c.arc(x,y,r,0,7);c.fill()}
+function label(c,t,x,y,col,al){c.fillStyle=col;c.textAlign=al||'left';c.fillText(t,x,y)}
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---- Folie 1
+function draw1(t){
+  const {c,w,h}=prep(cv1);const cx=w*.45,cy=h*.55,R=Math.min(w,h)*.16,orb=Math.min(w*.4,h*.4);
+  c.strokeStyle=css('--line');c.setLineDash([5,6]);c.lineWidth=1.5;c.beginPath();c.arc(cx,cy,orb,0,7);c.stroke();c.setLineDash([]);
+  dot(c,cx,cy,R,css('--v'));label(c,'Erde',cx,cy+5,css('--surface'),'center');
+  const a=-t*.35,mx=cx+orb*Math.cos(a),my=cy+orb*Math.sin(a);
+  dot(c,mx,my,R*.27,css('--muted'));
+  arrow(c,mx,my,mx+Math.sin(a)*R*.9,my-Math.cos(a)*R*.9,css('--v'));tipLab(c,mx,my,mx+Math.sin(a)*R*.9,my-Math.cos(a)*R*.9,'v','',css('--v'));
+  arrow(c,mx,my,mx+(cx-mx)*.28,my+(cy-my)*.28,css('--fz'));tipLab(c,mx,my,mx+(cx-mx)*.28,my+(cy-my)*.28,'F','G',css('--fz'));
+  // Apfel fällt
+  const ph=(t%2.2)/2.2,ax=cx+R*1.6,ay0=cy-R*1.9,ay=ay0+(R*1.75)*ph*ph;
+  c.strokeStyle=css('--muted');c.lineWidth=2;c.beginPath();c.moveTo(ax-R*.5,ay0-R*.15);c.lineTo(ax+R*.4,ay0-R*.15);c.stroke();
+  dot(c,ax,ay,R*.13,css('--accent'));
+  label(c,'Mond',mx,my-R*.4,css('--fg'),'center');
+}
+// ---- Folie 2
+const gm1=document.getElementById('g-m1'),gm2=document.getElementById('g-m2'),gr=document.getElementById('g-r');
+function upd2(){
+  const m1=+gm1.value,m2=+gm2.value,r=+gr.value,F=m1*m2/(r*r);
+  document.getElementById('o-m1').textContent=m1+' · m₀';document.getElementById('o-m2').textContent=m2+' · m₀';document.getElementById('o-r').textContent=r+' · r₀';
+  const gcd=(x,y)=>y?gcd(y,x%y):x,num=m1*m2,den=r*r,g=gcd(num,den);
+  const txt=den/g===1?String(num/g):(num/g)+'/'+(den/g);
+  document.getElementById('g-res').textContent='F = '+m1+' · '+m2+' / '+r+'² · F₀ = '+txt+' · F₀';
+}
+[gm1,gm2,gr].forEach(e=>e.addEventListener('input',upd2));upd2();
+function draw2(){
+  const {c,w,h}=prep(cv2);const m1=+gm1.value,m2=+gm2.value,r=+gr.value,F=m1*m2/(r*r);
+  const base=Math.min(h*.09,w*.045),d0=(w*.8)/4.4,d=d0*r,x1=w/2-d/2,x2=w/2+d/2,y=h*.42;
+  const r1=base*Math.cbrt(m1),r2=base*Math.cbrt(m2);
+  c.strokeStyle=css('--line');c.setLineDash([4,5]);c.lineWidth=1.5;c.beginPath();c.moveTo(x1,y+r1+16);c.lineTo(x2,y+r2+16);c.stroke();c.setLineDash([]);
+  label(c,'r = '+r+' · r₀',w/2,y+Math.max(r1,r2)+34,css('--muted'),'center');
+  dot(c,x1,y,r1,css('--mass'));dot(c,x2,y,r2,css('--mass'));
+  label(c,'m₁',x1,y-r1-10,css('--fg'),'center');label(c,'m₂',x2,y-r2-10,css('--fg'),'center');
+  const L=Math.min(d0*.55*F,d/2-Math.max(r1,r2)-4);
+  arrow(c,x1+r1,y,x1+r1+Math.max(6,L),y,css('--fg-grav'),4);
+  arrow(c,x2-r2,y,x2-r2-Math.max(6,L),y,css('--fg-grav'),4);
+  vlab(c,'F','G',x1+r1+4,y-14,css('--fg-grav'));vlab(c,'F','G',x2-r2-30,y+30,css('--fg-grav'));
+  // Balken
+  const bx=w*.08,bw=w*.84,by=h*.8,bh=Math.max(14,h*.05);
+  c.fillStyle=css('--surface');c.fillRect(bx,by,bw,bh);c.strokeStyle=css('--line');c.strokeRect(bx,by,bw,bh);
+  c.fillStyle=css('--fg-grav');c.fillRect(bx,by,bw*F/16,bh);
+  c.fillStyle=css('--muted');c.textAlign='center';
+  [0,1,4,9,16].forEach(v=>{const xx=bx+bw*v/16;c.fillRect(xx-.5,by+bh,1,5);c.fillText(v,xx,by+bh+20)});
+  label(c,'Kraft F in Vielfachen von F₀',bx,by-8,css('--muted'));
+}
+// ---- Folie 3
+function draw3(){
+  const {c,w,h}=prep(cv3);const L=w*.13,R=w*.95,T=h*.1,B=h*.82;
+  const X=r=>L+(r-.5)/(4.5-.5)*(R-L),Y=f=>B-f*(B-T);
+  c.strokeStyle=css('--line');c.lineWidth=1;
+  [0,.25,.5,.75,1].forEach(f=>{c.beginPath();c.moveTo(L,Y(f));c.lineTo(R,Y(f));c.stroke()});
+  c.fillStyle=css('--muted');c.textAlign='right';
+  [[1,'F₀'],[.5,'½ F₀'],[.25,'¼ F₀'],[0,'0']].forEach(([f,t])=>c.fillText(t,L-8,Y(f)+5));
+  c.textAlign='center';[1,2,3,4].forEach(r=>c.fillText(r+' r₀',X(r),B+22));
+  c.strokeStyle=css('--fg-grav');c.lineWidth=3;c.beginPath();
+  for(let r=.95;r<=4.5;r+=.02){const yy=Y(Math.min(1.1,1/(r*r)));r<=.951?c.moveTo(X(r),yy):c.lineTo(X(r),yy)}c.stroke();
+  [[1,'1'],[2,'¼'],[3,'¹⁄₉'],[4,'¹⁄₁₆']].forEach(([r,t])=>{dot(c,X(r),Y(1/(r*r)),6,css('--fg-grav'));label(c,t,X(r)+10,Y(1/(r*r))-10,css('--fg'))});
+  label(c,'Abstand r',R,B+44,css('--muted'),'right');
+  label(c,'doppelter Abstand → ¼ der Kraft',X(1.6),T+18,css('--fg'));
+}
+// ---- Folie 4
+let many4=false;document.getElementById('b4').onclick=e=>{many4=!many4;e.target.textContent=many4?'Nur einen Pfeil zeigen':'Pfeile an mehreren Stellen zeigen'};
+function draw4(t){
+  const {c,w,h}=prep(cv4);const cx=w/2,cy=h/2,R=Math.min(w,h)*.33,vl=R*.55;
+  c.strokeStyle=css('--muted');c.setLineDash([6,6]);c.lineWidth=1.5;c.beginPath();c.arc(cx,cy,R,0,7);c.stroke();c.setLineDash([]);
+  dot(c,cx,cy,4,css('--fg'));label(c,'M',cx+8,cy+18,css('--fg'));
+  if(many4){for(let k=0;k<8;k++){const a=k*Math.PI/4,x=cx+R*Math.cos(a),y=cy+R*Math.sin(a);dot(c,x,y,4,css('--muted'));arrow(c,x,y,x-vl*Math.sin(a),y+vl*Math.cos(a),css('--v'),2.5);tipLab(c,x,y,x-vl*Math.sin(a),y+vl*Math.cos(a),'v','',css('--v'))}}
+  const a=reduce?0.8:t*2*Math.PI/5,x=cx+R*Math.cos(a),y=cy+R*Math.sin(a);
+  c.strokeStyle=css('--fz');c.lineWidth=2;c.beginPath();c.moveTo(cx,cy);c.lineTo(x,y);c.stroke();
+  label(c,'r',(cx+x)/2+8,(cy+y)/2-6,css('--fz'));
+  dot(c,x,y,9,css('--mass'));
+  arrow(c,x,y,x-vl*Math.sin(a),y+vl*Math.cos(a),css('--v'),4);
+  tipLab(c,x,y,x-vl*Math.sin(a),y+vl*Math.cos(a),'v','',css('--v'));
+  label(c,'|v| bleibt gleich, die Richtung nicht',16,26,css('--muted'));
+}
+// ---- Folie 5
+const t5=document.getElementById('t5');let ang5=0,sw=false,swT=0,swA=0;
+function upd5(){const T=+t5.value;document.getElementById('o5').textContent=fmt(T,1)+' s';document.getElementById('r5a').textContent='f = 1/T = '+fmt(1/T,2)+' Hz';document.getElementById('r5b').textContent='ω = 2π/T = '+fmt(2*Math.PI/T,2)+' 1/s'}
+t5.addEventListener('input',upd5);upd5();
+document.getElementById('sw5').onclick=e=>{sw=!sw;e.target.textContent=sw?'Stoppuhr anhalten':'Stoppuhr weiterlaufen lassen'};
+document.getElementById('rs5').onclick=()=>{sw=false;swT=0;swA=0;document.getElementById('sw5').textContent='Stoppuhr starten'};
+function draw5(t,dt){
+  const T=+t5.value;const da=2*Math.PI*dt/T;ang5+=da;if(sw){swT+=dt;swA+=da}
+  const n=Math.floor(swA/(2*Math.PI)+1e-9);
+  document.getElementById('m5').textContent='t = '+fmt(swT,1)+' s · n = '+n+' Umdrehungen'+(swT>0.5&&n>0?' · n/t = '+fmt(n/swT,2)+' Hz':'');
+  const {c,w,h}=prep(cv5);const cx=w/2,cy=h*.52,R=Math.min(w,h)*.33;
+  c.strokeStyle=css('--line');c.lineWidth=2;c.beginPath();c.arc(cx,cy,R,0,7);c.stroke();
+  c.fillStyle=css('--muted');for(let k=0;k<12;k++){const a=k*Math.PI/6;c.fillRect(cx+R*1.04*Math.cos(a)-1.5,cy+R*1.04*Math.sin(a)-1.5,3,3)}
+  // Bogen seit Start der aktuellen Umdrehung
+  const frac=(ang5%(2*Math.PI));
+  c.strokeStyle=css('--accent');c.lineWidth=8;c.globalAlpha=.35;c.beginPath();c.arc(cx,cy,R,-Math.PI/2,-Math.PI/2+frac);c.stroke();c.globalAlpha=1;
+  const a=-Math.PI/2+frac;const x=cx+R*Math.cos(a),y=cy+R*Math.sin(a);
+  c.strokeStyle=css('--fg');c.lineWidth=2;c.beginPath();c.moveTo(cx,cy);c.lineTo(x,y);c.stroke();
+  dot(c,x,y,10,css('--mass'));dot(c,cx,cy,4,css('--fg'));
+  c.font='700 '+Math.max(16,R*.22)+'px '+css('--font-display');label(c,'n = '+n,cx,cy-R*1.22,css('--fg'),'center');
+  c.font='600 15px '+css('--font-body');label(c,'Start',cx,cy-R-14,css('--muted'),'center');
+}
+// ---- Folie 6
+const r6=document.getElementById('r6'),t6=document.getElementById('t6'),m6=document.getElementById('m6');let ang6=0;
+function vals6(){const r=+r6.value,T=+t6.value,m=+m6.value,om=2*Math.PI/T,v=om*r;return{r,T,m,om,v,f:1/T,a:v*v/r,F:m*v*v/r}}
+function upd6(){const q=vals6();document.getElementById('or6').textContent=fmt(q.r,1)+' m';document.getElementById('ot6').textContent=fmt(q.T,1)+' s';document.getElementById('om6').textContent=q.m+' kg';
+  document.getElementById('ro6').innerHTML=['<b>v</b> = '+fmt(q.v,2)+' m/s','<b>ω</b> = '+fmt(q.om,2)+' 1/s','<b>f</b> = '+fmt(q.f,2)+' Hz','<b>a<sub>Z</sub></b> = '+fmt(q.a,2)+' m/s²','<b>F<sub>Z</sub></b> = '+fmt(q.F,1)+' N'].map(s=>'<span class="chip">'+s+'</span>').join('')}
+[r6,t6,m6].forEach(e=>e.addEventListener('input',upd6));upd6();
+function draw6(t,dt){
+  const q=vals6();ang6+=q.om*dt;const {c,w,h}=prep(cv6);const cx=w/2,cy=h/2,S=Math.min(w,h)*.42/3,R=q.r*S;
+  c.strokeStyle=css('--line');c.lineWidth=1;for(let k=1;k<=3;k++){c.setLineDash([3,5]);c.beginPath();c.arc(cx,cy,k*S,0,7);c.stroke()}c.setLineDash([]);
+  label(c,'1 m',cx+S+4,cy-4,css('--muted'));
+  c.strokeStyle=css('--muted');c.lineWidth=2;c.beginPath();c.arc(cx,cy,R,0,7);c.stroke();
+  const x=cx+R*Math.cos(ang6),y=cy-R*Math.sin(ang6);
+  const vs=Math.min(S*.9,q.v*S*.35),fs=Math.min(R*.9,q.F*S*.05+8);
+  arrow(c,x,y,x-vs*Math.sin(ang6),y-vs*Math.cos(ang6),css('--v'),4);
+  arrow(c,x,y,x+(cx-x)/R*fs,y+(cy-y)/R*fs,css('--fz'),4);
+  tipLab(c,x,y,x-vs*Math.sin(ang6),y-vs*Math.cos(ang6),'v','',css('--v'));tipLab(c,x,y,x+(cx-x)/R*fs,y+(cy-y)/R*fs,'F','Z',css('--fz'));
+  dot(c,x,y,7+q.m*1.5,css('--mass'));dot(c,cx,cy,4,css('--fg'));
+  label(c,'Pfeillängen wachsen mit den Werten',16,26,css('--muted'));
+}
+// ---- Folie 7
+let st7={cut:false,a:0,x:0,y:0,vx:0,vy:0};
+document.getElementById('cut7').onclick=()=>{if(!st7.cut){st7.cut=true;st7.trail=[]}};
+document.getElementById('rs7').onclick=()=>{st7={cut:false,a:0}};
+function draw7(t,dt){
+  const {c,w,h}=prep(cv7);const cx=w*.4,cy=h*.55,R=Math.min(w,h)*.3,om=2*Math.PI/3;
+  c.strokeStyle=css('--line');c.setLineDash([6,6]);c.lineWidth=1.5;c.beginPath();c.arc(cx,cy,R,0,7);c.stroke();c.setLineDash([]);
+  dot(c,cx,cy,10,css('--muted'));label(c,'Hand',cx,cy+30,css('--muted'),'center');
+  if(!st7.cut){
+    st7.a+=om*dt;const x=cx+R*Math.cos(st7.a),y=cy-R*Math.sin(st7.a);st7.x=x;st7.y=y;st7.vx=-R*om*Math.sin(st7.a);st7.vy=-R*om*Math.cos(st7.a);
+    c.strokeStyle=css('--fg');c.lineWidth=2;c.beginPath();c.moveTo(cx,cy);c.lineTo(x,y);c.stroke();
+    arrow(c,x,y,x+(cx-x)*.45,y+(cy-y)*.45,css('--fz'),4);
+    arrow(c,x,y,x+st7.vx*.28,y+st7.vy*.28,css('--v'),4);
+    dot(c,x,y,11,css('--fg-grav'));
+    tipLab(c,x,y,x+(cx-x)*.45,y+(cy-y)*.45,'F','Z',css('--fz'));tipLab(c,x,y,x+st7.vx*.28,y+st7.vy*.28,'v','',css('--v'));
+  }else{
+    st7.trail.push([st7.x,st7.y]);st7.x+=st7.vx*dt;st7.y+=st7.vy*dt;
+    c.strokeStyle=css('--v');c.setLineDash([3,6]);c.lineWidth=2;c.beginPath();st7.trail.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.stroke();c.setLineDash([]);
+    if(st7.x>-50&&st7.x<w+50&&st7.y>-50&&st7.y<h+50){arrow(c,st7.x,st7.y,st7.x+st7.vx*.28,st7.y+st7.vy*.28,css('--v'),4);tipLab(c,st7.x,st7.y,st7.x+st7.vx*.28,st7.y+st7.vy*.28,'v','',css('--v'));dot(c,st7.x,st7.y,11,css('--fg-grav'))}
+    label(c,'keine Kraft zur Mitte → geradeaus (tangential)',16,26,css('--fg'));
+  }
+}
+// ---- Folie 9
+const t9=document.getElementById('t9');let ang9=0,hist=[],spring=false,tt=0;
+t9.addEventListener('input',()=>{document.getElementById('o9').textContent=fmt(+t9.value,1)+' s'});
+document.getElementById('sp9').onclick=e=>{spring=!spring;e.target.textContent=spring?'Federpendel abnehmen':'Federpendel an die Wand hängen'};
+function draw9(t,dt){
+  const T=+t9.value;ang9+=2*Math.PI*dt/T;tt+=dt;
+  const {c,w,h}=prep(cv9);const R=Math.min(h*.32,w*.19),cx=R+w*.06,cy=h*.5,xw=cx+R+w*.12;
+  const x=cx+R*Math.cos(ang9),y=cy-R*Math.sin(ang9);
+  hist.push([tt,y]);while(hist.length&&tt-hist[0][0]>12)hist.shift();
+  // Licht
+  label(c,'Licht →',8,22,css('--accent'));
+  c.strokeStyle=css('--accent');c.globalAlpha=.35;c.lineWidth=1;for(let k=0;k<5;k++){const yy=cy-R+k*R/2;c.beginPath();c.moveTo(4,yy);c.lineTo(cx-R-6,yy);c.stroke()}c.globalAlpha=1;
+  c.strokeStyle=css('--muted');c.lineWidth=1.5;c.beginPath();c.arc(cx,cy,R,0,7);c.stroke();
+  c.strokeStyle=css('--accent');c.setLineDash([4,5]);c.beginPath();c.moveTo(x,y);c.lineTo(xw,y);c.stroke();c.setLineDash([]);
+  c.strokeStyle=css('--fz');c.lineWidth=2;c.beginPath();c.moveTo(cx,cy);c.lineTo(x,y);c.stroke();
+  dot(c,x,y,8,css('--mass'));dot(c,cx,cy,3,css('--fg'));
+  // Wand
+  c.fillStyle=css('--line');c.fillRect(xw-3,h*.06,6,h*.88);label(c,'Wand',xw,h*.06-6,css('--muted'),'center');
+  // Zeitachse
+  const x0=xw+16,sp=(w-x0-10)/10;
+  c.strokeStyle=css('--line');c.lineWidth=1;c.beginPath();c.moveTo(x0,cy);c.lineTo(w-6,cy);c.stroke();
+  label(c,'Zeit →',w-8,cy+20,css('--muted'),'right');
+  c.strokeStyle=css('--v');c.lineWidth=3;c.beginPath();
+  for(let i=hist.length-1,first=true;i>=0;i--){const xx=x0+(tt-hist[i][0])*sp;if(xx>w-6)break;first?c.moveTo(xx,hist[i][1]):c.lineTo(xx,hist[i][1]);first=false}c.stroke();
+  c.strokeStyle=css('--muted');c.setLineDash([3,5]);[cy-R,cy+R].forEach(yy=>{c.beginPath();c.moveTo(x0,yy);c.lineTo(w-6,yy);c.stroke()});c.setLineDash([]);
+  label(c,'+r',x0+4,cy-R-6,css('--muted'));label(c,'−r',x0+4,cy+R+16,css('--muted'));
+  // Schatten bzw. Federpendel
+  if(spring){
+    const top=h*.06,n=12,amp=8;c.strokeStyle=css('--fg');c.lineWidth=2;c.beginPath();c.moveTo(xw,top);
+    for(let k=1;k<=n;k++){const yy=top+(y-14-top)*k/n;c.lineTo(xw+(k%2?amp:-amp),yy)}c.lineTo(xw,y-14);c.stroke();
+    c.fillStyle=css('--fg-grav');c.fillRect(xw-12,y-14,24,28);
+  }else{dot(c,xw,y,9,css('--fg'))}
+}
+
+const drawers=[draw1,draw2,draw3,draw4,draw5,draw6,draw7,null,draw9,null];
+const cvs={};['cv1','cv2','cv3','cv4','cv5','cv6','cv7','cv9'].forEach(id=>cvs[id]=document.getElementById(id));
+const {cv1,cv2,cv3,cv4,cv5,cv6,cv7,cv9}=cvs;
+let last=performance.now();
+function loop(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;
+  const f=drawers[cur];if(f){try{f(now/1000,reduce?dt*.5:dt)}catch(e){console.error(e)}}
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>
+
+</body>
+</html>
