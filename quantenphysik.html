@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lernpfad Quantenphysik</title>
+<style>
+/* Layout: eine Lesespalte; oben fünf Stunden als Leiste, darunter Stationen einer Stunde, jeweils eine Station sichtbar. */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#17212c; --muted:#586574; --line:#d3dae2;
+  --accent:#2742c4; --accent-soft:#e7ebfb;
+  --sol:#c8102e; --good:#1b7a48; --good-soft:#e3f4ea; --bad:#b0362e; --bad-soft:#fbe9e7;
+  --hg1:#c99700; --hg2:#4f9a00; --hg3:#2f48d8; --hg4:#7a2fc0; --hg5:#6b5a85;
+  --font-display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --font-body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-math:"Cambria Math","STIX Two Math","Times New Roman",Georgia,serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0f141a; --surface:#18202a; --ink:#e7ecf1; --muted:#9ba8b6; --line:#2d3945;
+    --accent:#8fa8ff; --accent-soft:#1f2a4d;
+    --sol:#ff6b6b; --good:#62cf95; --good-soft:#143524; --bad:#ff8f85; --bad-soft:#3d1c19;
+    --hg1:#e6b422; --hg2:#86c93a; --hg3:#7f93ff; --hg4:#b784f0; --hg5:#a497bd;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0f141a; --surface:#18202a; --ink:#e7ecf1; --muted:#9ba8b6; --line:#2d3945;
+  --accent:#8fa8ff; --accent-soft:#1f2a4d;
+  --sol:#ff6b6b; --good:#62cf95; --good-soft:#143524; --bad:#ff8f85; --bad-soft:#3d1c19;
+  --hg1:#e6b422; --hg2:#86c93a; --hg3:#7f93ff; --hg4:#b784f0; --hg5:#a497bd;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.55}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 56px;display:flex;flex-direction:column;gap:16px}
+header h1{font-family:var(--font-display);font-size:1.75rem;line-height:1.15;margin:0 0 4px;text-wrap:balance;font-weight:600}
+header p{margin:0;color:var(--muted);font-size:.95rem}
+.overall{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.simctl label{flex-wrap:wrap;max-width:100%}
+.simctl select{max-width:100%;min-width:0}
+.card,.lessonhead,.all{overflow-wrap:break-word;min-width:0}
+nav.stunden{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+@media (max-width:380px){nav.stunden .sw{display:none}nav.stunden button b{font-size:1.05rem}}
+nav.stunden button{font:inherit;font-size:.82rem;line-height:1.2;padding:8px 4px 7px;border:1px solid var(--line);border-top:4px solid var(--lc);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer;min-height:54px;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav.stunden button b{font-size:.95rem}
+nav.stunden button span{color:var(--muted);font-variant-numeric:tabular-nums}
+nav.stunden button[aria-current="true"]{background:var(--accent-soft);border-color:var(--accent);border-top-color:var(--lc)}
+.lessonhead h2{font-family:var(--font-display);font-size:1.3rem;margin:0;line-height:1.2;text-wrap:balance;font-weight:600}
+.lessonhead p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.dots button{font:inherit;font-size:.8rem;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;font-variant-numeric:tabular-nums}
+.dots button.done{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.dots button[aria-current="true"]{border:2px solid var(--accent);color:var(--ink);font-weight:700}
+.card{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--lc);border-radius:8px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:14px}
+.card h3{font-family:var(--font-display);font-size:1.2rem;margin:0;line-height:1.25;text-wrap:balance;font-weight:600}
+.eyebrow{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
+.body{display:flex;flex-direction:column;gap:12px}
+.body p,.body ul,.body ol{margin:0}
+.body ul,.body ol{padding-left:1.25em;display:flex;flex-direction:column;gap:6px}
+.formel{font-family:var(--font-math);font-size:1.15rem;text-align:center;padding:10px 8px;background:var(--bg);border-radius:6px;overflow-x:auto;white-space:nowrap}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.2;margin:0 .15em}
+.frac>span:first-child{border-bottom:1px solid currentColor;padding:0 .3em 1px}
+.frac>span:last-child{padding:1px .3em 0}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--bg);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.merk.stack{display:flex;flex-direction:column;gap:10px}
+.merk{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 14px;border-radius:0 6px 6px 0}
+.regel{border:1px solid var(--line);background:var(--bg);padding:10px 12px;border-radius:6px}
+.durch{border:1px dashed var(--muted);padding:10px 12px;border-radius:6px;display:flex;flex-direction:column;gap:6px}
+.durch>b{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.meter{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.meter>div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column}
+.meter span{font-size:.8rem;color:var(--muted)}
+.meter b{font-size:1.35rem;font-variant-numeric:tabular-nums}
+.task{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:10px}
+.task .q{margin:0;font-weight:600}
+.task .tag{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:0}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opts button,.btn{font:inherit;text-align:left;padding:11px 13px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer;min-height:46px}
+.opts button:hover:not(:disabled),.btn:hover:not(:disabled){border-color:var(--accent)}
+.opts button.right{background:var(--good-soft);border-color:var(--good)}
+.opts button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--muted)}
+.opts button:disabled{cursor:default}
+.btn{text-align:center;font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.btn.small{min-height:40px;padding:7px 12px;font-weight:500;font-size:.92rem}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.numrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.numrow input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);width:11.5em;max-width:100%;min-height:46px}
+.numrow .unit{color:var(--muted)}
+.hint{font-size:.82rem;color:var(--muted);margin:0}
+.fb{padding:10px 12px;border-radius:6px;font-size:.95rem}
+.fb.good{background:var(--good-soft);border-left:4px solid var(--good)}
+.fb.bad{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.fb.neutral{background:var(--bg);border-left:4px solid var(--muted)}
+.cls{display:flex;flex-direction:column;gap:10px}
+.cls .item{border:1px solid var(--line);border-radius:6px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.cls .item.ok{border-color:var(--good);background:var(--good-soft)}
+.cls .choices{display:flex;flex-wrap:wrap;gap:8px}
+.foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.foot .btn{flex:1 1 140px}
+.sim{border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.sim svg{width:100%;height:auto;display:block}
+.sim canvas{width:100%;display:block;border-radius:4px;background:var(--surface);border:1px solid var(--line)}
+.simctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.simctl label{display:flex;align-items:center;gap:8px;font-size:.92rem;min-height:40px}
+.simctl label.wide{flex:1 1 100%;flex-wrap:wrap}
+.simctl label b{white-space:nowrap}
+.simctl input[type=range]{flex:1;min-width:120px;accent-color:var(--accent)}
+.simctl input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent)}
+.simctl select{font:inherit;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);min-height:40px}
+.simout{font-size:.93rem;font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;gap:4px 16px}
+.simout b{font-weight:600}
+.zeiger{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.zeiger>div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px;text-align:center;font-size:.9rem;font-variant-numeric:tabular-nums}
+.zeiger svg{max-width:150px;margin:0 auto}
+.zcol{display:flex;flex-direction:column;gap:6px}
+.zhead{font-weight:600}
+.wrows{display:flex;flex-direction:column;gap:4px}
+.wrow{display:flex;align-items:center;gap:6px;text-align:left}
+.wl{flex:0 0 5.4em;font-size:.76rem;line-height:1.15;display:flex;align-items:center;gap:3px;font-weight:600}
+.sim canvas.wc{flex:1;min-width:0;height:30px;border:none;background:transparent;border-radius:0}
+.wnote{margin:0;font-size:.8rem;line-height:1.35;color:var(--muted);text-align:left}
+.pico{flex:none}
+.wrow.r2d{flex-direction:column;align-items:flex-start;gap:2px}
+.sim .wrow.r2d canvas.wc{flex:none;width:68px;min-width:68px;align-self:center}
+.wrow.r2d .wl{flex:none}
+.sim svg.pico,.zeiger svg.pico{width:14px;height:14px;max-width:none;margin:0}
+svg text{font-family:var(--font-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lnoff{stroke:var(--line);stroke-width:1.5;fill:none;stroke-dasharray:4 4}
+svg .ink{stroke:var(--ink);fill:none}
+svg .box{fill:var(--surface);stroke:var(--muted);stroke-width:1.5}
+svg .det{fill:var(--surface);stroke:var(--accent);stroke-width:2}
+svg .det.hit{fill:var(--accent)}
+svg .det.hit+text{fill:var(--surface)}
+svg .fillink{fill:var(--ink)}
+svg .fillmut{fill:var(--muted)}
+svg .acc{stroke:var(--accent);fill:none}
+svg .fillacc{fill:var(--accent)}
+svg .fillbad{fill:var(--bad)}
+svg .grid{stroke:var(--line);stroke-width:1}
+.checklist{list-style:none;padding:0 !important}
+.checklist label{display:flex;gap:10px;align-items:flex-start}
+.checklist label span{min-width:0}
+.checklist input{width:20px;height:20px;margin-top:3px;flex:none;accent-color:var(--accent)}
+footer{color:var(--muted);font-size:.82rem;display:flex;flex-direction:column;gap:6px}
+.spectrum{display:flex;height:5px;border-radius:3px;overflow:hidden}
+.spectrum i{flex:1}
+@media (max-width:420px){
+  body{font-size:16px}
+  .card{padding:14px 13px}
+  nav.stunden button{font-size:.75rem}
+  .zeiger{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion: reduce){.bar>i{transition:none}}
+/* Handy und Tablet: Spalten lösen sich auf, Reihenfolge Text, Experiment, Erklärung, Fragen */
+.chead{display:flex;flex-direction:column;gap:6px;order:0}
+.col{display:contents}
+.mzl,.mzr{display:contents}
+.o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}
+.part[hidden]{display:none!important}
+.parts{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.parts button{font:inherit;font-size:.78rem;min-width:30px;height:28px;padding:0 9px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;font-variant-numeric:tabular-nums}
+.parts button.done{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.parts button[aria-current="true"]{border:2px solid var(--lc,var(--accent));color:var(--ink);font-weight:700}
+.task.part{border-top:none;padding-top:0}
+.task.part>.q{font-size:1.08rem;line-height:1.4}
+.post.part{border-top:none;padding-top:0}
+/* Bildschirm: alles auf einer Seite. Text | Experiment | Fragen */
+@media (min-width:1000px) and (min-height:560px){
+  body{font-size:15px;line-height:1.45}
+  .wrap{max-width:1640px;padding:8px 20px 6px;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto auto auto;column-gap:20px;row-gap:6px}
+  header{grid-column:1/-1;display:flex;align-items:baseline;gap:4px 16px;flex-wrap:wrap}
+  header h1{font-size:1.3rem;margin:0}
+  header p{font-size:.82rem}
+  .overall{margin:0 0 0 auto;min-width:260px}
+  nav.stunden{grid-column:1;grid-row:2;width:460px;align-self:center}
+  nav.stunden button{min-height:40px;padding:4px;font-size:.78rem}
+  .lessonhead{grid-column:2;grid-row:2;display:flex;align-items:center;gap:4px 14px;flex-wrap:wrap}
+  .lessonhead h2{font-size:1.05rem}
+  .lessonhead p{display:none}
+  .dots{margin:0;gap:5px}
+  .dots button{width:auto;min-width:28px;height:28px;padding:0 5px;border-radius:14px;font-size:.75rem;white-space:nowrap}
+  .card{grid-column:1/-1;grid-row:3;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) minmax(0,1fr);grid-template-rows:auto auto;grid-template-areas:"h h h" "a b c";gap:8px 22px;padding:10px 16px 12px}
+  .card.nosim{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"h h" "a b"}
+  .card.withsim{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);grid-template-areas:"h h" "b c"}
+  .card.withsim .colA{display:none}
+  .colC .sim svg{max-height:26vh}
+  .parts{margin-left:auto}
+  body{font-size:16px}
+  .card.single{grid-template-columns:minmax(0,1fr);grid-template-areas:"h" "a"}
+  .card.single .colB,.card.single .colC,.card.nosim .colC{display:none}
+  .card.single .colA{max-width:920px}
+  .chead{grid-area:h;gap:0 14px;flex-direction:row;align-items:baseline;flex-wrap:wrap}
+  .chead h3{font-size:1.1rem}
+  .colA{grid-area:a}.colB{grid-area:b}.colC{grid-area:c}
+  .col{display:flex;flex-direction:column;gap:10px;min-width:0}
+  .body{gap:9px}
+  .durch{padding:7px 10px;gap:3px;font-size:.93rem}
+  .merk{padding:9px 12px}
+  .regel{padding:8px 10px}
+  .formel{padding:6px;font-size:1.05rem}
+  .sim{padding:8px;gap:6px}
+  .colB .sim svg{max-height:40vh}
+  .gfa,.gfb{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .colB .sim.gf{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:10px;align-items:start}
+  .colB .sim.mzi{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:10px;align-items:start}
+  .colB .sim.mzi:not(:has(.mzr)){grid-template-columns:minmax(0,1fr)}
+  .mzl,.mzr{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .colB .sim.mzi svg{max-height:40vh}
+  .colB .fitwrap{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.5fr);gap:10px;align-items:start}
+  .colB .fitwrap>.hint{grid-column:1/-1}
+  .colA .sim svg{max-height:22vh}
+  .colA .sim.ablauf svg{max-height:15vh}
+  .colB .sim.mzi>.hint{font-size:.72rem}
+  .colB .sim.mzi .zeiger svg{max-width:100px}
+  .wnote{font-size:.74rem}
+  .hint{font-size:.76rem}
+  .simctl{gap:4px 12px}
+  .simctl label{min-height:32px;font-size:.88rem}
+  .btn.small{min-height:32px;padding:4px 10px;font-size:.85rem}
+  .simout{font-size:.85rem}
+  .meter b{font-size:1.1rem}
+  .zeiger{gap:6px}
+  .zeiger>div{padding:4px}
+  .zeiger svg{max-width:110px}
+  .task{padding-top:8px;gap:7px}
+  .task:first-child{border-top:none;padding-top:0}
+  .opts{gap:6px}
+  .opts button,.btn{min-height:36px;padding:6px 10px}
+  .numrow input{min-height:36px;padding:6px 10px}
+  .cls{gap:6px}.cls .item{padding:6px 9px;gap:5px}
+  .fb{padding:7px 10px;font-size:.9rem}
+  .foot{grid-column:1/-1;grid-row:4}
+  .foot .btn{min-height:36px;padding:4px 12px}
+  footer{grid-column:1/-1;grid-row:5;font-size:.7rem;gap:0}
+  footer .spectrum,footer span:first-of-type{display:none}
+}
+
+
+.all{display:flex;flex-direction:column;gap:16px}
+.all .lessonhead{margin-top:12px;scroll-margin-top:12px}
+.opts button.solopt,.btn.solopt{color:var(--sol);border:2px solid var(--sol);font-weight:700}
+.solval{color:var(--sol);font-weight:700;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:10px 12px;min-width:7em;font-variant-numeric:tabular-nums}
+.solnote{color:var(--sol);font-size:.95rem}
+.solnote>*+*{margin-top:8px}
+.solnote .regel,.solnote table{color:var(--sol)}
+@media print{nav.stunden{display:none}.task{break-inside:avoid}}
+/* Sperre */
+#nav[hidden],#lessonhead[hidden],#card[hidden],#foot[hidden],#cert[hidden],#certBtn[hidden]{display:none!important}
+.dots button:disabled,nav.stunden button:disabled,.parts button:disabled{opacity:.4;cursor:not-allowed}
+.foot .btn:disabled{opacity:.55;cursor:not-allowed}
+.certbtn{min-height:30px!important;padding:3px 12px!important;border-color:var(--hg1);font-weight:600}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;max-width:90vw}
+.toast.show{opacity:1}
+/* Urkunde */
+#cert{grid-column:1/-1;grid-row:2/5;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0}
+.certctl{width:100%;max-width:1000px;display:flex;flex-direction:column;gap:8px}
+.certctl p{margin:0}
+.certctl .row{display:flex;gap:10px;flex-wrap:wrap}
+.certctl .row .btn{flex:1 1 200px}
+.urkunde{box-sizing:border-box;width:1000px;height:707px;flex:none;position:relative;overflow:hidden;background:#fffdf7;color:#17212c;border:1px solid #d8d1bd;box-shadow:0 2px 16px rgba(0,0,0,.14);padding:52px 76px 46px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;font-family:var(--font-body);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.urkunde::before{content:"";position:absolute;inset:16px;border:2px solid #2742c4;outline:1px solid #2742c4;outline-offset:5px;pointer-events:none}
+.ubar{position:absolute;left:30px;right:30px;top:30px;height:6px;display:flex}
+.ubar i{flex:1}
+.umotiv{position:absolute;right:54px;top:56px;width:150px;height:auto}
+.ukicker{margin:20px 0 0;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:#586574}
+.utitle{font-family:var(--font-display);font-size:84px;line-height:1;margin:6px 0 0;font-weight:600;letter-spacing:.06em;color:#17212c}
+.ufor{margin:4px 0 0;font-size:19px;color:#586574;font-style:italic;font-family:var(--font-display)}
+.uname{font:600 34px/1.25 var(--font-display);text-align:center;width:640px;max-width:100%;border:none;border-bottom:1.5px solid #17212c;background:transparent;color:#17212c;padding:2px 8px;outline:none;border-radius:0}
+.urkunde .uname:focus,.urkunde .uname:focus-visible{background:#eef1fd;border-bottom-color:#2742c4;outline:none}
+.uname::placeholder{color:#9aa4ae;font-weight:400}
+.utext{font-size:19px;line-height:1.5;max-width:800px;margin:12px 0 0}
+.ulist{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;width:100%}
+.ulist li{display:flex;flex-direction:column;border-top:4px solid var(--c);padding:9px 4px 0;font-size:14.5px;line-height:1.35;text-align:left;color:#17212c}
+.ulist b{display:block;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:#586574;margin-bottom:3px;font-weight:600}
+.ulist em{display:block;margin-top:auto!important;padding-top:6px;font-style:normal;font-family:var(--font-display);font-size:17px;margin-top:6px;color:#17212c;white-space:nowrap}
+.ustat{font-size:15px;color:#586574;margin:14px 0 0}
+.usign{margin-top:auto;display:flex;justify-content:space-between;width:100%;gap:90px}
+.usign div{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.usign span{font-size:17px;min-height:24px;font-family:var(--font-display)}
+.usign i{display:block;width:100%;border-top:1.5px solid #17212c}
+.usign small{font-size:11.5px;color:#586574;letter-spacing:.1em;text-transform:uppercase}
+@media print{
+  @page{size:A4 landscape;margin:0}
+  html,body.certmode{background:#fff!important}
+  body.certmode .wrap{zoom:1!important;max-width:none!important;padding:0!important;margin:0!important;display:block!important}
+  body.certmode .wrap>*:not(#cert),body.certmode .toast{display:none!important}
+  body.certmode .certctl{display:none!important}
+  body.certmode #cert{display:block!important}
+  body.certmode .urkunde{zoom:1.118!important;border:none;box-shadow:none}
+  .urkunde .uname{background:transparent!important;outline:none!important}
+  .uname::placeholder{color:transparent}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Lernpfad Quantenphysik</h1>
+    <p>Physik 13 (erhöhtes Anforderungsniveau) · Lernbereich 1 · fünf Unterrichtsstunden</p>
+    <div class="overall"><span id="overallText"></span><div class="bar"><i id="overallBar"></i></div><button type="button" class="btn small certbtn" id="certBtn" hidden>Urkunde</button></div>
+  </header>
+  <nav class="stunden" id="nav" aria-label="Stunden"></nav>
+  <section class="lessonhead" id="lessonhead"></section>
+  <main class="card" id="card"></main>
+  <div class="foot" id="foot"></div>
+  <section id="cert" hidden></section>
+  <footer>
+    <div class="spectrum" aria-hidden="true"><i style="background:var(--hg1)"></i><i style="background:var(--hg2)"></i><i style="background:var(--hg3)"></i><i style="background:var(--hg4)"></i><i style="background:var(--hg5)"></i></div>
+    <span>Die Farben der fünf Stunden sind die Linien der Quecksilberdampflampe aus Stunde 2: 578, 546, 436, 405 und 365 nm.</span>
+    <span>Konstanten: h = 6,626·10<sup>−34</sup> Js · c = 2,998·10<sup>8</sup> m/s · e = 1,602·10<sup>−19</sup> C · m<sub>e</sub> = 9,109·10<sup>−31</sup> kg · h·c = 1240 eV·nm. Der Bearbeitungsstand wird nur in diesem Browser gespeichert.</span>
+  </footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+var SOLUTION=false;
+var LOCK=true; /* Sperre: Aufgabe lösen, dann weiter. Lehrkraft: fünfmal schnell auf den Titel tippen. */
+var uid=0;
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+function fr(a,b){return '<span class="frac"><span>'+a+'</span><span>'+b+'</span></span>';}
+function F(h){return '<div class="formel">'+h+'</div>';}
+function de(v,d){return v.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function sci(v,d){if(v===0)return '0';var e=Math.floor(Math.log10(Math.abs(v)));var m=Number((v/Math.pow(10,e)).toFixed(d));if(Math.abs(m)>=10){m/=10;e++;}return de(m,d)+'·10<sup>'+String(e).replace('-','−')+'</sup>';}
+var curZoom=1;function pxr(){return (window.devicePixelRatio||1)*curZoom;}
+/* Zeichenfläche vorbereiten: Die Anzeigehöhe ist fest, die Auflösung folgt Bildschirm und Verkleinerung. */
+function cvs(cv,hh){var w=cv.clientWidth||320,r=pxr(),bw=Math.max(1,Math.round(w*r)),bh=Math.max(1,Math.round(hh*r));
+  if(cv.width!==bw||cv.height!==bh){cv.width=bw;cv.height=bh;}
+  var sh=(hh+cv.offsetHeight-cv.clientHeight)+'px';if(cv.style.height!==sh)cv.style.height=sh; /* Rahmen zählt zur Höhe */
+  var c=cv.getContext('2d');c.setTransform(bw/w,0,0,bh/hh,0,0);c.clearRect(0,0,w,hh);
+  c.globalAlpha=1;c.setLineDash([]);c.textAlign='left';c.textBaseline='alphabetic';c.lineCap='butt';c.lineJoin='miter';
+  return {c:c,w:w};}
+/* Neuzeichnen bei Größenänderung und Messwert-Meldungen: zentral verwaltet, verwaiste Einträge werden entfernt */
+var liveFns=[],measSubs=[];
+function alive(list){return list.filter(function(x){return x.n.isConnected;});}
+function onLayout(node,fn){liveFns.push({n:node,f:fn});}
+function measChanged(){measSubs=alive(measSubs);measSubs.forEach(function(x){x.f();});}
+window.addEventListener('resize',function(){liveFns=alive(liveFns);liveFns.forEach(function(x){try{x.f();}catch(e){}});});
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+/* ---------- Zahleneingabe ---------- */
+function parseNum(s){
+  s=String(s).trim().toLowerCase().replace(/\s+/g,'').replace(/[−–]/g,'-').replace(/,/g,'.');
+  s=s.replace(/^½$/,'0.5').replace(/^¼$/,'0.25').replace(/^¾$/,'0.75');
+  var pct=/%$/.test(s),v;
+  s=s.replace(/[a-zµ%°\/²³·*]+$/,'');
+  var m=s.match(/^(-?\d*\.?\d*)[·*x×]?10\^\(?(-?\d+)\)?$/);
+  if(m){var man=(m[1]===''||m[1]==='-')?m[1]+'1':m[1];v=parseFloat(man)*Math.pow(10,parseInt(m[2],10));return isFinite(v)?v:NaN;}
+  var fm=s.match(/^(-?\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+  if(fm){var dn=parseFloat(fm[2]);return dn?parseFloat(fm[1])/dn:NaN;}
+  if(s==='')return NaN;
+  v=Number(s);if(!isFinite(v))return NaN;return pct?v/100:v;
+}
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function orderFor(n,seed){var r=rng(seed*7919+13),o=[],i;for(i=0;i<n;i++)o.push(i);for(i=n-1;i>0;i--){var j=Math.floor(r()*(i+1)),tmp=o[i];o[i]=o[j];o[j]=tmp;}return o;}
+function seedOf(L,S,i){return 1+L*997+S*31+i;}
+function numOK(v,a,tol){if(a===0)return Math.abs(v)<=0.01;return Math.abs(v-a)<=tol*Math.abs(a);}
+
+/* ---------- Abbildungen ---------- */
+function figPaar(){return '<div class="sim"><svg viewBox="0 0 360 120" role="img" aria-label="Photonenpaarquelle mit Triggerdetektor">'+
+'<rect class="box" x="8" y="42" width="62" height="34" rx="6"/><text x="39" y="64" text-anchor="middle" font-size="12">Laser</text>'+
+'<line class="ln" x1="70" y1="59" x2="118" y2="59"/><rect class="fillmut" x="118" y="40" width="20" height="38"/><text x="128" y="96" text-anchor="middle" font-size="12">Kristall</text>'+
+'<line class="acc" stroke-width="1.5" x1="138" y1="52" x2="236" y2="24"/><line class="acc" stroke-width="1.5" x1="138" y1="66" x2="236" y2="94"/>'+
+'<rect class="det" x="236" y="8" width="116" height="32" rx="6"/><text x="294" y="29" text-anchor="middle" font-size="12">Triggerdetektor T</text>'+
+'<rect class="box" x="236" y="78" width="116" height="32" rx="6"/><text x="294" y="99" text-anchor="middle" font-size="12">Experiment</text></svg></div>';}
+
+function arrS(x1,y1,x2,y2,col,w){var a=Math.atan2(y2-y1,x2-x1),L=8;return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="var('+col+')" stroke-width="'+w+'"/><path fill="var('+col+')" d="M'+x2+' '+y2+'L'+(x2-L*Math.cos(a-.45)).toFixed(1)+' '+(y2-L*Math.sin(a-.45)).toFixed(1)+'L'+(x2-L*Math.cos(a+.45)).toFixed(1)+' '+(y2-L*Math.sin(a+.45)).toFixed(1)+'z"/>';}
+function figProjektion(){
+  function panel(ox,sg,title,cap){var oy=108,L=55,h=L*Math.SQRT1_2*Math.SQRT1_2*2/2,ax=ox+h,ay=oy-h,bx=sg>0?ox+h:ox-h,by=sg>0?oy-h:oy-h,g='',p;
+    // Durchlassrichtung
+    g+='<line x1="'+(ox-62)+'" y1="'+(oy+62*sg)+'" x2="'+(ox+62)+'" y2="'+(oy-62*sg)+'" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>';
+    g+=sg>0?'<text class="mut" x="'+(ox+66)+'" y="'+(oy-58)+'" font-size="12" text-anchor="end">45°</text>':'<text class="mut" x="'+(ox-66)+'" y="'+(oy-58)+'" font-size="12">−45°</text>';
+    // Projektionen
+    var pA=sg>0?[ox+27.5,oy-27.5]:[ox+27.5,oy+27.5],pB=sg>0?[ox+27.5,oy-27.5]:[ox-27.5,oy-27.5];
+    g+='<line x1="'+(ox+L)+'" y1="'+oy+'" x2="'+pA[0]+'" y2="'+pA[1]+'" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/>';
+    g+='<line x1="'+ox+'" y1="'+(oy-L)+'" x2="'+pB[0]+'" y2="'+pB[1]+'" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/>';
+    g+=arrS(ox,oy,ox+L,oy,'--hg1',2.5)+arrS(ox,oy,ox,oy-L,'--hg4',2.5);
+    g+=arrS(ox,oy,pA[0],pA[1],'--hg2',4)+(sg>0?'':arrS(ox,oy,pB[0],pB[1],'--hg2',4));
+    g+='<text x="'+(ox+L+4)+'" y="'+(oy+16)+'" font-size="13" fill="var(--hg1)" font-weight="600">A</text><text x="'+(ox+6)+'" y="'+(oy-L+4)+'" font-size="13" fill="var(--hg4)" font-weight="600">B</text>';
+    g+='<text x="'+ox+'" y="22" text-anchor="middle" font-size="14" font-weight="600">'+title+'</text>';
+    g+='<text class="mut" x="'+ox+'" y="186" text-anchor="middle" font-size="12">'+cap+'</text>';
+    return g;}
+  return '<div class="sim"><svg viewBox="0 0 360 196" role="img" aria-label="Wirkung des Radierer-Filters auf die waagrechte und die senkrechte Schwingung">'+
+    panel(90,1,'Filter 45°','gleiche Richtung')+panel(270,-1,'Filter −45°','entgegengesetzt: Berg wird Tal')+
+    '</svg><p class="hint"><span style="color:var(--hg1)">■</span> Schwingung von Weg A (waagrecht) &nbsp; <span style="color:var(--hg4)">■</span> von Weg B (senkrecht) &nbsp; <span style="color:var(--hg2)">■</span> Anteil, den der Filter durchlässt</p></div>';
+}
+
+function figAblauf(){
+  var box=function(x,n,l1,l2,acc){return '<rect x="'+x+'" y="34" width="104" height="66" rx="8" fill="'+(acc?'var(--accent-soft)':'var(--surface)')+'" stroke="var('+(acc?'--accent':'--muted')+')" stroke-width="1.5"/><text x="'+(x+52)+'" y="56" text-anchor="middle" font-size="13" font-weight="700">'+n+'</text><text x="'+(x+52)+'" y="74" text-anchor="middle" font-size="12">'+l1+'</text><text x="'+(x+52)+'" y="90" text-anchor="middle" font-size="12">'+l2+'</text>';};
+  var ar=function(x){return '<line x1="'+x+'" y1="67" x2="'+(x+14)+'" y2="67" stroke="var(--muted)" stroke-width="1.5"/><path fill="var(--muted)" d="M'+(x+18)+' 67l-7 -4v8z"/>';};
+  return '<div class="sim ablauf"><svg viewBox="0 0 360 106" role="img" aria-label="Ablauf: Photon passiert Strahlteiler 1, dann entscheidet der Zufallsgenerator, dann folgt der Nachweis">'+
+   '<text class="mut" x="180" y="18" text-anchor="middle" font-size="12">Zeit →</text>'+
+   box(4,'1','Photon passiert','Strahlteiler 1',false)+ar(110)+box(128,'2','Zufall: ST 2','rein oder raus',true)+ar(234)+box(252,'3','Nachweis an','D1 oder D2',false)+
+   '</svg></div>';
+}
+
+/* ---------- Simulation: Photoeffekt-Labor ---------- */
+function wlColor(w){if(w<380)return '#8a78b8';var r=0,g=0,b=0;
+  if(w<440){r=-(w-440)/60;b=1;}else if(w<490){g=(w-440)/50;b=1;}else if(w<510){g=1;b=-(w-510)/20;}else if(w<580){r=(w-510)/70;g=1;}else if(w<645){r=1;g=-(w-645)/65;}else{r=1;}
+  var f=1;if(w<420)f=.3+.7*(w-380)/40;else if(w>700)f=.3+.7*(780-w)/80;
+  return 'rgb('+[r,g,b].map(function(c){return Math.round(255*Math.pow(Math.max(c,0)*f,.8));}).join(',')+')';}
+function photoLab(root){
+  var id='p'+(++uid);
+  root.innerHTML='<div class="sim"><canvas id="'+id+'c" height="200" role="img" aria-label="Licht trifft auf eine Metallplatte und löst Elektronen aus"></canvas>'+
+  '<p class="hint"><span style="color:var(--accent)">●</span> ausgelöstes Elektron. Je länger der Strich dahinter, desto schneller ist es.</p><div class="simctl">'+
+  '<label>Metall <select id="'+id+'m"><option value="1.94">Cäsium (W_A = 1,94 eV)</option><option value="2.25">Kalium (W_A = 2,25 eV)</option><option value="4.30">Zink (W_A = 4,30 eV)</option></select></label>'+
+  '<label class="wide">Wellenlänge <input type="range" id="'+id+'w" min="200" max="700" step="1" value="550"> <b id="'+id+'wv"></b></label>'+
+  '<label class="wide">Intensität <input type="range" id="'+id+'i" min="0" max="100" step="10" value="50"> <b id="'+id+'iv"></b></label></div>'+
+  '<div class="simout" id="'+id+'o"></div></div>';
+  var m=root.querySelector('#'+id+'m'),w=root.querySelector('#'+id+'w'),it=root.querySelector('#'+id+'i'),cv=root.querySelector('#'+id+'c');
+  var els=[],acc=0,last=0,phase=0;
+  function P(){var W=parseFloat(m.value),lam=parseInt(w.value,10),I=parseInt(it.value,10),E=1239.84/lam;return {W:W,lam:lam,I:I,E:E,Ek:E-W};}
+  function info(){var p=P(),on=p.Ek>0&&p.I>0;
+    root.querySelector('#'+id+'wv').textContent=p.lam+' nm'+(p.lam<380?' (UV)':'');
+    root.querySelector('#'+id+'iv').textContent=p.I+' %';
+    root.querySelector('#'+id+'o').innerHTML='<span>Energie eines Photons: <b>'+de(p.E,2)+' eV</b></span><span>E<sub>kin,max</sub>: <b>'+(on?de(p.Ek,2)+' eV':'–')+'</b></span><span>Photostrom: <b>'+(on?p.I:0)+' %</b> des Höchstwerts</span>';}
+  function draw(p){
+    var hh=200,K=cvs(cv,hh),c=K.c,wd=K.w;
+    var xp=wd-58,yT=16,yB=168,col=wlColor(p.lam),n=Math.round(p.I/20),per=p.lam/22,k,x;
+    c.font='13px '+cssVar('--font-body');
+    /* Licht */
+    c.strokeStyle=col;c.lineWidth=2;
+    for(k=0;k<n;k++){var y0=yT+18+k*((yB-yT-36)/4);c.beginPath();for(x=8;x<=xp-2;x+=1.5){var yy=y0+4*Math.sin(2*Math.PI*(x-phase)/per);if(x===8)c.moveTo(x,yy);else c.lineTo(x,yy);}c.stroke();}
+    /* Metall */
+    c.fillStyle=cssVar('--muted');c.fillRect(xp,yT-6,14,yB-yT+12);
+    c.textAlign='center';c.fillText('Metall',xp+7,yB+24);
+    /* Elektronen */
+    var acc2=cssVar('--accent');c.strokeStyle=acc2;c.fillStyle=acc2;c.lineWidth=2;
+    for(k=0;k<els.length;k++){var e=els[k];c.globalAlpha=Math.max(0,Math.min(1,e.x/40));c.beginPath();c.moveTo(e.x,e.y);c.lineTo(e.x-e.vx*0.18,e.y-e.vy*0.18);c.stroke();c.beginPath();c.arc(e.x,e.y,4,0,6.2832);c.fill();}
+    c.globalAlpha=1;
+    if(p.I>0&&p.Ek<=0){c.fillStyle=cssVar('--muted');c.textAlign='left';c.fillText('Es treten keine Elektronen aus.',8,yB+24);}
+    c.textAlign='left';
+  }
+  function frame(t){
+    if(!root.isConnected)return;
+    var dt=last?Math.min(0.05,(t-last)/1000):0;last=t;var p=P();
+    phase+=dt*90;
+    if(p.Ek>0&&p.I>0){acc+=p.I/100*14*dt;while(acc>=1){acc--;if(els.length<160){var Ei=p.Ek*(1-Math.sqrt(Math.random())),v=25+150*Math.sqrt(Ei),a=(Math.random()-0.5)*1.1;
+      els.push({x:(cv.clientWidth||320)-62,y:30+Math.random()*126,vx:-v*Math.cos(a),vy:v*Math.sin(a)});}}}
+    var keep=[];for(var k=0;k<els.length;k++){var e=els[k];e.x+=e.vx*dt;e.y+=e.vy*dt;if(e.x>-10&&e.y>-10&&e.y<210)keep.push(e);}els=keep;
+    draw(p);requestAnimationFrame(frame);
+  }
+  m.addEventListener('change',function(){els=[];info();});w.addEventListener('input',function(){els=[];info();});it.addEventListener('input',info);
+  info();draw(P());requestAnimationFrame(frame);
+}
+
+/* ---------- Simulation: Energiebild zur Einstein-Gleichung ---------- */
+function ctext(c,x,y,str,align){
+  var parts=str.split(/_\{([^}]*)\}/),big=c.font,m=big.match(/^(\d+)px (.*)$/),small=m?Math.round(m[1]*0.75)+'px '+m[2]:big,w=0,i;
+  for(i=0;i<parts.length;i++){c.font=i%2?small:big;w+=c.measureText(parts[i]).width;}
+  var px=align==='right'?x-w:align==='center'?x-w/2:x;c.textAlign='left';
+  for(i=0;i<parts.length;i++){c.font=i%2?small:big;c.fillText(parts[i],px,y+(i%2?4:0));px+=c.measureText(parts[i]).width;}
+  c.font=big;
+}
+function energyLab(root){
+  var id='e'+(++uid);
+  root.innerHTML='<div class="sim"><canvas id="'+id+'c" height="250" role="img" aria-label="Energiebild: Ein Photon hebt ein Elektron im Metall an. Reicht die Energie über den Rand, verlässt das Elektron das Metall."></canvas>'+
+  '<div class="simctl"><label>Metall <select id="'+id+'m"><option value="1.94">Cäsium (W_A = 1,94 eV)</option><option value="2.25">Kalium (W_A = 2,25 eV)</option><option value="4.30">Zink (W_A = 4,30 eV)</option></select></label>'+
+  '<label class="wide">Wellenlänge <input type="range" id="'+id+'w" min="200" max="700" step="1" value="700"> <b id="'+id+'wv"></b></label></div>'+
+  '<div class="simout" id="'+id+'o"></div></div>';
+  function q(s){return root.querySelector('#'+id+s);}
+  var m=q('m'),w=q('w'),cv=q('c'),T=0,last=0;
+  function P(){var W=parseFloat(m.value),lam=parseInt(w.value,10),E=1239.84/lam;return {W:W,lam:lam,E:E,Ek:E-W};}
+  function info(){var p=P();q('wv').textContent=p.lam+' nm'+(p.lam<380?' (UV)':'');
+    q('o').innerHTML='<span>Energie des Photons: <b>'+de(p.E,2)+' eV</b></span><span>Austrittsarbeit: <b>'+de(p.W,2)+' eV</b></span>'+
+    (p.Ek>0?'<span>bleibt als Bewegungsenergie: <b>'+de(p.Ek,2)+' eV</b></span><span>Das Elektron verlässt das Metall.</span>':'<span>bis zum Rand fehlen: <b>'+de(-p.Ek,2)+' eV</b></span><span>Das Elektron bleibt im Metall.</span>');}
+  function ibeam(c,x,ya,yb){c.beginPath();c.moveTo(x,ya);c.lineTo(x,yb);c.moveTo(x-4,ya);c.lineTo(x+4,ya);c.moveTo(x-4,yb);c.lineTo(x+4,yb);c.stroke();}
+  function draw(){
+    var hh=250,K=cvs(cv,hh),c=K.c,wd=K.w;
+    var ink=cssVar('--ink'),mut=cssVar('--muted'),accent=cssVar('--accent'),p=P(),col=wlColor(p.lam);
+    var xL=10,xS=Math.round(wd*0.52),xR=wd-10,y0=206,sc=27,floor=y0+7,xe=xS-52,yW=y0-p.W*sc,yH=y0-p.E*sc,u;
+    c.font='13px '+cssVar('--font-body');
+    /* Metall, Rand und Energieverlauf */
+    c.globalAlpha=.16;c.fillStyle=mut;c.fillRect(xL,yW,xS-xL,hh-8-yW);c.globalAlpha=1;
+    c.strokeStyle=mut;c.lineWidth=1;c.setLineDash([4,4]);c.beginPath();c.moveTo(xL,yW);c.lineTo(xS,yW);c.stroke();c.setLineDash([]);
+    c.strokeStyle=ink;c.lineWidth=2;c.beginPath();c.moveTo(xL,floor);c.lineTo(xS,floor);c.lineTo(xS,yW);c.lineTo(xR,yW);c.stroke();
+    c.fillStyle=mut;c.textAlign='left';c.fillText('Metall',xL+6,hh-10);c.textAlign='right';c.fillText('außerhalb',xR,hh-10);
+    c.strokeStyle=mut;c.lineWidth=1.5;ibeam(c,xS+14,floor,yW);
+    c.fillStyle=ink;ctext(c,xS+24,(floor+yW)/2+4,'W_{A} = '+de(p.W,2)+' eV','left');
+    ctext(c,xL+2,16,'Photon: h·f = '+de(p.E,2)+' eV','left');
+    /* Ablauf: Photon kommt an, Elektron wird angehoben, verlässt das Metall oder fällt zurück */
+    var t1=0.9,t2=1.8,ex=xe,ey=y0,top=y0;
+    if(T<t1){u=T/t1;var ax=xL+26,ay=34,bx=xe,by=y0-6,dx=bx-ax,dy=by-ay,len=Math.hypot(dx,dy),cxp=ax+dx*u,cyp=ay+dy*u;
+      c.strokeStyle=col;c.lineWidth=2.5;c.beginPath();
+      for(var s=-24;s<=24;s+=1.5){var o=4*Math.sin(s/24*Math.PI*3),px=cxp+dx/len*s-dy/len*o,py=cyp+dy/len*s+dx/len*o;if(s===-24)c.moveTo(px,py);else c.lineTo(px,py);}
+      c.stroke();}
+    else if(T<t2){u=(T-t1)/(t2-t1);u=u*u*(3-2*u);ey=y0+(yH-y0)*u;top=ey;}
+    else if(p.Ek>0){var v=45+110*Math.sqrt(p.Ek),tt=T-t2;ex=xe+v*tt;ey=yH;top=yH;if(tt>(xR+12-xe)/v+0.7)T=0;}
+    else{var tf=T-t2;if(tf<0.35)ey=yH;else if(tf<0.85){u=(tf-0.35)/0.5;ey=yH+(y0-yH)*u*u;}else{ey=y0;if(tf>1.6)T=0;}top=ey;}
+    if(T>=t1&&y0-top>2){c.strokeStyle=col;c.lineWidth=3;c.beginPath();c.moveTo(xe,y0);c.lineTo(xe,top);c.stroke();
+      if(y0-top>16){c.fillStyle=ink;c.textAlign='right';c.fillText('h·f',xe-9,(y0+top)/2+4);}}
+    if(T>=t2&&p.Ek>0){c.strokeStyle=accent;c.lineWidth=1.5;ibeam(c,xR-6,yW,yH);
+      c.globalAlpha=.45;c.lineWidth=2;c.beginPath();c.moveTo(xe,yH);c.lineTo(Math.min(ex,xR),yH);c.stroke();c.globalAlpha=1;
+      c.fillStyle=ink;ctext(c,xR,yH-10,'E_{kin,max} = '+de(p.Ek,2)+' eV','right');}
+    if(ex<xR+8){c.fillStyle=accent;c.beginPath();c.arc(ex,ey,6,0,6.2832);c.fill();}
+  }
+  function frame(t){if(!root.isConnected)return;var dt=last?Math.min(0.05,(t-last)/1000):0;last=t;T+=dt;draw();requestAnimationFrame(frame);}
+  m.addEventListener('change',function(){T=0;info();});w.addEventListener('input',info);
+  info();draw();requestAnimationFrame(frame);
+}
+
+/* ---------- Simulation: Hallwachs-Experiment ---------- */
+function D(items){return '<div class="durch"><b>Durchführung</b><ol><li>'+items.join('</li><li>')+'</li></ol></div>';}
+function hallwachsLab(root,opts){
+  opts=opts||{};var id='h'+(++uid),st={q:0,lamp:false,glass:false,d:50,t:0,ph:0};
+  var h='<div class="sim"><div id="'+id+'f"></div><div class="simctl"><button type="button" class="btn small" id="'+id+'n">Negativ laden</button><button type="button" class="btn small" id="'+id+'p">Positiv laden</button><label><input type="checkbox" id="'+id+'l"> Lampe ein</label>';
+  if(opts.glass)h+='<label><input type="checkbox" id="'+id+'g"> Glasscheibe</label>';
+  if(opts.dist)h+='<label class="wide">Abstand der Lampe <input type="range" id="'+id+'d" min="20" max="100" step="10" value="50"> <b id="'+id+'dv"></b></label>';
+  h+='</div><div class="simout" id="'+id+'o"></div></div>';root.innerHTML=h;
+  function q(s){return root.querySelector('#'+id+s);}
+  function draw(){
+    var lx=8+(100-st.d)*1.2,rx=lx+64,a=Math.abs(st.q)*50*Math.PI/180,n=Math.ceil(Math.abs(st.q)*3-0.01),sign=st.q<0?'−':'+',k,g,sg='';
+    var active=st.lamp&&st.q<0&&!st.glass;
+    g='<svg viewBox="0 0 360 196" role="img" aria-label="Hallwachs-Experiment mit Lampe, Zinkplatte und Elektroskop">';
+    g+='<rect class="box" x="'+lx+'" y="28" width="64" height="40" rx="6"/><text x="'+(lx+32)+'" y="53" text-anchor="middle" font-size="13">Lampe</text>';
+    if(st.lamp){var ux=st.glass?186:222;
+      g+='<line x1="'+rx+'" y1="43" x2="222" y2="43" stroke="var(--hg1)" stroke-width="3"/><line x1="'+rx+'" y1="53" x2="222" y2="53" stroke="var(--hg1)" stroke-width="3"/>';
+      g+='<line x1="'+rx+'" y1="34" x2="'+ux+'" y2="34" stroke="var(--hg4)" stroke-width="3" stroke-dasharray="6 4"/><line x1="'+rx+'" y1="62" x2="'+ux+'" y2="62" stroke="var(--hg4)" stroke-width="3" stroke-dasharray="6 4"/>';}
+    if(st.glass)g+='<rect class="fillacc" opacity=".35" x="186" y="14" width="8" height="68"/><text class="mut" x="190" y="98" text-anchor="middle" font-size="12">Glas</text>';
+    g+='<rect class="fillmut" x="222" y="18" width="10" height="60"/><text x="242" y="30" font-size="13">Zinkplatte</text>';
+    for(k=0;k<n;k++)sg+=sign+' ';
+    g+='<text x="242" y="58" font-size="22" font-weight="700">'+sg+'</text>';
+    if(active){for(k=0;k<3;k++){var ex=212-((st.ph*5+k*9)%28);g+='<circle class="fillacc" cx="'+ex+'" cy="'+(74+k*3+(212-ex)*0.4).toFixed(1)+'" r="3"/>';}}
+    g+='<line class="ln" x1="227" y1="78" x2="227" y2="108"/><circle class="box" cx="227" cy="146" r="38"/><line class="ink" stroke-width="3" x1="227" y1="112" x2="227" y2="178"/>';
+    g+='<line class="acc" stroke-width="3" x1="227" y1="134" x2="'+(227+38*Math.sin(a)).toFixed(1)+'" y2="'+(134+38*Math.cos(a)).toFixed(1)+'"/>';
+    g+='<text x="274" y="150" font-size="13">Elektroskop</text>';
+    g+='<line x1="10" y1="150" x2="40" y2="150" stroke="var(--hg1)" stroke-width="3"/><text class="mut" x="46" y="154" font-size="12">sichtbares Licht</text><line x1="10" y1="172" x2="40" y2="172" stroke="var(--hg4)" stroke-width="3" stroke-dasharray="6 4"/><text class="mut" x="46" y="176" font-size="12">UV-Licht</text></svg>';
+    q('f').innerHTML=g;
+    if(q('dv'))q('dv').textContent=st.d+' cm';
+    q('o').innerHTML='<span>Ladung der Platte: <b>'+(st.q<-0.005?'negativ':st.q>0.005?'positiv':'keine')+'</b></span><span>Ausschlag: <b>'+Math.round(Math.abs(st.q)*100)+' %</b></span><span>Lampe leuchtet seit: <b>'+(st.lamp?de(st.t,1)+' s':'–')+'</b></span>';
+  }
+  q('n').addEventListener('click',function(){st.q=-1;st.t=0;draw();});
+  q('p').addEventListener('click',function(){st.q=1;st.t=0;draw();});
+  q('l').addEventListener('change',function(e){st.lamp=e.target.checked;st.t=0;draw();});
+  if(q('g'))q('g').addEventListener('change',function(e){st.glass=e.target.checked;draw();});
+  if(q('d'))q('d').addEventListener('input',function(e){st.d=parseInt(e.target.value,10);draw();});
+  var iv=setInterval(function(){if(!root.isConnected){clearInterval(iv);return;}if(!st.lamp)return;st.t+=0.06;st.ph++;
+    if(st.q<0&&!st.glass)st.q=Math.min(0,st.q+0.5*Math.pow(50/st.d,2)*0.06);draw();},60);
+  draw();
+}
+
+/* ---------- Simulation: Gegenfeldmethode ---------- */
+var HG=[[578,'gelb'],[546,'grün'],[436,'blau'],[405,'violett'],[365,'ultraviolett']];
+function gegenfeldLab(root,opts){
+  opts=opts||{};var id='q'+(++uid),i;
+  var h='<div class="sim gf"><div class="gfa"><canvas id="'+id+'c" height="304" role="img" aria-label="Stromkreis mit Photozelle: Elektronen fliegen von der Kathode zur Anode und fließen durch Messverstärker und Spannungsquelle zurück"></canvas>'+
+  '<p class="hint"><span style="color:var(--accent)">●</span> Elektron fliegt zur Anode &nbsp; <span style="color:var(--muted)">●</span> Elektron kehrt um &nbsp; Die Punkte im Draht zeigen den Photostrom.</p><div class="meter"><div><span>Gegenspannung U</span><b id="'+id+'uv"></b></div><div><span>Photostrom I</span><b id="'+id+'iv"></b></div></div>'+
+  '<div class="simctl"><label>Linie <select id="'+id+'s">';
+  for(i=0;i<5;i++)h+='<option value="'+HG[i][0]+'"'+(i===2?' selected':'')+'>'+HG[i][1]+', '+HG[i][0]+' nm</option>';
+  h+='</select></label>';
+  if(opts.metal)h+='<label>Kathode <select id="'+id+'m"><option value="1.94">Cäsium</option><option value="2.25">Kalium</option></select></label>';
+  h+='<label class="wide">Intensität <input type="range" id="'+id+'n" min="40" max="100" step="10" value="70"> <b id="'+id+'nv"></b></label>'+
+  '<label class="wide">Gegenspannung <input type="range" id="'+id+'u" min="0" max="2" step="0.01" value="0"></label>'+
+  '<button type="button" class="btn small" id="'+id+'dn">− 0,01 V</button><button type="button" class="btn small" id="'+id+'up">+ 0,01 V</button></div>'+
+  '</div><div class="gfb"><canvas id="'+id+'k" height="170" role="img" aria-label="Kennlinie: Photostrom über der Gegenspannung"></canvas>'+
+  '<p class="hint">Die Kennlinie zeichnet jeden eingestellten Messpunkt ein. Ein Wechsel der Linie oder der Intensität beginnt eine neue Kennlinie.</p>';
+  if(opts.record)h+='<div class="simctl"><button type="button" class="btn small" id="'+id+'r">Messwert für diese Linie übernehmen</button></div><div id="'+id+'msg"></div><div class="tw" id="'+id+'t"></div>';
+  h+='</div></div>';root.innerHTML=h;
+  function q(s){return root.querySelector('#'+id+s);}
+  var sel=q('s'),u=q('u'),n=q('n'),m=q('m'),cv=q('c'),kv=q('k');
+  var els=[],acc=0,last=0,flash=0,trace=[],traceKey='';
+  function EK(){return 1239.84/parseInt(sel.value,10)-(m?parseFloat(m.value):1.94);}
+  function cur(U){var ug=EK(),I0=parseInt(n.value,10);if(U===undefined)U=parseFloat(u.value);if(ug<=0||U>=ug)return 0;return Math.max(0.001,I0*Math.pow(1-U/ug,2));}
+  function fmtI(I){return (I===0?'0,000':I>=1?de(I,1):de(I,3))+' nA';}
+  /* Elektronen: Startenergie zwischen 0 und E_kin,max, Bewegung längs der Achse s (0 = Kathode, 1 = Anode) */
+  function spawn(){var e=EK();if(e<=0)return;var E=e*(1-Math.sqrt(Math.random()));els.push({s:0,v:Math.sqrt(Math.max(E,0.02)*1.44),y:Math.random()});}
+  
+  function drawTube(){
+    var hh=304,K=cvs(cv,hh),c=K.c,w=K.w,U=parseFloat(u.value),I=cur();
+    var ink=cssVar('--ink'),mut=cssVar('--muted'),line=cssVar('--line'),accent=cssVar('--accent'),surf=cssVar('--surface');
+    var x0=w*0.15,x1=w*0.83,yT=58,yB=172,cy=(yT+yB)/2,lam=parseInt(sel.value,10),col=wlColor(lam),wy=262,xWL=6,xWR=w-6,xs=w*0.34,xm=w*0.68,k,t;
+    c.font='12px '+cssVar('--font-body');c.textBaseline='alphabetic';
+    /* Stromkreis: Anode -> Messverstärker -> Spannungsquelle -> Kathode */
+    var pts=[[x1+7,cy],[xWR,cy],[xWR,wy],[xWL,wy],[xWL,cy],[x0-2,cy]],L=0,seg=[];
+    c.strokeStyle=mut;c.lineWidth=1.5;c.beginPath();c.moveTo(pts[0][0],pts[0][1]);
+    for(k=1;k<pts.length;k++){c.lineTo(pts[k][0],pts[k][1]);var d=Math.hypot(pts[k][0]-pts[k-1][0],pts[k][1]-pts[k-1][1]);seg.push(d);L+=d;}
+    c.stroke();
+    var N=I>=0.5?Math.max(1,Math.round(I/100*16)):0,ph=(performance.now()/1000*70)%L;
+    c.fillStyle=accent;
+    for(k=0;k<N;k++){var dd=(ph+k*L/N)%L,j=0;while(j<seg.length-1&&dd>seg[j]){dd-=seg[j];j++;}var f=dd/seg[j];
+      c.beginPath();c.arc(pts[j][0]+(pts[j+1][0]-pts[j][0])*f,pts[j][1]+(pts[j+1][1]-pts[j][1])*f,2.8,0,6.2832);c.fill();}
+    /* Photozelle */
+    c.strokeStyle=line;c.lineWidth=1.5;c.beginPath();c.ellipse(w/2,cy,w*0.44,(yB-yT)/2+14,0,0,6.2832);c.stroke();
+    c.strokeStyle=col;c.lineWidth=2;
+    for(k=0;k<3;k++){c.beginPath();var sx=x0+70+k*16,sy=22;for(t=0;t<=1;t+=0.02){var px=sx+(x0+10-sx)*t,py=sy+(yT+20+k*22-sy)*t,o=Math.sin(t*28)*3;if(t===0)c.moveTo(px+o,py);else c.lineTo(px+o,py);}c.stroke();}
+    c.strokeStyle=ink;c.lineWidth=5;c.beginPath();c.arc(x0+60,cy,62,Math.PI*0.78,Math.PI*1.22);c.stroke();
+    c.lineWidth=3;c.beginPath();c.ellipse(x1,cy,7,46,0,0,6.2832);c.stroke();
+    if(flash>0){c.strokeStyle=accent;c.globalAlpha=Math.min(1,flash);c.lineWidth=5;c.beginPath();c.ellipse(x1,cy,7,46,0,0,6.2832);c.stroke();c.globalAlpha=1;}
+    c.fillStyle=ink;c.textAlign='left';c.fillText('Kathode'+(U>0?' (+)':''),4,14);
+    c.textAlign='right';c.fillText('Anode'+(U>0?' (−)':''),w-4,14);
+    c.fillStyle=mut;c.textAlign='center';c.fillText('Licht, '+lam+' nm',w/2+6,14);
+    /* Spannungsquelle */
+    c.fillStyle=surf;c.fillRect(xs-5,wy-4,10,8);
+    c.strokeStyle=ink;c.lineWidth=2;c.beginPath();c.moveTo(xs-5,wy-16);c.lineTo(xs-5,wy+16);c.stroke();
+    c.lineWidth=5;c.beginPath();c.moveTo(xs+5,wy-9);c.lineTo(xs+5,wy+9);c.stroke();
+    c.fillStyle=ink;c.fillText('+',xs-17,wy-10);c.fillText('−',xs+17,wy-10);
+    c.fillText('U = '+de(U,2)+' V',xs,wy+34);
+    /* Messverstärker */
+    c.fillStyle=surf;c.strokeStyle=mut;c.lineWidth=1.5;c.beginPath();c.arc(xm,wy,17,0,6.2832);c.fill();c.stroke();
+    c.fillStyle=ink;c.fillText('I',xm,wy+4);c.fillText('I = '+fmtI(I),xm,wy+34);
+    /* Gegenfeld */
+    if(U>0){c.globalAlpha=Math.min(1,0.25+U/1.5);c.strokeStyle=mut;c.fillStyle=mut;c.lineWidth=1.5;var ay=yB+6,ax1=w/2+44,ax0=w/2-44;
+      c.beginPath();c.moveTo(ax1,ay);c.lineTo(ax0,ay);c.stroke();c.beginPath();c.moveTo(ax0,ay);c.lineTo(ax0+8,ay-4);c.lineTo(ax0+8,ay+4);c.fill();
+      c.fillText('Bremskraft auf die Elektronen',w/2,ay+26);c.globalAlpha=1;}
+    if(EK()<=0){c.fillStyle=mut;c.fillText('Es treten keine Elektronen aus.',w/2,cy);}
+    c.textAlign='left';
+    /* Elektronen in der Photozelle */
+    for(var q2=0;q2<els.length;q2++){var e=els[q2],ex=x0+6+e.s*(x1-x0-14),ey=yT+14+e.y*(yB-yT-28);
+      c.fillStyle=e.v<0?mut:accent;c.beginPath();c.arc(ex,ey,3.6,0,6.2832);c.fill();}
+  }
+function drawCurve(){
+    var hh=170,K=cvs(kv,hh),c=K.c,w=K.w,L=44,R=w-14,T=12,B=hh-30,U=parseFloat(u.value);
+    var ink=cssVar('--ink'),mut=cssVar('--muted'),line=cssVar('--line'),accent=cssVar('--accent');
+    function X(v){return L+v/2*(R-L);}function Y(v){return B-v/100*(B-T);}
+    c.font='12px '+cssVar('--font-body');c.lineWidth=1;c.strokeStyle=line;c.fillStyle=mut;c.textAlign='center';
+    for(var v=0;v<=2.001;v+=0.5){c.beginPath();c.moveTo(X(v),T);c.lineTo(X(v),B);c.stroke();c.fillText(de(v,1),X(v),B+15);}
+    c.textAlign='right';for(var y=0;y<=100;y+=25){c.beginPath();c.moveTo(L,Y(y));c.lineTo(R,Y(y));c.stroke();c.fillText(String(y),L-6,Y(y)+4);}
+    c.strokeStyle=mut;c.lineWidth=1.5;c.beginPath();c.moveTo(L,T);c.lineTo(L,B);c.lineTo(R,B);c.stroke();
+    c.textAlign='right';c.fillText('U in V',R,B+28);c.textAlign='left';c.fillText('I in nA',L+6,T+10);
+    c.fillStyle=ink;for(var k=0;k<trace.length;k++){c.beginPath();c.arc(X(trace[k][0]),Y(trace[k][1]),2.6,0,6.2832);c.fill();}
+    c.strokeStyle=accent;c.setLineDash([4,4]);c.beginPath();c.moveTo(X(U),T);c.lineTo(X(U),B);c.stroke();c.setLineDash([]);
+    c.fillStyle=accent;c.beginPath();c.arc(X(U),Y(cur()),5,0,6.2832);c.fill();
+  }
+  function table(){if(!opts.record)return;var r='',k;for(k=0;k<5;k++){var v=state.meas[HG[k][0]];r+='<tr><td>'+HG[k][1]+'</td><td class="n">'+HG[k][0]+'</td><td class="n">'+de(2998/HG[k][0],2)+'</td><td class="n">'+(typeof v==='number'?de(v,2):'–')+'</td></tr>';}
+    q('t').innerHTML='<table><thead><tr><th>Linie</th><th class="n">λ in nm</th><th class="n">f in 10<sup>14</sup> Hz</th><th class="n">U<sub>G</sub> in V</th></tr></thead><tbody>'+r+'</tbody></table>';}
+  function update(){var I=cur(),U=parseFloat(u.value),key=sel.value+'|'+n.value+'|'+(m?m.value:'');
+    if(key!==traceKey){traceKey=key;trace=[];}
+    if(!trace.some(function(p){return Math.abs(p[0]-U)<0.005;}))trace.push([U,I]);
+    q('uv').textContent=de(U,2)+' V';q('nv').textContent=n.value+' %';q('iv').textContent=fmtI(I);drawCurve();}
+  function step(d){u.value=Math.min(2,Math.max(0,Math.round((parseFloat(u.value)+d)*100)/100));update();}
+  sel.addEventListener('change',function(){u.value=0;els=[];update();});if(m)m.addEventListener('change',function(){u.value=0;els=[];update();});
+  u.addEventListener('input',update);n.addEventListener('input',update);
+  q('dn').addEventListener('click',function(){step(-0.01);});q('up').addEventListener('click',function(){step(0.01);});
+  if(opts.record){q('r').addEventListener('click',function(){var U=parseFloat(u.value),msg=q('msg');
+    if(cur()>0){msg.className='fb bad';msg.innerHTML='Es kommen noch Elektronen an der Anode an. Erhöht die Gegenspannung weiter.';return;}
+    if(U>EK()+0.03){msg.className='fb bad';msg.innerHTML='Der Photostrom ist schon bei kleinerer Gegenspannung null. Gesucht ist die kleinste Spannung, bei der kein Elektron mehr ankommt.';return;}
+    state.meas[sel.value]=Math.round(U*100)/100;save();table();msg.className='fb good';msg.innerHTML='Übernommen: U<sub>G</sub> = '+de(U,2)+' V für die Linie mit '+sel.value+' nm.';
+    measChanged();});table();}
+  function frame(t){
+    if(!root.isConnected)return;
+    var dt=last?Math.min(0.05,(t-last)/1000):0;last=t;
+    acc+=parseInt(n.value,10)/100*28*dt;while(acc>=1){acc--;if(els.length<260)spawn();}
+    var a=parseFloat(u.value)*0.72,keep=[];
+    for(var j=0;j<els.length;j++){var e=els[j];e.v-=a*dt;e.s+=e.v*dt;if(e.s>=1){flash=1;continue;}if(e.s<0)continue;keep.push(e);}
+    els=keep;flash=Math.max(0,flash-dt*4);
+    drawTube();requestAnimationFrame(frame);
+  }
+  update();drawTube();requestAnimationFrame(frame);
+  onLayout(root,drawCurve);
+}
+function measCount(){var n=0,k;for(k=0;k<5;k++)if(typeof state.meas[HG[k][0]]==='number')n++;return n;}
+function measData(){var U=[],own=measCount()===5,k;for(k=0;k<5;k++)U.push(own?state.meas[HG[k][0]]:[0.21,0.34,0.91,1.13,1.46][k]);
+  return {f:HG.map(function(x){return 2998/x[0];}),U:U,own:own};}
+
+/* ---------- Simulation: Ausgleichsgerade ---------- */
+function fitLab(root){
+  root.classList.add('fitwrap');var id='g'+(++uid),dat=measData(),f=dat.f,U=dat.U,rows='',i;
+  for(i=0;i<5;i++)rows+='<tr><td class="n">'+HG[i][0]+'</td><td class="n">'+de(f[i],2)+'</td><td class="n">'+de(U[i],2)+'</td></tr>';
+  root.innerHTML='<p class="hint">'+(dat.own?'Die Punkte sind eure eigenen Messwerte aus der Station „Die Messreihe aufnehmen“.':'Ihr habt noch nicht alle fünf Linien gemessen. Gezeigt wird deshalb eine Beispielmessreihe.')+'</p><div class="tw"><table><thead><tr><th class="n">λ in nm</th><th class="n">f in 10<sup>14</sup> Hz</th><th class="n">U<sub>G</sub> in V</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+  '<div class="sim"><div id="'+id+'f"></div><div class="simctl">'+
+  '<label class="wide">Steigung <input type="range" id="'+id+'s" min="3" max="5.5" step="0.02" value="3.4"> <b id="'+id+'sv"></b></label>'+
+  '<label class="wide">Achsenabschnitt <input type="range" id="'+id+'b" min="-2.5" max="-1" step="0.02" value="-1.3"> <b id="'+id+'bv"></b></label></div>'+
+  '<div class="simout" id="'+id+'o"></div></div>';
+  var s=root.querySelector('#'+id+'s'),b=root.querySelector('#'+id+'b');
+  function X(v){return 44+v/9*300;}function Y(v){return 20+(2-v)/4.5*210;}
+  function draw(){
+    var m=parseFloat(s.value),c=parseFloat(b.value),u,x,g='<svg viewBox="0 0 360 250" role="img" aria-label="Gegenspannung über Frequenz mit einstellbarer Gerade">';
+    for(u=-2;u<=2;u++){g+='<line class="grid" x1="44" x2="344" y1="'+Y(u)+'" y2="'+Y(u)+'"/><text class="mut" x="38" y="'+(Y(u)+4)+'" text-anchor="end" font-size="12">'+u+'</text>';}
+    for(x=0;x<=9;x+=3){g+='<line class="grid" y1="20" y2="230" x1="'+X(x)+'" x2="'+X(x)+'"/><text class="mut" x="'+X(x)+'" y="246" text-anchor="middle" font-size="12">'+x+'</text>';}
+    g+='<line class="ln" x1="44" x2="344" y1="'+Y(0)+'" y2="'+Y(0)+'"/><line class="ln" x1="44" x2="44" y1="20" y2="230"/>';
+    g+='<text class="mut" x="344" y="'+(Y(0)-6)+'" text-anchor="end" font-size="12">f in 10¹⁴ Hz</text><text class="mut" x="50" y="16" font-size="12">U_G in V</text>';
+    var x2=9,y2=c+m*0.9;if(y2>2){x2=(2-c)/m*10;y2=2;}
+    g+='<line class="acc" stroke-width="2" x1="'+X(0)+'" y1="'+Y(c)+'" x2="'+X(x2)+'" y2="'+Y(y2)+'"/>';
+    var q=0;for(var i=0;i<5;i++){var p=c+m*f[i]/10;q+=(p-U[i])*(p-U[i]);g+='<circle class="fillink" cx="'+X(f[i])+'" cy="'+Y(U[i])+'" r="4"/>';}
+    g+='</svg>';root.querySelector('#'+id+'f').innerHTML=g;
+    var rms=Math.sqrt(q/5);
+    root.querySelector('#'+id+'sv').innerHTML=de(m,2)+'·10<sup>−15</sup> Vs';root.querySelector('#'+id+'bv').textContent=de(c,2)+' V';
+    root.querySelector('#'+id+'o').innerHTML='<span>mittlere Abweichung der Punkte: <b>'+de(rms,3)+' V</b> '+(rms<0.02?'(sehr gute Anpassung)':rms<0.06?'(brauchbar, noch verbesserbar)':'(noch anpassen)')+'</span><span>h = Steigung · e = <b>'+de(m*1.602,2)+'·10<sup>−34</sup> Js</b></span><span>W<sub>A</sub> = <b>'+de(-c,2)+' eV</b></span>';
+  }
+  s.addEventListener('input',draw);b.addEventListener('input',draw);draw();
+}
+
+/* ---------- Simulation: Mach-Zehnder-Interferometer ---------- */
+function gcd(a,b){return b?gcd(b,a%b):a;}
+function dsLabel(k){if(k===0)return '0';var g=gcd(k,24),n=k/g,d=24/g;if(d===1)return (n===1?'':n)+'λ';return (n===1?'':n)+'λ/'+d;}
+function mzi(root,opts){
+  opts=opts||{};var id='m'+(++uid),ctrl=opts.ctrl||[];
+  var st={st2:true,block:false,k:0,pol:false,er:0,n1:0,n2:0,n0:0};var key;for(key in (opts.init||{}))st[key]=opts.init[key];
+  var dc={on:[0,0],off:[0,0],last:null};
+  var h='<div class="sim mzi"><div id="'+id+'f"></div><p class="hint">'+(opts.wave?'<span style="color:var(--hg1)">Gelb:</span> Weg A. <span style="color:var(--hg4)">Violett:</span> Weg B. Dick: beide zusammen. ':'')+'Helle Punkte: die Wege, die dem Photon offenstehen. Nachgewiesen wird es immer an genau einer Stelle.'+((ctrl.indexOf('block')>=0||ctrl.indexOf('pol')>=0||ctrl.indexOf('eraser')>=0)?' Rot: dort absorbiert.':'')+'</p><div class="simctl">';
+  if(ctrl.indexOf('block')>=0)h+='<label><input type="checkbox" id="'+id+'bl"> Weg B blockieren</label>';
+  if(ctrl.indexOf('pol')>=0)h+='<label><input type="checkbox" id="'+id+'po"> Polarisationsfilter in den Wegen (A: 0°, B: 90°)</label>';
+  if(ctrl.indexOf('eraser')>=0)h+='<label>Radierer <select id="'+id+'er"><option value="0">keiner</option><option value="45">45°</option><option value="-45">−45° (Zusatz)</option></select></label>';
+  if(ctrl.indexOf('phase')>=0)h+='<label class="wide">Gangunterschied <input type="range" id="'+id+'ph" min="0" max="24" step="1" value="0"> <b id="'+id+'phv"></b></label>';
+  h+='</div><div class="simctl"><button type="button" class="btn small" id="'+id+'s1">1 Photon</button><button type="button" class="btn small" id="'+id+'s100">100 Photonen</button><button type="button" class="btn small" id="'+id+'rs">Zurücksetzen</button></div><div class="simout" id="'+id+'o"></div>';
+  if(opts.zeiger)h+='<div class="zeiger" id="'+id+'z"></div>';
+  if(opts.wave){h+='<div class="zeiger">';for(var j0=1;j0<=2;j0++)h+='<div class="zcol"><div class="zhead">bei D'+j0+'</div><div class="wrows"><div class="wrow"><span class="wl" style="color:var(--hg1)" id="'+id+'la'+j0+'"></span><canvas class="wc" id="'+id+'ca'+j0+'"></canvas></div><div class="wrow"><span class="wl" style="color:var(--hg4)" id="'+id+'lb'+j0+'"></span><canvas class="wc" id="'+id+'cb'+j0+'"></canvas></div><div class="wrow"><span class="wl" id="'+id+'ls'+j0+'"></span><canvas class="wc" id="'+id+'cs'+j0+'"></canvas></div></div><p class="wnote" id="'+id+'wn'+j0+'"></p><div id="'+id+'wp'+j0+'"></div></div>';h+='</div>';}
+  h+='</div>';root.innerHTML=h;
+  (function(){var sm=root.querySelector('.sim'),ml=el('div','mzl'),mr=el('div','mzr');Array.prototype.slice.call(sm.children).forEach(function(c){(c.classList.contains('zeiger')||(opts.delayed&&c.classList.contains('simout'))?mr:ml).appendChild(c);});sm.appendChild(ml);if(mr.children.length)sm.appendChild(mr);})();
+  function q(s){return root.querySelector('#'+id+s);}
+  function phi(){return 2*Math.PI*st.k/24;}
+  function probs(){var c=Math.pow(Math.cos(phi()/2),2),s=1-c;
+    if(st.pol){if(st.er===0)return [.25,.25];return st.er>0?[c/4,s/4]:[s/4,c/4];}
+    if(st.st2)return st.block?[.25,.25]:[c,s];
+    return st.block?[.5,0]:[.5,.5];}
+  function reset(){st.n1=st.n2=st.n0=0;dc.on=[0,0];dc.off=[0,0];dc.last=null;}
+  var calm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* ---------- Wellenbild ---------- */
+  var wst2=true,W8=!!opts.wave,AMP=10,LD=22,OM=2*Math.PI*34/22,wsp=[],t0=performance.now();
+  function now(){return calm?0:(performance.now()-t0)/1000;}
+  function cpol(m,p){var r=p*Math.PI/180;return [m*Math.cos(r),m*Math.sin(r)];}
+  function contrib(er){if(wst2===false){var q1=Math.SQRT1_2;return [{A:{m:q1,p:90,pol:null},B:{m:0,p:0,pol:null}},{A:{m:0,p:0,pol:null},B:{m:st.block?0:q1,p:st.k*15,pol:null}}];}
+    var r2=Math.SQRT1_2,dp=st.k*15,fa=st.pol?r2:1,fb=(st.block?0:1)*(st.pol?r2:1),pa=st.pol?0:null,pb=st.pol?90:null;
+    var D=[{A:{m:.5*fa,p:90,pol:pa},B:{m:.5*fb,p:90+dp,pol:pb}},{A:{m:.5*fa,p:180,pol:pa},B:{m:.5*fb,p:dp,pol:pb}}];
+    if(er&&st.pol&&st.er!==0)D.forEach(function(d){d.A.m*=r2;d.B.m*=r2;d.A.pol=d.B.pol=st.er;if(st.er<0)d.B.p+=180;});
+    return D;}
+  function wsum(d){var x=cpol(d.A.m,d.A.p),y=cpol(d.B.m,d.B.p),re=x[0]+y[0],im=x[1]+y[1];return {m:Math.hypot(re,im),p:Math.atan2(im,re)*180/Math.PI};}
+  function perp(){return st.pol&&st.er===0&&!st.block;}
+  function specs(){var r2=Math.SQRT1_2,dp=st.k*15,L=[],X2=wst2!==false?380:455,Y2=wst2!==false?210:258;
+    L.push({pts:[[92,70],[150,70]],s0:0,p:0,m:1,c:'--muted',w:2});
+    if(st.pol){L.push({pts:[[150,70],[150,132]],s0:58,p:90,m:r2,c:'--hg1',w:2});L.push({pts:[[150,132],[150,210],[X2,210]],s0:120,p:90,m:.5,c:'--hg1',w:2});}
+    else L.push({pts:[[150,70],[150,210],[X2,210]],s0:58,p:90,m:r2,c:'--hg1',w:2});
+    if(st.block)L.push({pts:[[150,70],[258,70]],s0:58,p:dp,m:r2,c:'--hg4',w:2});
+    else if(st.pol){L.push({pts:[[150,70],[300,70]],s0:58,p:dp,m:r2,c:'--hg4',w:2});L.push({pts:[[300,70],[380,70],[380,Y2]],s0:208,p:dp,m:.5,c:'--hg4',w:2});}
+    else L.push({pts:[[150,70],[380,70],[380,Y2]],s0:58,p:dp,m:r2,c:'--hg4',w:2});
+    if(wst2===true){var D0=contrib(false),D1=contrib(true),sg=[[[380,210],[455,210],425],[[380,210],[380,258],242]];
+      for(var j=0;j<2;j++){var a=sg[j][0],b=sg[j][1],f=sg[j][2],mid=j===0?[f,210]:[380,f],d0=D0[j];
+        if(perp()){L.push({pts:[a,b],s0:428,p:d0.A.p,m:d0.A.m,c:'--hg1',w:2});L.push({pts:[a,b],s0:428,p:d0.B.p,m:d0.B.m,c:'--hg4',w:2});}
+        else if(st.pol&&st.er!==0){L.push({pts:[a,mid],s0:428,p:d0.A.p,m:d0.A.m,c:'--hg1',w:2});L.push({pts:[a,mid],s0:428,p:d0.B.p,m:d0.B.m,c:'--hg4',w:2});
+          var S=wsum(D1[j]);L.push({pts:[mid,b],s0:428+(j===0?f-380:f-210),p:S.p,m:S.m,c:'--ink',w:3});}
+        else{var S2=wsum(d0);L.push({pts:[a,b],s0:428,p:S2.p,m:S2.m,c:'--ink',w:3});}}}
+    return L;}
+  function pathD(sp,tt){var d='',s=sp.s0,pts=sp.pts;
+    for(var i=0;i<pts.length-1;i++){var x1=pts[i][0],y1=pts[i][1],x2=pts[i+1][0],y2=pts[i+1][1],len=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/len,uy=(y2-y1)/len;
+      for(var u=0;u<=len+0.01;u+=2){var dd=AMP*sp.m*Math.sin(2*Math.PI*(s+u)/LD-OM*tt+sp.p*Math.PI/180);
+        d+=(d?'L':'M')+(x1+ux*u-uy*dd).toFixed(1)+' '+(y1+uy*u+ux*dd).toFixed(1);}
+      s+=len;}
+    return d||'M0 0';}
+  function ico(a){var r=a*Math.PI/180,c=Math.cos(r)*6,s=Math.sin(r)*6;return '<svg class="pico" viewBox="-8 -8 16 16" width="14" height="14" aria-hidden="true"><line x1="'+(-c).toFixed(1)+'" y1="'+s.toFixed(1)+'" x2="'+c.toFixed(1)+'" y2="'+(-s).toFixed(1)+'" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';}
+  function wnote(d,pp){if(d.A.m<1e-9||d.B.m<1e-9)return 'Nur ein Weg kommt an: Es gibt nichts zu überlagern.';
+    if(pp)return 'Waagrecht und senkrecht ergeben zusammen eine '+((((d.B.p-d.A.p)%180)+180)%180===0?'schräge':'kreisende')+' Schwingung. Sie verschwindet nie.';
+    var r=wsum(d).m/(d.A.m+d.B.m),pre=(st.pol&&st.er!==0)?'Hinter dem Filter schwingen beide gleich. ':'';
+    return pre+(r>0.97?'Berg trifft auf Berg: Die Wellen verstärken sich.':r<0.03?'Berg trifft auf Tal: Die Wellen löschen sich aus.':'Die Wellen verstärken sich teilweise.');}
+  function panelText(){var D=contrib(true),pr=probs(),pp=perp();
+    for(var j=1;j<=2;j++){var d=D[j-1];
+      q('la'+j).innerHTML='Weg A'+(st.pol?ico(st.er!==0?st.er:0):'');q('lb'+j).innerHTML='Weg B'+(st.pol?ico(st.er!==0?st.er:90):'');
+      q('ls'+j).textContent=pp?'Blick in den Strahl':'zusammen';q('ls'+j).parentNode.classList.toggle('r2d',pp);
+      q('wn'+j).textContent=wnote(d,pp);var Pj=pp?d.A.m*d.A.m+d.B.m*d.B.m:Math.pow(wsum(d).m,2);q('wp'+j).innerHTML='P(D'+j+') = <b>'+de(Pj,2)+'</b>';}}
+  function fit(cv,h){var w=cv.clientWidth||100,r=pxr();
+    if(cv.width!==Math.round(w*r)||cv.height!==Math.round(h*r)){cv.width=Math.round(w*r);cv.height=Math.round(h*r);cv.style.height=h+'px';}
+    var c=cv.getContext('2d');c.setTransform(cv.width/w,0,0,cv.height/h,0,0);c.clearRect(0,0,w,h);return [c,w];}
+  function trace(cv,m,p,col,lw,sc,tt,ln){var f=fit(cv,30),c=f[0],w=f[1];c.strokeStyle=ln;c.lineWidth=1;c.beginPath();c.moveTo(0,15);c.lineTo(w,15);c.stroke();
+    c.strokeStyle=col;c.lineWidth=lw;c.beginPath();for(var x=0;x<=w;x+=1.5){var y=15-sc*m*Math.sin(2*Math.PI*x/28-OM*tt+p*Math.PI/180);if(x===0)c.moveTo(x,y);else c.lineTo(x,y);}c.stroke();}
+  function view2d(cv,A,B,tt,c1,c4,ci,ln){var f=fit(cv,64),c=f[0],cx=32,cy=32,R=24,sc=R/Math.max(A.m,B.m,1e-9),i,P;
+    c.strokeStyle=ln;c.lineWidth=1;c.beginPath();c.moveTo(cx-R-5,cy);c.lineTo(cx+R+5,cy);c.moveTo(cx,cy-R-5);c.lineTo(cx,cy+R+5);c.stroke();
+    function pt(th){return [cx+sc*A.m*Math.sin(th+A.p*Math.PI/180),cy-sc*B.m*Math.sin(th+B.p*Math.PI/180)];}
+    c.strokeStyle=ci;c.globalAlpha=.3;c.lineWidth=1.5;c.beginPath();for(i=0;i<=64;i++){P=pt(i/64*2*Math.PI);if(i)c.lineTo(P[0],P[1]);else c.moveTo(P[0],P[1]);}c.stroke();c.globalAlpha=1;
+    P=pt(-OM*tt);
+    c.fillStyle=c1;c.beginPath();c.arc(P[0],cy,3.2,0,6.3);c.fill();c.fillStyle=c4;c.beginPath();c.arc(cx,P[1],3.2,0,6.3);c.fill();
+    c.strokeStyle=ci;c.lineWidth=2;c.beginPath();c.moveTo(cx,cy);c.lineTo(P[0],P[1]);c.stroke();c.fillStyle=ci;c.beginPath();c.arc(P[0],P[1],3.2,0,6.3);c.fill();}
+  function panelDraw(tt){var D=contrib(true),pp=perp(),c1=cssVar('--hg1'),c4=cssVar('--hg4'),ci=cssVar('--ink'),ln=cssVar('--line');
+    for(var j=1;j<=2;j++){var d=D[j-1],sc=11/Math.max(d.A.m+d.B.m,1e-9);
+      trace(q('ca'+j),d.A.m,d.A.p,c1,2,sc,tt,ln);trace(q('cb'+j),d.B.m,d.B.p,c4,2,sc,tt,ln);
+      if(pp)view2d(q('cs'+j),d.A,d.B,tt,c1,c4,ci,ln);else{var S=wsum(d);trace(q('cs'+j),S.m,S.p,ci,3,sc,tt,ln);}}}
+  function wtick(){if(!root.isConnected)return;var tt=now(),ps=q('f').querySelectorAll('.waves path');
+    for(var i=0;i<ps.length&&i<wsp.length;i++)ps[i].setAttribute('d',pathD(wsp[i],tt));
+    panelDraw(tt);if(!calm)requestAnimationFrame(wtick);}
+  function draw(hit,ov){
+    ov=ov||{};var s2=ov.st2!==undefined?ov.st2:(opts.delayed?(dc.last===null?true:dc.last):st.st2),show2=s2!==false,fl=ov.flash;
+    var g='<svg viewBox="0 0 520 305" role="img" aria-label="Mach-Zehnder-Interferometer">';
+    g+='<rect class="box" x="8" y="50" width="84" height="40" rx="6"/><text x="50" y="75" text-anchor="middle" font-size="18">Quelle</text>';
+    g+='<line class="ln" x1="92" y1="70" x2="134" y2="70"/>';
+    g+='<path class="'+(st.block?'lnoff':'ln')+'" d="M166 70 H380 V'+(show2?194:258)+'"/>';
+    if(st.block)g+='<line class="ln" x1="166" y1="70" x2="258" y2="70"/><rect class="'+(fl==='block'?'fillbad':'fillink')+'" x="258" y="54" width="9" height="32"/>';
+    g+='<path class="ln" d="M150 86 V210 H'+(show2?364:455)+'"/>';
+    if(show2)g+='<line class="ln" x1="396" y1="210" x2="455" y2="210"/><line class="ln" x1="380" y1="226" x2="380" y2="258"/>';
+    if(W8){wst2=s2==='pending'?'pending':show2;wsp=specs();var tt=now();g+='<g class="waves">'+wsp.map(function(sp){return '<path fill="none" stroke="var('+sp.c+')" stroke-width="'+sp.w+'" stroke-linecap="round" stroke-linejoin="round" d="'+pathD(sp,tt)+'"/>';}).join('')+'</g>';}
+    g+='<rect class="box" x="134" y="54" width="32" height="32"/><line class="ln" x1="134" y1="54" x2="166" y2="86"/><text x="150" y="44" text-anchor="middle" font-size="16">ST 1</text>';
+    g+='<line class="ink" stroke-width="4" x1="366" y1="56" x2="394" y2="84"/><text class="mut" x="402" y="62" font-size="15">Spiegel</text>';
+    g+='<line class="ink" stroke-width="4" x1="136" y1="196" x2="164" y2="224"/><text class="mut" x="128" y="228" text-anchor="end" font-size="15">Spiegel</text>';
+    if(s2==='pending')g+='<rect class="box" x="364" y="194" width="32" height="32" stroke-dasharray="4 3"/><text x="380" y="216" text-anchor="middle" font-size="18">?</text>';
+    else if(show2){g+='<rect class="box" x="364" y="194" width="32" height="32"'+(opts.delayed?' stroke-dasharray="4 3"':'')+'/><line class="ln" x1="364" y1="194" x2="396" y2="226"/>';}
+    g+='<text x="356" y="240" text-anchor="end" font-size="16">ST 2'+(opts.delayed?' (Zufallsgenerator)':'')+'</text>';
+    g+='<text class="mut" x="215" y="'+(W8?52:62)+'" text-anchor="middle" font-size="15">Weg B</text><text class="mut" x="'+(W8?166:158)+'" y="172" font-size="15">Weg A</text>';
+    if(st.pol){g+='<rect class="'+(fl==='pa'?'fillbad':'fillacc')+'" x="136" y="128" width="28" height="9"/><text x="128" y="137" text-anchor="end" font-size="15">0°</text><rect class="'+(fl==='pb'?'fillbad':'fillacc')+'" x="296" y="56" width="9" height="28"/><text x="300" y="50" text-anchor="middle" font-size="15">90°</text>';}
+    if(st.er!==0){var lab=(st.er>0?'':'−')+'45°';g+='<rect class="'+(fl==='e1'?'fillbad':'fillacc')+'" x="421" y="196" width="9" height="28"/><text x="425" y="190" text-anchor="middle" font-size="15">'+lab+'</text><rect class="'+(fl==='e2'?'fillbad':'fillacc')+'" x="366" y="238" width="28" height="9"/><text x="400" y="247" font-size="15">'+lab+'</text>';}
+    g+='<g class="pulse"></g>';
+    g+='<rect class="det'+(hit===1?' hit':'')+'" x="455" y="190" width="60" height="40" rx="6"/><text x="485" y="215" text-anchor="middle" font-size="18">D1</text>';
+    g+='<rect class="det'+(hit===2?' hit':'')+'" x="350" y="258" width="60" height="40" rx="6"/><text x="380" y="283" text-anchor="middle" font-size="18">D2</text>';
+    g+='</svg>';q('f').innerHTML=g;
+    var o;
+    if(opts.delayed){o='<div class="tw" style="flex:1 1 100%"><table><thead><tr><th>Wahl nach Passieren von ST 1</th><th class="n">D1</th><th class="n">D2</th></tr></thead><tbody><tr><td>ST 2 spät eingesetzt</td><td class="n">'+dc.on[0]+'</td><td class="n">'+dc.on[1]+'</td></tr><tr><td>ST 2 spät entfernt</td><td class="n">'+dc.off[0]+'</td><td class="n">'+dc.off[1]+'</td></tr></tbody></table></div>';
+      if(dc.last!==null)o+='<span>Letztes Photon: ST 2 wurde <b>'+(dc.last?'eingesetzt':'entfernt')+'</b>.</span>';}
+    else{var N=st.n1+st.n2+st.n0;o='<span>D1: <b>'+st.n1+'</b></span><span>D2: <b>'+st.n2+'</b></span><span>nicht nachgewiesen: <b>'+st.n0+'</b></span><span>gesendet: <b>'+N+'</b></span>';}
+    q('o').innerHTML=o;
+    if(q('phv'))q('phv').textContent='Δs = '+dsLabel(st.k)+'  (Δφ = '+(st.k*15)+'°)';
+    if(opts.zeiger)drawZ();
+    if(W8){panelText();if(calm)wtick();}
+  }
+  function arrow(x1,y1,x2,y2,cls,w){var a=Math.atan2(y2-y1,x2-x1),L=7;if(Math.hypot(x2-x1,y2-y1)<2)return '<circle class="'+(cls==='acc'?'fillacc':'fillmut')+'" cx="'+x1+'" cy="'+y1+'" r="3.5"/>';
+    return '<line class="'+cls+'" stroke-width="'+w+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'"/><path class="'+(cls==='acc'?'fillacc':'fillmut')+'" d="M'+x2+' '+y2+' L'+(x2-L*Math.cos(a-.45))+' '+(y2-L*Math.sin(a-.45))+' L'+(x2-L*Math.cos(a+.45))+' '+(y2-L*Math.sin(a+.45))+'z"/>';}
+  function drawZ(){
+    var out='',R=52,cx=70,cy=70,defs=[[90,90+st.k*15],[180,st.k*15]];
+    for(var j=0;j<2;j++){
+      var a=defs[j][0]*Math.PI/180,b=defs[j][1]*Math.PI/180;
+      var ax=cx+R/2*Math.cos(a),ay=cy-R/2*Math.sin(a),bx=ax,by=ay;
+      var g='<svg viewBox="0 0 140 140" role="img" aria-label="Zeigerdiagramm Detektor D'+(j+1)+'"><circle class="grid" fill="none" cx="70" cy="70" r="52"/><line class="grid" x1="12" x2="128" y1="70" y2="70"/><line class="grid" y1="12" y2="128" x1="70" x2="70"/>';
+      g+=arrow(cx,cy,ax,ay,'ln',2);
+      if(!st.block){bx=ax+R/2*Math.cos(b);by=ay-R/2*Math.sin(b);g+=arrow(ax,ay,bx,by,'ln',2);}
+      g+=arrow(cx,cy,bx,by,'acc',3)+'</svg>';
+      var P=(Math.pow(bx-cx,2)+Math.pow(by-cy,2))/(R*R);
+      out+='<div>'+g+'P(D'+(j+1)+') = <b>'+de(P,2)+'</b></div>';
+    }
+    q('z').innerHTML=out;
+  }
+  var anim=null;
+  function sample(){var r=Math.random(),o={hit:0,abs:null,on:null};
+    if(opts.delayed){o.on=Math.random()<.5;o.hit=o.on?1:(r<.5?1:2);return o;}
+    var p=probs();if(r<p[0])o.hit=1;else if(r<p[0]+p[1])o.hit=2;
+    else if(st.pol){var c=Math.pow(Math.cos(phi()/2),2),s=1-c,w=[.25,.25,st.er===0?0:(st.er>0?s/4:c/4),st.er===0?0:(st.er>0?c/4:s/4)],x=Math.random()*(w[0]+w[1]+w[2]+w[3]),i=0;
+      while(i<3&&x>w[i]){x-=w[i];i++;}o.abs=['pa','pb','e1','e2'][i];}
+    else if(st.block)o.abs='block';
+    else o.hit=p[1]>0?2:1;
+    return o;}
+  function commit(o){if(opts.delayed){dc[o.on?'on':'off'][o.hit-1]++;dc.last=o.on;}else if(o.hit===1)st.n1++;else if(o.hit===2)st.n2++;else st.n0++;}
+  function stopAnim(keep){if(!anim)return;var o=anim.o;anim=null;if(keep)commit(o);}
+  function dot(x,y,op){return '<circle class="fillacc" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="11" opacity="'+(op*0.28).toFixed(2)+'"/><circle class="fillacc" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5.5" opacity="'+op.toFixed(2)+'"/>';}
+  /* Ein Photon: Punkt von der Quelle zu ST 1, dann je ein Punkt für jede offene Möglichkeit, am Ende genau ein Nachweis */
+  function step(ts){
+    if(!anim)return;if(!root.isConnected){anim=null;return;}
+    var a=anim,o=a.o;if(a.t0===null)a.t0=ts;
+    var d=(ts-a.t0)/1000*300,has2=opts.delayed?o.on:st.st2,view=opts.delayed?(d<58+185?'pending':o.on):undefined,pulses='',fin=null;
+    if(d<58)pulses=dot(92+d,70,1);
+    else if(d<428){var s=d-58;
+      if(o.abs==='block'&&s>=108)fin={flash:'block'};
+      else if(o.abs==='pa'&&s>=62)fin={flash:'pa'};
+      else if(o.abs==='pb'&&s>=150)fin={flash:'pb'};
+      else{pulses=s<=140?dot(150,70+s,.7):dot(150+s-140,210,.7);
+        if(!(st.block&&s>=108))pulses+=s<=230?dot(150+s,70,.7):dot(380,70+s-230,.7);}}
+    else{var e=d-428;
+      if(o.abs==='e1'&&e>=45)fin={flash:'e1'};
+      else if(o.abs==='e2'&&e>=32)fin={flash:'e2'};
+      else if((o.hit===2&&e>=48)||e>=75)fin={hit:o.hit};
+      else{var p=has2?(opts.delayed?[1,0]:probs()):[1,st.block?0:1],mx=Math.max(p[0],p[1])||1,er=st.pol&&st.er!==0;
+        var o1=(er&&e<45)?.7:(p[0]>0.004?0.3+0.5*p[0]/mx:0),o2=(er&&e<32)?.7:(p[1]>0.004?0.3+0.5*p[1]/mx:0);
+        if(o1>0)pulses+=dot(380+e,210,o1);if(o2>0&&e<48)pulses+=dot(380,210+e,o2);}}
+    if(fin){anim=null;commit(o);draw(fin.hit,{flash:fin.flash});setTimeout(function(){if(root.isConnected&&!anim)draw();},380);return;}
+    if(!a.drawn||a.view!==view){a.drawn=true;a.view=view;draw(undefined,{st2:view});}
+    var pg=q('f').querySelector('.pulse');if(pg)pg.innerHTML=pulses;
+    requestAnimationFrame(step);
+  }
+  function send(n){stopAnim(true);
+    if(n===1&&!calm){anim={o:sample(),t0:null,drawn:false,view:undefined};requestAnimationFrame(step);return;}
+    var o;for(var i=0;i<n;i++){o=sample();commit(o);}
+    if(n===1){draw(o.hit,{flash:o.abs});setTimeout(function(){if(root.isConnected&&!anim)draw();},380);}else draw();}
+  if(q('bl'))q('bl').addEventListener('change',function(e){stopAnim(false);st.block=e.target.checked;reset();draw();});
+  if(q('po')){q('po').checked=st.pol;q('po').addEventListener('change',function(e){stopAnim(false);st.pol=e.target.checked;reset();draw();});}
+  if(q('er'))q('er').addEventListener('change',function(e){stopAnim(false);st.er=parseInt(e.target.value,10);reset();draw();});
+  if(q('ph'))q('ph').addEventListener('input',function(e){stopAnim(false);st.k=parseInt(e.target.value,10);reset();draw();});
+  q('s1').addEventListener('click',function(){send(1);});q('s100').addEventListener('click',function(){send(100);});q('rs').addEventListener('click',function(){stopAnim(false);reset();draw();});
+  draw();
+  if(W8&&!calm)requestAnimationFrame(wtick);
+}
+
+/* ---------- Simulation: Zeiger und Weglänge ---------- */
+function fracTxt(k){var g=gcd(k,24),n=k/g,d=24/g;return d===1?String(n):n+'/'+d;}
+function zeigerUhr(root){
+  var id='u'+(++uid),calm=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  root.innerHTML='<div class="sim"><canvas id="'+id+'c" height="184" role="img" aria-label="Zwei Zeiger drehen sich entlang von Weg A und Weg B: pro Wellenlänge eine volle Umdrehung"></canvas>'+
+  '<div class="simctl"><label class="wide">Gangunterschied <input type="range" id="'+id+'k" min="0" max="24" step="3" value="0"> <b id="'+id+'kv"></b></label>'+
+  '<button type="button" class="btn small" id="'+id+'p">Abspielen</button></div><div class="simout" id="'+id+'o"></div></div>';
+  function q(s){return root.querySelector('#'+id+s);}
+  var cv=q('c'),kk=q('k'),T=0,last=0,run=false,raf=0,SPEED=0.75;
+  function K(){return parseInt(kk.value,10);}
+  function rel(deg){var d=deg%360;if(d>180)d=360-d;
+    if(d===0)return deg===0?'in dieselbe Richtung':'wieder in dieselbe Richtung';
+    if(d===180)return 'in entgegengesetzte Richtungen';if(d===90)return 'senkrecht zueinander';return 'schräg zueinander, im Winkel von '+d+'°';}
+  function info(){var k=K(),deg=k*15;q('kv').textContent='Δs = '+dsLabel(k);
+    q('o').innerHTML='<span>Zusätzliche Drehung von Zeiger B: <b>360° · '+fracTxt(k)+' = '+deg+'°</b></span><span>Am Ende zeigen die Zeiger <b>'+rel(deg)+'</b>.</span>';}
+  function draw(){
+    var H=184,K0=cvs(cv,H),c=K0.c,W=K0.w;
+    var ink=cssVar('--ink'),mut=cssVar('--muted'),line=cssVar('--line'),acc=cssVar('--accent'),surf=cssVar('--surface');
+    var d=K()/24,x0=22,lp=(W-x0-26)/3,yA=56,yB=134,R=Math.min(14,lp*0.27),rm=Math.max(4,Math.min(7,lp*0.085));
+    var endB=2+d,p=run?T*SPEED:1e9,pA=Math.min(p,2),pB=Math.min(p,endB),i;
+    function X(pp){return x0+pp*lp;}
+    function ang(pp){return Math.PI/2+2*Math.PI*pp;}
+    c.font='13px '+cssVar('--font-body');c.textBaseline='alphabetic';c.lineCap='round';
+    /* Wege */
+    c.strokeStyle=line;c.lineWidth=1.5;
+    c.beginPath();c.moveTo(X(0),yA);c.lineTo(X(2),yA);c.stroke();
+    c.beginPath();c.moveTo(X(0),yB);c.lineTo(X(2),yB);c.stroke();
+    if(d>0){c.strokeStyle=acc;c.lineWidth=4;c.beginPath();c.moveTo(X(2),yB);c.lineTo(X(endB),yB);c.stroke();
+      c.fillStyle=acc;c.textAlign='center';c.fillText('Δs',X(2+d/2),yB-R-9);}
+    /* Marken je Wellenlänge */
+    c.strokeStyle=mut;c.lineWidth=1;c.fillStyle=mut;c.textAlign='center';
+    for(i=0;i<=2;i++){c.beginPath();c.moveTo(X(i),yA-7);c.lineTo(X(i),yA+7);c.moveTo(X(i),yB-7);c.lineTo(X(i),yB+7);c.stroke();
+      c.fillText(i===0?'Start':(i===1?'λ':i+'λ'),X(i),yB+R+22);}
+    c.fillStyle=ink;c.textAlign='left';c.fillText('Weg A',4,yA-R-10);c.fillText('Weg B',4,yB-R-10);
+    /* Spur: Zeigerstellung nach jeder Viertel-Wellenlänge */
+    function mini(x,y,a,col){c.strokeStyle=line;c.lineWidth=1;c.beginPath();c.arc(x,y,rm,0,6.2832);c.stroke();
+      c.strokeStyle=col;c.lineWidth=2;c.beginPath();c.moveTo(x,y);c.lineTo(x+rm*Math.cos(a),y-rm*Math.sin(a));c.stroke();}
+    for(i=0;i/4<=endB+1e-9;i++){var pp=i/4;
+      if(pp<=pA+1e-9&&pp<=2+1e-9)mini(X(pp),yA,ang(pp),mut);
+      if(pp<=pB+1e-9)mini(X(pp),yB,ang(pp),pp>2+1e-9?acc:mut);}
+    /* große Zeiger */
+    function clock(x,y,a,col){c.fillStyle=surf;c.strokeStyle=col;c.lineWidth=1.5;c.beginPath();c.arc(x,y,R,0,6.2832);c.fill();c.stroke();
+      var ex=x+(R-6)*Math.cos(a),ey=y-(R-6)*Math.sin(a),hw=3.2;
+      c.strokeStyle=col;c.lineWidth=2.5;c.beginPath();c.moveTo(x,y);c.lineTo(ex,ey);c.stroke();
+      c.fillStyle=col;c.beginPath();c.moveTo(x+(R-1)*Math.cos(a),y-(R-1)*Math.sin(a));
+      c.lineTo(ex+hw*Math.cos(a+Math.PI/2),ey-hw*Math.sin(a+Math.PI/2));c.lineTo(ex+hw*Math.cos(a-Math.PI/2),ey-hw*Math.sin(a-Math.PI/2));c.closePath();c.fill();}
+    clock(X(pA),yA,ang(pA),ink);clock(X(pB),yB,ang(pB),acc);
+  }
+  function frame(t){if(!root.isConnected)return;var dt=last?Math.min(0.05,(t-last)/1000):0;last=t;T+=dt;
+    if(T*SPEED>=2+K()/24)run=false;
+    draw();if(run)raf=requestAnimationFrame(frame);}
+  function play(){cancelAnimationFrame(raf);if(calm){run=false;draw();return;}T=0;last=0;run=true;raf=requestAnimationFrame(frame);}
+  kk.addEventListener('input',function(){info();play();});
+  q('p').addEventListener('click',play);
+  info();draw();play();
+  onLayout(root,function(){if(!run)draw();});
+}
+
+/* ---------- Simulation: Doppelspalt mit einzelnen Quantenobjekten ---------- */
+function doubleSlit(root,opts){
+  opts=opts||{};var id='d'+(++uid),vis=1,h='<div class="sim">'+(opts.pressure?'<canvas id="'+id+'v" height="150" role="img" aria-label="Seitenansicht: Moleküle fliegen durch Gas zum Gitter und zum Schirm"></canvas><p class="hint"><span style="color:var(--accent)">●</span> Molekül &nbsp; <span style="color:var(--muted)">●</span> Gasteilchen bzw. Molekül nach einem Stoß &nbsp; <span style="color:var(--bad)">○</span> Stoß. Darunter: Treffer auf dem Schirm, von vorn gesehen.</p>':'')+'<canvas id="'+id+'c" height="200"></canvas><div class="simctl">';
+  if(opts.pressure)h+='<label class="wide">Gasdruck <input type="range" id="'+id+'g" min="0" max="100" step="5" value="0"> <b id="'+id+'gv"></b></label>';
+  if(!opts.pressure)h+='<button type="button" class="btn small" data-n="1">+1</button><button type="button" class="btn small" data-n="10">+10</button>';
+  h+='<button type="button" class="btn small" data-n="100">+100</button><button type="button" class="btn small" data-n="1000">+1000</button><button type="button" class="btn small" id="'+id+'r">Zurücksetzen</button>';
+  if(!opts.pressure)h+='<label><input type="checkbox" id="'+id+'p"> |ψ|² einblenden</label>';
+  h+='</div><div class="simout" id="'+id+'o"></div></div>';root.innerHTML=h;
+  var cv=root.querySelector('#'+id+'c'),hits=[],show=false;
+  function p(x){var e=x===0?1:Math.sin(Math.PI*1.5*x)/(Math.PI*1.5*x);return e*e*(1+vis*Math.cos(9*Math.PI*x))/2;}
+  function sample(){for(;;){var x=Math.random()*2-1;if(Math.random()<p(x))return x;}}
+  function draw(){
+    var hh=200,K=cvs(cv,hh),c=K.c,w=K.w;
+    c.fillStyle=cssVar('--ink');c.globalAlpha=.55;
+    for(var i=0;i<hits.length;i++){c.beginPath();c.arc((hits[i][0]+1)/2*w,8+hits[i][1]*(hh-16),1.6,0,6.3);c.fill();}
+    c.globalAlpha=1;
+    if(show){c.strokeStyle=cssVar('--accent');c.lineWidth=2;c.beginPath();for(var px=0;px<=w;px++){var y=hh-6-p(px/w*2-1)*(hh-14);if(px===0)c.moveTo(px,y);else c.lineTo(px,y);}c.stroke();}
+    root.querySelector('#'+id+'o').innerHTML='<span>'+(opts.pressure?'Nachgewiesene Moleküle':'Nachweise auf dem Schirm')+': <b>'+hits.length+'</b></span>'+(opts.pressure?'<span>Deutlichkeit der Streifen: <b>'+Math.round(vis*100)+' %</b></span>':'');
+    var gv=root.querySelector('#'+id+'gv');if(gv){var g=parseInt(root.querySelector('#'+id+'g').value,10);gv.textContent=g===0?'0 (Hochvakuum)':g+' %';}
+  }
+  root.querySelectorAll('button[data-n]').forEach(function(b){b.addEventListener('click',function(){var n=parseInt(b.getAttribute('data-n'),10);for(var i=0;i<n&&hits.length<3000;i++)hits.push([sample(),Math.random()]);draw();});});
+  root.querySelector('#'+id+'r').addEventListener('click',function(){hits=[];draw();});
+  if(!opts.pressure)root.querySelector('#'+id+'p').addEventListener('change',function(e){show=e.target.checked;draw();});
+  if(opts.pressure)root.querySelector('#'+id+'g').addEventListener('input',function(e){vis=Math.exp(-parseInt(e.target.value,10)/20);hits=[];draw();});
+  onLayout(cv,draw);draw();
+  /* Gasdruck: Seitenansicht mit Gas und fliegenden Molekülen, Treffer laufen automatisch ein */
+  if(opts.pressure){
+    var gv2=root.querySelector('#'+id+'v'),gas=[],mols=[],flashes=[],gacc=0,glast=0,dirty=false,calmG=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function pres(){return parseInt(root.querySelector('#'+id+'g').value,10);}
+    function setGas(){var n=Math.round(pres()*0.7);while(gas.length<n)gas.push({x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25});gas.length=n;}
+    function gdraw(){var hh=150,K=cvs(gv2,hh),c=K.c,w=K.w;
+      var ink=cssVar('--ink'),mut=cssVar('--muted'),acc=cssVar('--accent'),bad=cssVar('--bad'),x0=40,xs=w*0.42,xe=w-14,yt=16,yb=hh-22,i;
+      c.font='12px '+cssVar('--font-body');
+      c.fillStyle=mut;c.fillRect(4,hh/2-14,30,28);c.fillStyle=cssVar('--surface');c.textAlign='center';c.fillText('Ofen',19,hh/2+4);
+      c.fillStyle=ink;c.fillRect(xs-2,yt,4,hh/2-12-yt);c.fillRect(xs-2,hh/2-4,4,8);c.fillRect(xs-2,hh/2+12,4,yb-hh/2-12);
+      c.fillStyle=mut;c.fillRect(xe,yt,4,yb-yt);
+      c.fillStyle=mut;c.textAlign='center';c.fillText('Gitter',xs,hh-6);c.fillText('Schirm',xe-6,hh-6);
+      c.globalAlpha=.55;c.fillStyle=mut;for(i=0;i<gas.length;i++){c.beginPath();c.arc(x0+gas[i].x*(xe-x0),yt+gas[i].y*(yb-yt),1.8,0,6.3);c.fill();}c.globalAlpha=1;
+      for(i=0;i<flashes.length;i++){var f=flashes[i];c.strokeStyle=bad;c.globalAlpha=Math.max(0,f.t);c.lineWidth=2;c.beginPath();c.arc(f.x,f.y,6+(1-f.t)*10,0,6.3);c.stroke();}c.globalAlpha=1;
+      for(i=0;i<mols.length;i++){var m=mols[i];c.fillStyle=m.hit?mut:acc;c.beginPath();c.arc(m.x,m.y,4.5,0,6.3);c.fill();}
+      return {x0:x0,xs:xs,xe:xe,yt:yt,yb:yb,hh:hh};}
+    function gtick(t){if(!gv2.isConnected)return;var dt=glast?Math.min(.05,(t-glast)/1000):0,i;glast=t;
+      var w=gv2.clientWidth||320,G={x0:40,xs:w*0.42,xe:w-14,yt:16,yb:128},P=pres();
+      for(i=0;i<gas.length;i++){var g=gas[i];g.x+=g.vx*dt;g.y+=g.vy*dt;if(g.x<0||g.x>1)g.vx*=-1;if(g.y<0||g.y>1)g.vy*=-1;g.x=Math.min(1,Math.max(0,g.x));g.y=Math.min(1,Math.max(0,g.y));}
+      gacc+=dt*7;while(gacc>=1){gacc--;if(mols.length<30)mols.push({x:G.x0,y:75,vx:150,vy:0,hit:false,through:false});}
+      var keep=[];for(i=0;i<mols.length;i++){var m=mols[i];m.x+=m.vx*dt;m.y+=m.vy*dt;
+        if(!m.through&&m.x>=G.xs){m.through=true;m.vy=(Math.random()-.5)*110;m.y=75+(Math.random()<.5?-8:8);}
+        if(!m.hit&&P>0&&Math.random()<P/100*2.2*dt){m.hit=true;flashes.push({x:m.x,y:m.y,t:1});}
+        if(m.x<G.xe)keep.push(m);else{for(var k=0;k<4;k++){hits.push([sample(),Math.random()]);}if(hits.length>3000)hits.splice(0,hits.length-3000);dirty=true;}}
+      mols=keep;flashes.forEach(function(f){f.t-=dt*2;});flashes=flashes.filter(function(f){return f.t>0;});
+      gdraw();if(dirty){dirty=false;draw();}requestAnimationFrame(gtick);}
+    root.querySelector('#'+id+'g').addEventListener('input',function(){setGas();});
+    setGas();gdraw();if(!calmG)requestAnimationFrame(gtick);
+  }
+}
+
+/* ---------- Simulation: Koinzidenzmessung ---------- */
+function coincSim(root){
+  var id='k'+(++uid);
+  root.innerHTML='<div class="sim"><div id="'+id+'f"></div><div class="simctl"><button type="button" class="btn small" id="'+id+'b">Neue Messung</button></div><div class="simout" id="'+id+'o"></div></div>';
+  function X(t){return 16+t*328;}
+  function run(){var i,np=6+Math.floor(Math.random()*4),nd=2+Math.floor(Math.random()*3),nt=1+Math.floor(Math.random()*2),t;
+    var g='<svg viewBox="0 0 360 126" role="img" aria-label="Zeitverlauf der Signale an Triggerdetektor und Messdetektor"><text x="16" y="14" font-size="12">Triggerdetektor T</text><line class="grid" x1="16" x2="344" y1="50" y2="50"/><text x="16" y="78" font-size="12">Detektor D im Experiment</text><line class="grid" x1="16" x2="344" y1="114" y2="114"/>';
+    for(i=0;i<np;i++){t=X(Math.random()).toFixed(1);g+='<rect class="fillacc" opacity=".14" x="'+(t-4)+'" y="22" width="8" height="92"/><line class="acc" stroke-width="2.5" x1="'+t+'" x2="'+t+'" y1="24" y2="50"/><line class="acc" stroke-width="2.5" x1="'+t+'" x2="'+t+'" y1="88" y2="114"/>';}
+    for(i=0;i<nt;i++){t=X(Math.random()).toFixed(1);g+='<line class="ln" stroke-width="2.5" x1="'+t+'" x2="'+t+'" y1="24" y2="50"/>';}
+    for(i=0;i<nd;i++){t=X(Math.random()).toFixed(1);g+='<line class="ln" stroke-width="2.5" x1="'+t+'" x2="'+t+'" y1="88" y2="114"/>';}
+    g+='<text class="mut" x="344" y="124" text-anchor="end" font-size="11">Zeit</text></svg>';
+    root.querySelector('#'+id+'f').innerHTML=g;
+    root.querySelector('#'+id+'o').innerHTML='<span>Signale an D: <b>'+(np+nd)+'</b></span><span>davon gleichzeitig mit T: <b>'+np+'</b></span><span>ohne Triggersignal: <b>'+nd+'</b></span>';}
+  root.querySelector('#'+id+'b').addEventListener('click',run);run();
+}
+
+/* ---------- Simulation: Schlüsselaustausch mit einzelnen Photonen ---------- */
+function bb84(root){
+  var id='x'+(++uid),B=['+','×'];
+  root.innerHTML='<div class="sim"><div class="simctl"><label><input type="checkbox" id="'+id+'e"> Lauscher in der Leitung</label><button type="button" class="btn small" id="'+id+'b">200 Photonen übertragen</button></div><div class="tw" id="'+id+'t"></div><div class="simout" id="'+id+'o"></div></div>';
+  function rb(){return Math.random()<.5?0:1;}
+  function run(){var eve=root.querySelector('#'+id+'e').checked,same=0,err=0,rows='',i;
+    for(i=0;i<200;i++){var ab=rb(),bit=rb(),pb=ab,pbit=bit;
+      if(eve){var eb=rb();pbit=(eb===ab)?bit:rb();pb=eb;}
+      var bb=rb(),got=(bb===pb)?pbit:rb(),keep=bb===ab;
+      if(keep){same++;if(got!==bit)err++;}
+      if(i<6)rows+='<tr><td class="n">'+(i+1)+'</td><td>'+B[ab]+'</td><td class="n">'+bit+'</td><td>'+B[bb]+'</td><td class="n">'+got+'</td><td>'+(keep?(got===bit?'ja':'ja, <b>Fehler</b>'):'nein')+'</td></tr>';}
+    root.querySelector('#'+id+'t').innerHTML='<table><thead><tr><th class="n">Nr.</th><th>Basis Sender</th><th class="n">Bit</th><th>Basis Empfänger</th><th class="n">Bit</th><th>behalten?</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    root.querySelector('#'+id+'o').innerHTML='<span>Die ersten 6 von 200 Photonen stehen in der Tabelle.</span><span>Gleiche Basis: <b>'+same+' von 200</b></span><span>Fehler in den behaltenen Bits: <b>'+err+'</b> ('+de(same?100*err/same:0,0)+' %)</span>';}
+  root.querySelector('#'+id+'b').addEventListener('click',run);root.querySelector('#'+id+'e').addEventListener('change',run);run();
+}
+
+/* ---------- Simulation: Wellenpaket ---------- */
+function wavePacket(root){
+  var id='w'+(++uid);
+  root.innerHTML='<div class="sim"><div id="'+id+'f"></div><div class="simctl"><label class="wide">Breite des Pakets <input type="range" id="'+id+'s" min="0.15" max="1.5" step="0.01" value="0.6"> <b id="'+id+'sv"></b></label></div><div class="simout" id="'+id+'o"></div></div>';
+  var s=root.querySelector('#'+id+'s');
+  function draw(){
+    var sg=parseFloat(s.value),k0=12,sk=1/(2*sg),i,x,k,d1='',d2='',d3='';
+    for(i=0;i<=400;i++){x=-4+8*i/400;var env=Math.exp(-x*x/(4*sg*sg)),X=20+i*0.8;d1+=(i?'L':'M')+X.toFixed(1)+' '+(62-46*env*Math.cos(k0*x)).toFixed(1);d2+=(i?'L':'M')+X.toFixed(1)+' '+(62-46*env).toFixed(1);}
+    for(i=0;i<=200;i++){k=-8+16*i/200;d3+=(i?'L':'M')+(20+i*1.6).toFixed(1)+' '+(214-64*Math.exp(-k*k/(2*sk*sk))).toFixed(1);}
+    var g='<svg viewBox="0 0 360 236" role="img" aria-label="Wellenpaket im Ortsraum und zugehörige Impulsverteilung">'+
+    '<text class="mut" x="20" y="12" font-size="12">Wellenfunktion ψ(x), Ausschnitt 8 nm</text><line class="grid" x1="20" x2="340" y1="62" y2="62"/><path class="lnoff" d="'+d2+'"/><path class="acc" stroke-width="1.5" d="'+d1+'"/>'+
+    '<text class="mut" x="20" y="140" font-size="12">Verteilung der beteiligten Impulse</text><line class="grid" x1="20" x2="340" y1="214" y2="214"/><path class="ink" stroke-width="2" d="'+d3+'"/><text class="mut" x="180" y="230" text-anchor="middle" font-size="12">mittlerer Impuls p₀</text></svg>';
+    root.querySelector('#'+id+'f').innerHTML=g;
+    var dx=sg*1e-9,dp=1.0546e-34/(2*dx);
+    root.querySelector('#'+id+'sv').textContent='Δx = '+de(sg,2)+' nm';
+    root.querySelector('#'+id+'o').innerHTML='<span>Δx = <b>'+sci(dx,1)+' m</b></span><span>Δp = <b>'+sci(dp,1)+' kg·m/s</b></span><span>Δx·Δp = <b>'+sci(dx*dp,1)+' Js</b></span>';
+  }
+  s.addEventListener('input',draw);draw();
+}
+
+/* ---------- Inhalte ---------- */
+var H='<sup>−34</sup>';
+var lessons=[
+{t:'Der Photoeffekt: Licht kommt in Portionen',steps:[
+ {t:'Das Hallwachs-Experiment',h:'<p><b>Worum es geht.</b> Aus der Wellenoptik wisst ihr: Licht zeigt Beugung und Interferenz, es breitet sich als Welle aus. In dieser Stunde prüft ihr an einem Experiment von 1888, ob dieses Bild ausreicht, wenn Licht auf Metall trifft.</p><p><b>Der Aufbau.</b> Eine frisch geschmirgelte Zinkplatte sitzt auf einem Elektroskop. Der Zeiger des Elektroskops schlägt umso weiter aus, je stärker die Platte geladen ist. Bestrahlt wird mit einer Quecksilberdampflampe. Sie sendet sichtbares Licht und unsichtbares UV-Licht aus.</p>'+D(['Ladet die Platte negativ und schaltet die Lampe ein. Beobachtet den Zeiger.','Schaltet die Lampe aus und ladet die Platte positiv. Schaltet die Lampe wieder ein.']),w:function(r){hallwachsLab(r,{});},
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Negativ geladene Platte im Licht der Lampe: Was geschieht mit dem Ausschlag?',o:['Er geht in wenigen Sekunden auf null zurück.','Er bleibt unverändert.','Er wird größer.'],c:0,e:'Die Platte verliert ihre negative Ladung.'},
+   {k:'mc',tag:'Beobachtung',q:'Positiv geladene Platte im Licht der Lampe: Was geschieht?',o:['Der Ausschlag bleibt unverändert.','Der Ausschlag geht auf null zurück.','Der Ausschlag wird größer.'],c:0,e:'Die positive Ladung bleibt auf der Platte.'},
+   {k:'mc',tag:'Deutung',q:'Welche Erklärung passt zu beiden Beobachtungen?',o:['Das Licht löst Elektronen aus der Platte.','Das Licht macht die Luft leitend, die Ladung fließt über die Luft ab.','Das Licht bringt positive Ladung auf die Platte.'],c:0,
+    w:[null,'Dann würde sich auch die positiv geladene Platte entladen.','Dann würde der Ausschlag der positiv geladenen Platte wachsen.'],
+    e:'Die negativ geladene Platte verliert ihre überschüssigen Elektronen. Bei positiver Ladung werden ausgelöste Elektronen sofort zurückgezogen. Der Vorgang heißt <b>Photoeffekt</b>.'}]},
+ {t:'Kontrollversuch mit der Glasscheibe',h:'<p>Welche Eigenschaft des Lichts ist für das Auslösen der Elektronen verantwortlich? Das Wellenmodell gibt eine klare Antwort: Es kommt auf die Energie an, die pro Sekunde auf die Platte trifft, also auf die <b>Intensität</b>. Je näher die Lampe steht, desto größer ist die Intensität.</p><p>Eine Glasscheibe hilft beim Prüfen. Glas lässt sichtbares Licht durch und hält UV-Licht zurück. Die Platte bleibt hinter der Scheibe hell beleuchtet.</p>'+D(['Ladet die Platte negativ und schaltet die Lampe ein. Wiederholt den Versuch mit kleinerem Abstand der Lampe.','Ladet die Platte erneut negativ und setzt die Glasscheibe ein.','Rückt die Lampe bei eingesetzter Scheibe ganz nah an die Platte.']),w:function(r){hallwachsLab(r,{glass:true,dist:true});},
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Ohne Glasscheibe: Wie wirkt sich ein kleinerer Abstand der Lampe aus?',o:['Die Platte entlädt sich schneller.','Die Entladung dauert gleich lang.','Die Platte entlädt sich langsamer.'],c:0,e:'Größere Intensität löst pro Sekunde mehr Elektronen aus. So weit passt das Wellenmodell.'},
+   {k:'mc',tag:'Beobachtung',q:'Mit Glasscheibe: Was beobachtet ihr, auch bei kleinstem Abstand?',o:['Der Ausschlag bleibt unverändert. Die Platte entlädt sich nicht.','Die Platte entlädt sich etwas langsamer als ohne Scheibe.','Die Platte entlädt sich wie zuvor.'],c:0,e:'Das sichtbare Licht löst kein einziges Elektron aus, gleich wie hell es ist.'},
+   {k:'mc',tag:'Deutung',q:'Was entscheidet demnach darüber, ob Elektronen ausgelöst werden?',o:['Die Art des Lichts: Nur das UV-Licht, also Licht hoher Frequenz, löst Elektronen aus.','Allein die Intensität des Lichts.','Die Dauer der Bestrahlung.'],c:0,e:'Das ist der erste Widerspruch zum Wellenmodell: Dort dürfte es nur auf die Intensität ankommen.'}]},
+ {t:'Sofort oder mit Wartezeit?',h:'<p>Im Wellenmodell verteilt sich die Lichtenergie gleichmäßig über die ganze Platte. Ein einzelnes Elektron bekommt davon nur einen winzigen Anteil und müsste erst Energie sammeln, bevor es das Metall verlassen kann. Für eine Lampe mit 1 W in 1 m Abstand ergibt eine Abschätzung eine Wartezeit von rund <b>14 Minuten</b>.</p>'+D(['Stellt den größten Abstand ein und ladet die Platte negativ.','Schaltet die Lampe ein und achtet darauf, wann der Zeiger sich zu bewegen beginnt.']),w:function(r){hallwachsLab(r,{dist:true});},
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Wann beginnt der Ausschlag zu sinken?',o:['Sofort beim Einschalten der Lampe.','Erst nach einer deutlichen Wartezeit.'],c:0,e:'Auch bei schwacher Beleuchtung gibt es keine messbare Verzögerung.'},
+   {k:'mc',tag:'Deutung',q:'Was folgt aus dem Vergleich mit der Abschätzung?',o:['Das Wellenmodell kann das sofortige Einsetzen nicht erklären.','Die Beobachtung bestätigt das Wellenmodell.'],c:0,e:'Zweiter Widerspruch zum Wellenmodell.'},
+   {k:'rev',opt:true,tag:'Zusatz für Interessierte',q:'So kommt die Abschätzung zustande.',btn:'Rechnung zeigen',s:'Intensität in 1 m Abstand: I = 1,0 W / (4π · (1,0 m)²) = 0,080 W/m². Ein Atom fängt Licht über etwa 10<sup>−20</sup> m² auf, das sind 8,0·10<sup>−22</sup> W. Bis die Austrittsarbeit von Zink (6,9·10<sup>−19</sup> J) gesammelt ist, vergehen 6,9·10<sup>−19</sup> J / 8,0·10<sup>−22</sup> W ≈ 870 s.'}]},
+ {t:'Das Photoeffekt-Labor',h:'<p>Jetzt untersucht ihr den Effekt genauer. Im Labor wählt ihr das Metall, die Wellenlänge des Lichts und die Intensität. Angezeigt wird, ob Elektronen ausgelöst werden, wie groß ihre Bewegungsenergie höchstens ist (E<sub>kin,max</sub>) und wie groß der Photostrom ist, also wie viele Elektronen pro Sekunde die Platte verlassen.</p>'+D(['Wählt Cäsium und verkleinert die Wellenlänge langsam von 700 nm aus, bis die ersten Elektronen aus dem Metall austreten.','Stellt 400 nm ein und verändert nur die Intensität. Achtet darauf, wie viele Elektronen austreten und wie schnell sie sind.','Wechselt bei 400 nm und voller Intensität zu Zink.']),w:photoLab,
+  tasks:[{k:'num',tag:'Beobachtung',q:'Cäsium: Bei welcher Wellenlänge erscheinen die ersten Elektronen?',a:639,tol:.015,u:'nm',e:'Die Grenze liegt bei etwa 639 nm. Licht mit größerer Wellenlänge, also kleinerer Frequenz, löst nichts aus.'},
+   {k:'mc',tag:'Beobachtung',q:'Cäsium bei 400 nm: Was ändert sich, wenn ihr nur die Intensität verändert?',o:['Der Photostrom. Die Energie E<sub>kin,max</sub> der Elektronen bleibt gleich.','Die Energie E<sub>kin,max</sub> der Elektronen. Der Photostrom bleibt gleich.','Photostrom und Energie wachsen beide.'],c:0,e:'Helleres Licht liefert mehr Elektronen, aber keine schnelleren. Dritter Widerspruch: Im Wellenmodell müsste helleres Licht den Elektronen mehr Energie geben.'},
+   {k:'mc',tag:'Beobachtung',q:'Zink bei 400 nm und voller Intensität: Was zeigt das Labor?',o:['Kein einziges Elektron wird ausgelöst.','Wenige, aber sehr schnelle Elektronen.','Viele langsame Elektronen.'],c:0,e:'Das ist der Glasscheiben-Versuch: Sichtbares Licht löst aus Zink nichts aus.'}]},
+ {t:'Einsteins Idee: Licht in Portionen',h:'<p>1905 schlug Albert Einstein eine Erklärung vor, die alle drei Widersprüche auflöst. Licht der Frequenz f gibt seine Energie nicht gleichmäßig ab, sondern in einzelnen Portionen. Diese Portionen heißen <b>Photonen</b>. Jedes Photon gibt seine ganze Energie an genau ein Elektron ab.</p>'+F('E<sub>Photon</sub> = h · f = '+fr('h · c','λ'))+'<p>h = 6,626·10'+H+' Js heißt Planck’sches Wirkungsquantum. Bequem zum Rechnen: Mit der Wellenlänge in nm gilt E<sub>Photon</sub> = 1240 eV·nm / λ.</p>',
+  tasks:[{k:'num',q:'Wie groß ist die Energie eines Photons von blauem Licht mit λ = 436 nm? Rechnet 1240 / 436.',a:2.844,sol:'2,84',tol:.02,u:'eV',e:'E<sub>Photon</sub> = 1240 eV·nm / 436 nm = 2,84 eV'},
+   {k:'mc',q:'Welches Licht besteht aus den energiereichsten Photonen?',o:['UV-Licht (kleine Wellenlänge, große Frequenz)','rotes Licht (große Wellenlänge, kleine Frequenz)','Alle Photonen haben dieselbe Energie.'],c:0,e:'Je größer die Frequenz, desto mehr Energie trägt das einzelne Photon. Deshalb wirkt bei Zink nur das UV-Licht.'}]},
+ {t:'Die Einstein-Gleichung',h:'<p>Ein Elektron nimmt die Energie h·f eines Photons auf. Um das Metall zu verlassen, muss es zuerst die <b>Austrittsarbeit W<sub>A</sub></b> aufbringen. Sie hängt vom Metall ab. Was dann noch übrig ist, behält das Elektron als Bewegungsenergie.</p><p><b>Das Energiebild.</b> Die Höhe im Bild steht für die Energie des Elektrons. Im Metall sitzt das Elektron wie in einer Mulde. Der Rand der Mulde liegt um die Austrittsarbeit W<sub>A</sub> höher. Ein Photon hebt das Elektron um h·f an.</p>'+D(['Cäsium und 700 nm sind eingestellt. Beobachtet, was mit dem Elektron geschieht.','Verkleinert die Wellenlänge langsam, bis das Elektron das Metall verlässt.','Stellt 436 nm ein und vergleicht die Energiewerte unter dem Bild.','Wechselt zu Zink und probiert sichtbares Licht (400 bis 700 nm) aus.']),w:energyLab,
+  h2:F('E<sub>kin,max</sub> = h · f − W<sub>A</sub>')+'<p>Reicht h·f nicht für die Austrittsarbeit, wird kein Elektron ausgelöst. Die kleinste Frequenz, bei der es gerade klappt, heißt <b>Grenzfrequenz</b>: f<sub>G</sub> = W<sub>A</sub> / h.</p>',
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Cäsium bei 700 nm: Was geschieht mit dem Elektron?',o:['Es wird angehoben, erreicht den Rand aber nicht und fällt zurück.','Es verlässt das Metall sehr langsam.','Es bleibt unbewegt liegen.'],c:0,e:'Das Photon bringt nur 1,77 eV mit. Bis zum Rand fehlen 0,17 eV.'},
+   {k:'mc',tag:'Beobachtung',q:'Cäsium bei 436 nm: Das Elektron kommt über den Rand. Was geschieht mit der Energie, die über den Rand hinausreicht?',o:['Das Elektron behält sie als Bewegungsenergie.','Sie geht verloren.','Sie bleibt im Metall zurück.'],c:0,e:'Zuerst wird die Austrittsarbeit aufgebracht. Der Rest ist Bewegungsenergie: 2,84 eV − 1,94 eV = 0,90 eV.'},
+   {k:'num',q:'Kalium hat die Austrittsarbeit 2,25 eV. Ein violettes Photon (405 nm) bringt 3,06 eV mit. Wie viel Bewegungsenergie bleibt dem Elektron höchstens?',a:0.81,sol:'0,81',tol:.03,u:'eV',e:'E<sub>kin,max</sub> = 3,06 eV − 2,25 eV = 0,81 eV. Im Energiebild könnt ihr das Ergebnis nachprüfen.'},
+   {k:'mc',q:'Zink hat die Austrittsarbeit 4,3 eV. Photonen des sichtbaren Lichts haben höchstens etwa 3,1 eV. Was folgt?',o:['Sichtbares Licht löst aus Zink kein Elektron aus, gleich wie hell es ist.','Sehr helles sichtbares Licht löst Elektronen aus, weil viele Photonen zusammenwirken.','Sichtbares Licht löst langsame Elektronen aus.'],c:0,
+    w:[null,'Ein Elektron nimmt nur ein einziges Photon auf. Viele schwache Photonen helfen ihm nicht.','Dafür müsste h·f größer als W<sub>A</sub> sein.'],e:'Damit ist der Versuch mit der Glasscheibe erklärt.'}]},
+ {t:'Richtig oder falsch?',h:'<p>Prüft, ob ihr das Photonenmodell sicher anwenden könnt.</p>',
+  tasks:[{k:'cls',tag:'Kurzcheck',q:'Beurteilt die Aussagen.',cats:['richtig','falsch'],items:[
+    {x:'Ein Photon gibt seine Energie an genau ein Elektron ab.',c:0},
+    {x:'Helleres Licht löst schnellere Elektronen aus.',c:1,e:'Helleres Licht bedeutet mehr Photonen und damit mehr Elektronen. Die Energie pro Photon bleibt gleich.'},
+    {x:'Unterhalb der Grenzfrequenz hilft auch sehr helles Licht nicht.',c:0},
+    {x:'Ein Elektron sammelt die Energie vieler Photonen, bis es reicht.',c:1,e:'Deshalb setzt der Effekt sofort ein, und deshalb gibt es eine Grenzfrequenz.'}]}]},
+ {t:'Ergebnis der Stunde 1',h:'<div class="merk"><ul><li>Licht löst Elektronen aus Metallen (Photoeffekt).</li><li>Drei Beobachtungen widersprechen dem Wellenmodell: Es gibt eine Grenzfrequenz, der Effekt setzt sofort ein, und die Energie der Elektronen hängt nicht von der Intensität ab.</li><li>Lichtquantenhypothese: Licht gibt Energie in Portionen E = h·f ab. Ein Photon wirkt auf ein Elektron.</li><li>Einstein-Gleichung: E<sub>kin,max</sub> = h·f − W<sub>A</sub>. Grenzfrequenz: f<sub>G</sub> = W<sub>A</sub>/h.</li><li>Die Intensität legt die Zahl der Photonen fest und damit den Photostrom.</li></ul></div>'}
+]},
+{t:'h messen. Energie und Impuls des Photons',steps:[
+ {t:'Die Gegenfeldmethode',h:'<p><b>Worum es geht.</b> Die Einstein-Gleichung E<sub>kin,max</sub> = h·f − W<sub>A</sub> lässt sich nur prüfen, wenn man die Bewegungsenergie der ausgelösten Elektronen messen kann. Das leistet die Gegenfeldmethode. Mit ihr bestimmt ihr in dieser Stunde selbst das Planck’sche Wirkungsquantum h.</p><p><b>Der Aufbau.</b> In einer luftleeren Photozelle trifft Licht einer einzigen Farbe auf die Kathode. Die ausgelösten Elektronen fliegen zur Ringanode und fließen durch den Draht zurück zur Kathode. Ein Messverstärker im Draht zeigt diesen Photostrom I. Die Spannungsquelle ist so gepolt, dass die Elektronen in der Photozelle gebremst werden: Sie müssen gegen ein Gegenfeld anlaufen. Das Bild zeigt den Aufbau in Betrieb.</p>'+D(['Die blaue Linie (436 nm) ist eingestellt. Verfolgt bei U = 0 V den Weg der Elektronen: von der Kathode zur Anode und durch den Draht zurück.','Erhöht die Gegenspannung langsam. Achtet auf die Elektronen in der Photozelle, auf den Strom im Draht und auf die Kennlinie.','Sucht die kleinste Gegenspannung, bei der der Photostrom null ist. Sie heißt U<sub>G</sub>. Für die Feineinstellung gibt es die beiden Tasten.','Verändert die Intensität und prüft, ob sich U<sub>G</sub> ändert.']),w:function(r){gegenfeldLab(r,{});},
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Was geschieht mit den Elektronen, sobald eine Gegenspannung anliegt?',o:['Sie werden gebremst. Die langsamen kehren vor der Anode um, die schnellen kommen noch an.','Alle werden gleich stark beschleunigt.','Sie fliegen unverändert weiter.'],c:0,e:'Das Gegenfeld bremst jedes Elektron. Nur wer genug Bewegungsenergie mitbringt, erreicht die Anode.'},{k:'mc',tag:'Beobachtung',q:'Was zeigt die Kennlinie, wenn die Gegenspannung wächst?',o:['Der Photostrom sinkt und ist ab einer bestimmten Spannung null.','Der Photostrom bleibt gleich.','Der Photostrom wächst.'],c:0,e:'Immer weniger Elektronen schaffen es gegen das Gegenfeld bis zur Anode.'},
+   {k:'num',tag:'Beobachtung',q:'Bei welcher Gegenspannung wird der Photostrom für die blaue Linie null?',a:0.905,sol:'0,91',tol:.03,u:'V',e:'U<sub>G</sub> ≈ 0,91 V'},
+   {k:'mc',tag:'Beobachtung',q:'Wie wirkt sich die Intensität aus?',o:['Der Photostrom ändert sich, U<sub>G</sub> bleibt gleich.','U<sub>G</sub> wächst mit der Intensität.','Weder Photostrom noch U<sub>G</sub> ändern sich.'],c:0,e:'Wie im Photoeffekt-Labor: Die Intensität bestimmt die Zahl der Elektronen, nicht ihre Energie.'},
+   {k:'mc',tag:'Deutung',q:'Welche Elektronen erreichen die Anode kurz vor U<sub>G</sub> noch?',o:['Nur die schnellsten.','Alle ausgelösten Elektronen.','Nur die langsamsten.'],c:0,e:'Bei U<sub>G</sub> reicht auch die Energie der schnellsten nicht mehr. Die Gegenspannung misst also ihre Bewegungsenergie:'+F('e · U<sub>G</sub> = E<sub>kin,max</sub>')+'Praktisch: U<sub>G</sub> = 0,91 V bedeutet E<sub>kin,max</sub> = 0,91 eV.'}]},
+ {t:'Die Messreihe aufnehmen',h:'<p>Die Quecksilberdampflampe sendet Licht in fünf scharfen Linien aus. Ein Farbfilter lässt jeweils eine davon durch. Bestimmt für jede Linie die Gegenspannung U<sub>G</sub> und übernehmt sie in die Tabelle.</p>',w:function(r){gegenfeldLab(r,{record:true});},
+  tasks:[{k:'meas',q:'Messt U<sub>G</sub> für alle fünf Linien.'},
+   {k:'mc',tag:'Beobachtung',q:'Wie hängt U<sub>G</sub> von der Frequenz des Lichts ab?',o:['Je größer die Frequenz, desto größer U<sub>G</sub>.','U<sub>G</sub> ist für alle Linien gleich.','Je größer die Frequenz, desto kleiner U<sub>G</sub>.'],c:0,e:'Licht höherer Frequenz liefert schnellere Elektronen, wie es die Einstein-Gleichung verlangt.'}]},
+ {t:'Die Messgerade',h:'<p>Setzt man e·U<sub>G</sub> = E<sub>kin,max</sub> in die Einstein-Gleichung ein und teilt durch e, erhält man:</p>'+F('U<sub>G</sub> = '+fr('h','e')+' · f − '+fr('W<sub>A</sub>','e'))+'<p>Das hat die Form einer Geradengleichung y = m·x + t mit x = f und y = U<sub>G</sub>.</p>',
+  tasks:[{k:'mc',q:'Welche Größe ist die Steigung m dieser Geraden?',o:['h / e','W<sub>A</sub> / e','f'],c:0,e:'Die Steigung enthält nur Naturkonstanten. Der Achsenabschnitt −W<sub>A</sub>/e hängt vom Metall ab.'},
+   {k:'mc',q:'Eine zweite Photozelle hat eine Kathode aus einem anderen Metall mit größerer Austrittsarbeit. Wie liegt ihre Gerade?',o:['Parallel nach unten verschoben: gleiche Steigung, anderer Achsenabschnitt.','Sie ist steiler.','Sie ist identisch.'],c:0,e:'Für jedes Metall ergibt sich dieselbe Steigung h/e. Daran erkennt man: h ist eine universelle Naturkonstante.'}]},
+ {t:'Die Messreihe auswerten',h:'<p>Jetzt bestimmt ihr h aus euren Messwerten. Legt die Gerade mit den beiden Reglern so durch die Punkte, dass die mittlere Abweichung möglichst klein wird. Die Anzeige rechnet Steigung und Achsenabschnitt gleich in h und W<sub>A</sub> um.</p>',w:fitLab,
+  tasks:[{k:'num',tag:'Ergebnis',q:'Welchen Wert für h liefert eure Gerade?',a:6.6,tol:.05,u:'· 10<sup>−34</sup> Js',e:'Der festgelegte Wert ist h = 6,626·10'+H+' Js. Ihr habt eine Naturkonstante der Quantenphysik mit Spannungsmessungen bestimmt.'},
+   {k:'num',tag:'Ergebnis',q:'Welche Austrittsarbeit hat die Kathode?',a:1.93,tol:.06,u:'eV',e:'Der Tabellenwert für Cäsium ist 1,94 eV.'}]},
+ {t:'Wie verlässlich ist das Ergebnis?',h:'<p>Bei jeder Messung unterscheidet man zwei Arten von Fehlern.</p><ul><li><b>Messunsicherheit:</b> zufällige Streuung. Beispiel: U<sub>G</sub> lässt sich nur auf etwa 0,01 V genau einstellen.</li><li><b>Messabweichung:</b> Verfälschung in eine feste Richtung. Beispiel: Zwischen Kathode und Anode besteht eine kleine zusätzliche Spannung (Kontaktspannung), die jeden Messwert um denselben Betrag verschiebt.</li></ul>',
+  tasks:[{k:'mc',q:'Alle U<sub>G</sub>-Werte sind um denselben Betrag verschoben. Was geschieht mit der Geraden?',o:['Sie wird parallel verschoben. Die Steigung und damit h bleiben richtig.','Sie wird steiler. h wird zu groß.','Es ändert sich nichts.'],c:0,e:'Die Austrittsarbeit wird dadurch verfälscht, h nicht. Deshalb ist h aus dieser Messung besonders verlässlich.'}]},
+ {t:'Der Impuls des Photons',h:'<p>Ein Photon hat Energie, aber keine Masse. Hat es trotzdem einen Impuls? Die bekannte Formel p = m·v hilft hier nicht. Die Relativitätstheorie liefert den allgemeinen Zusammenhang zwischen Energie E, Impuls p und Masse m:</p>'+F('E² = (p · c)² + (m · c²)²'),
+  tasks:[{k:'mc',q:'Für das Photon ist m = 0. Was bleibt von der Gleichung übrig?',o:['E = p · c','E = m · c²','p = 0'],c:0,e:'Aus E² = (p·c)² folgt E = p·c, also p = E / c.'},
+   {k:'mc',q:'Setzt E = h·f ein und nutzt c = λ·f. Was ergibt sich für den Impuls?',o:['p = h / λ','p = h · λ','p = h · f · c'],c:0,e:'p = h·f / c = h / λ. Dieselbe Beziehung kennt ihr als de-Broglie-Beziehung für Elektronen.'+F('E = h · f&emsp;&emsp;p = '+fr('h','λ'))}]},
+ {t:'Licht übt Druck aus',h:'<p>Trifft ein Photon auf eine Fläche und wird dort absorbiert, gibt es seinen Impuls an die Fläche ab. Sehr viele Photonen zusammen üben eine messbare Kraft aus.</p><p>Die Raumsonde IKAROS hat das 2010 genutzt: Ihr Antrieb war ein rund 200 m² großes Sonnensegel, auf das der Impuls des Sonnenlichts wirkt.</p>',
+  tasks:[{k:'num',q:'Welchen Impuls hat ein Photon mit λ = 500 nm? Rechnet 6,626 / 5,00.',a:1.325,sol:'1,33',tol:.03,u:'· 10<sup>−27</sup> kg·m/s',e:'p = 6,626·10'+H+' Js / 5,00·10<sup>−7</sup> m = 1,33·10<sup>−27</sup> kg·m/s. Winzig, aber die Sonne liefert sehr viele Photonen.'},
+   {k:'mc',q:'Wie lässt sich die Kraft auf ein Sonnensegel vergrößern?',o:['Durch ein spiegelndes Segel: Reflektierte Photonen übertragen den doppelten Impuls.','Durch ein schwarzes Segel, das alles absorbiert.','Gar nicht.'],c:0,e:'Beim Zurückwerfen ändert sich der Impuls des Photons von +p auf −p, das Segel erhält 2p.'}]},
+ {t:'Ergebnis der Stunde 2',h:'<div class="merk"><ul><li>Gegenfeldmethode: Bei der Gegenspannung U<sub>G</sub> verschwindet der Photostrom. Es gilt e·U<sub>G</sub> = E<sub>kin,max</sub>.</li><li>Im U<sub>G</sub>-f-Diagramm entsteht eine Gerade mit der Steigung h/e und dem Achsenabschnitt −W<sub>A</sub>/e.</li><li>h = 6,626·10'+H+' Js ist eine universelle Naturkonstante.</li><li>Messunsicherheiten streuen zufällig, Messabweichungen verschieben in eine Richtung.</li><li>Photon: Energie E = h·f, Impuls p = h/λ, Masse 0.</li></ul></div>'}
+]},
+{t:'Das Photon als Quantenobjekt',steps:[
+ {t:'Ein Photon nach dem anderen',h:'<p><b>Worum es geht.</b> Der Photoeffekt zeigt: Licht gibt Energie in Portionen ab. Die Interferenz zeigt: Licht breitet sich als Welle aus. In dieser Stunde untersucht ihr, wie beides zusammenpasst. Dazu braucht man Experimente mit einzelnen Photonen.</p><p><b>Die Quelle.</b> Ein abgeschwächter Laser genügt nicht, denn bei ihm kommen zufällig auch zwei Photonen zugleich. Man nutzt einen besonderen Kristall: Er wandelt ab und zu ein Laserphoton in ein <b>Paar</b> von Photonen um, die gleichzeitig entstehen. Eines läuft zum Triggerdetektor T, das andere in das Experiment zum Detektor D.</p>'+figPaar()+'<p>Unten seht ihr, wann T und D während einer kurzen Messzeit ansprechen. Jeder Strich ist ein Signal. Startet einige Messungen.</p>',w:coincSim,
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Vergleicht die beiden Zeilen. Was fällt auf?',o:['Die meisten Signale an D kommen gleichzeitig mit einem Signal an T, einige aber nicht.','T und D sprechen nie gleichzeitig an.','Beide Zeilen sind immer exakt gleich.'],c:0,e:'Signale ohne Partner stammen von Störlicht oder vom Detektor selbst.'},
+   {k:'mc',tag:'Deutung',q:'Man zählt ein Signal an D nur, wenn T gleichzeitig angesprochen hat (Koinzidenzmethode). Was gewinnt man?',o:['Man weiß: In diesem Moment war genau ein Photon im Experiment. Störsignale werden aussortiert.','Die Zählrate verdoppelt sich.','Die Photonen erhalten mehr Energie.'],c:0,e:'So präpariert man einzelne Photonen.'}]},
+ {t:'Ein Photon am Strahlteiler',h:'<p>Ein Strahlteiler (ST) ist ein halbdurchlässiger Spiegel: Von einem Lichtstrahl lässt er die Hälfte durch, die andere Hälfte reflektiert er. Was macht er mit einem einzelnen Photon, das sich nicht halbieren lässt?</p>'+D(['Sendet zehnmal ein einzelnes Photon und beobachtet, welcher Detektor aufleuchtet.','Sendet dann mehrmals 100 Photonen und vergleicht die Zählerstände.']),w:function(r){mzi(r,{init:{st2:false}});},
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Was zeigt sich bei jedem einzelnen Photon?',o:['Genau ein Detektor spricht an, nie beide zugleich.','Beide Detektoren sprechen gleichzeitig an.'],c:0,e:'Das Photon wird nie geteilt. Darin verhält es sich <b>teilchenartig</b>.'},
+   {k:'mc',tag:'Beobachtung',q:'Was zeigen die Zählerstände nach vielen Photonen?',o:['Etwa die Hälfte an D1, die Hälfte an D2. Beim einzelnen Photon ist nicht vorhersagbar, wohin es geht.','Die Detektoren wechseln sich regelmäßig ab.','Fast alle Photonen landen an D1.'],c:0,e:'Vorhersagen lässt sich nur die Wahrscheinlichkeit, hier je 50 %. Dieses Verhalten heißt <b>stochastisch</b>.'}]},
+ {t:'Das Mach-Zehnder-Interferometer',h:'<p>Jetzt führt ein zweiter Strahlteiler die beiden Wege wieder zusammen. Die Wege sind exakt gleich lang.</p><p><b>Vermutung:</b> Jedes Photon nimmt an Strahlteiler 1 zufällig einen der Wege. Strahlteiler 2 verteilt es dann wieder zufällig. Es müssten je 50 % an D1 und D2 ankommen.</p>'+D(['Sendet mehrmals 100 Photonen und prüft die Vermutung.','Blockiert Weg B und sendet wieder mehrmals 100 Photonen.']),w:function(r){mzi(r,{ctrl:['block']});},
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Beide Wege offen: Wo kommen die Photonen an?',o:['Alle an D1, keines an D2.','Je etwa die Hälfte an D1 und D2.','Alle an D2.'],c:0,e:'Die Vermutung ist widerlegt.'},
+   {k:'mc',tag:'Beobachtung',q:'Weg B blockiert: Was zeigen die Zähler bei 100 Photonen?',o:['Etwa 25 an D1, etwa 25 an D2, etwa 50 werden nicht nachgewiesen.','Alle an D1.','Je 50 an D1 und D2.'],c:0,e:'Die Hälfte bleibt im Hindernis hängen. Die übrigen verteilt Strahlteiler 2 gleichmäßig.'},
+   {k:'mc',tag:'Deutung',q:'Mit einem offenen Weg kommen Photonen an D2 an. Öffnet man den zweiten Weg dazu, kommt dort keines mehr an. Was folgt?',o:['Beide Wege wirken zusammen: Es liegt Interferenz vor. Die Vorstellung „jedes Photon nimmt genau einen Weg“ passt nicht.','Die Photonen stoßen im Interferometer zusammen.','Der zweite Weg schwächt die Photonen.'],c:0,
+    w:[null,'Es ist immer nur ein einziges Photon unterwegs.','Mit zwei offenen Wegen werden alle Photonen nachgewiesen, nämlich an D1.'],e:'Obwohl jedes Photon einzeln unterwegs ist, zeigt sich Interferenz. Darin verhält sich das Photon <b>wellenartig</b>. Warum die Photonen gerade an D1 ankommen und an D2 nie, klärt die nächste Station.'}]},
+ {t:'Zeiger: Warum alle Photonen an D1 ankommen',h:'<p>Im Interferometer kamen bei gleich langen Wegen alle Photonen an D1 an und keines an D2. Erklären lässt sich das mit Zeigern, wie ihr sie aus der Wellenoptik kennt.</p><div class="regel"><b>Zeigerregeln.</b><ol><li>Jeder mögliche Weg zu einem Detektor liefert einen Zeiger.</li><li>Wird das Photon an einem Strahlteiler <b>reflektiert</b>, dreht sich der Zeiger um 90°. Wird es <b>durchgelassen</b>, behält der Zeiger seine Richtung.</li><li>Jeder Strahlteiler teilt auf und verkürzt den Zeiger dabei auf das 1/√2-Fache. Nach zwei Strahlteilern hat jeder Zeiger die Länge ½.</li><li>Die Zeiger aller Wege zu einem Detektor werden aneinandergehängt.</li><li>Das Quadrat der Länge des Summenzeigers ist die Wahrscheinlichkeit P, dass der Detektor anspricht.</li></ol></div><p>Im Bild laufen die Wellen der beiden Wege durch das Interferometer. Die Karten „bei D1“ und „bei D2“ zeigen für jeden Detektor die Zeiger der beiden Wege (grau) mit dem Summenzeiger (farbig) sowie die beiden ankommenden Wellen und ihre Summe.</p>'+D(['Sendet einige einzelne Photonen und dann 100 Photonen.','Vergleicht die Zähler mit den Zeigerdiagrammen für D1 und D2.','Achtet auf die Wellen bei D1 und D2: Wo kommt eine kräftige Welle an, wo keine?']),w:function(r){mzi(r,{zeiger:true,wave:true});},
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Wie stehen die beiden grauen Zeiger bei D1?',o:['In derselben Richtung. Der Summenzeiger hat die Länge 1.','In entgegengesetzten Richtungen. Der Summenzeiger hat die Länge 0.','Senkrecht zueinander.'],c:0,e:'Deshalb ist P(D1) = 1² = 1: Alle Photonen kommen an D1 an.'},
+   {k:'mc',tag:'Beobachtung',q:'Wie stehen die beiden grauen Zeiger bei D2?',o:['Entgegengesetzt. Sie heben sich auf, P(D2) = 0.','Gleichgerichtet. P(D2) = 1.','Senkrecht zueinander.'],c:0,e:'Kein Photon kommt an D2 an.'}],
+  post:['<div class="merk stack"><p><b>Warum stehen die Zeiger so?</b> Es kommt darauf an, wie oft das Photon auf dem jeweiligen Weg an einem Strahlteiler reflektiert wird. Jede Reflexion dreht den Zeiger um 90°.</p><p><b>Zu D1:</b> Auf Weg A wird das Photon an ST 1 reflektiert und an ST 2 durchgelassen: 90°. Auf Weg B wird es an ST 1 durchgelassen und an ST 2 reflektiert: ebenfalls 90°. Beide Zeiger zeigen in dieselbe Richtung. Aneinandergehängt ergeben sie die Länge ½ + ½ = 1, also P(D1) = 1² = 1.</p><p><b>Zu D2:</b> Auf Weg A wird das Photon an ST 1 und an ST 2 reflektiert: 90° + 90° = 180°. Auf Weg B wird es zweimal durchgelassen: 0°. Die Zeiger zeigen in entgegengesetzte Richtungen. Aneinandergehängt ergeben sie die Länge ½ − ½ = 0, also P(D2) = 0.</p></div>','<div class="merk stack"><p><b>Und die Spiegel?</b> Jeder Weg enthält genau einen Spiegel. Was ein Spiegel mit dem Zeiger macht, geschieht deshalb auf beiden Wegen gleich: Beide Zeiger drehen sich um denselben Winkel. Dadurch dreht sich nur das ganze Zeigerbild. Die Länge des Summenzeigers bleibt gleich, und nur auf sie kommt es an.</p><p>Dasselbe gilt für die Weglängen, solange beide Wege gleich lang sind. Was ein Längenunterschied bewirkt, zeigt die nächste Station.</p></div>']},
+ {t:'Ein längerer Weg dreht den Zeiger',h:'<p>Was geschieht, wenn man einen der beiden Wege etwas verlängert? Dafür braucht ihr eine weitere Zeigerregel. Ihr kennt sie aus der Wellenoptik: Nach einer Wellenlänge hat eine Welle wieder dieselbe Phase.</p><div class="regel"><b>Zeigerregel für die Weglänge.</b> Der Zeiger eines Weges dreht sich entlang des Weges: pro Wellenlänge λ eine volle Umdrehung, also 360°.</div><p>Der Zeiger ist ein Hilfsmittel zum Rechnen. Er gehört zu einem möglichen Weg, nicht zu einem Teilchen, das diesen Weg entlangfliegt.</p><p>Im Bild ist Weg A zwei Wellenlängen lang, Weg B um den Gangunterschied Δs länger. Echte Wege sind viele Millionen Wellenlängen lang. Für das Ergebnis zählt aber nur der Unterschied. Beide Zeiger starten nach oben gerichtet. Die kleinen Kreise auf den Wegen zeigen die Stellung des Zeigers nach jeder Viertel-Wellenlänge.</p>'+D(['Spielt die Animation mit Δs = 0 ab und vergleicht die beiden Zeiger am Ende.','Stellt Δs = λ/4 und dann Δs = λ/2 ein. Beobachtet, wie weit sich Zeiger B auf dem zusätzlichen Stück dreht.','Stellt Δs = λ ein.']),w:zeigerUhr,
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Δs = 0: Wie stehen die beiden Zeiger am Ende?',o:['In derselben Richtung. Beide haben sich genau zweimal ganz gedreht.','In entgegengesetzten Richtungen.','Zeiger B hat sich weiter gedreht als Zeiger A.'],c:0,e:'Gleich lange Wege drehen beide Zeiger gleich weit.'},
+   {k:'num',tag:'Beobachtung',q:'Um wie viel Grad dreht sich Zeiger B bei Δs = λ/4 zusätzlich?',a:90,sol:'90',tol:.01,u:'°',e:'Eine Viertel-Wellenlänge bedeutet eine Viertel-Umdrehung: 360° · ¼ = 90°. Am Ende stehen die Zeiger senkrecht zueinander.'},
+   {k:'mc',tag:'Beobachtung',q:'Δs = λ: Wie stehen die Zeiger am Ende?',o:['Wieder in derselben Richtung wie bei Δs = 0.','In entgegengesetzten Richtungen.','Senkrecht zueinander.'],c:0,e:'Eine ganze Wellenlänge mehr ist eine volle Umdrehung mehr. Danach wiederholt sich alles.'}],
+  post:'<div class="merk stack"><p><b>Merke.</b> Ist Weg B um Δs länger als Weg A, dreht sich Zeiger B zusätzlich um</p>'+F('Δφ = 360° · '+fr('Δs','λ'))+'<div class="tw"><table><thead><tr><th>Δs</th><th class="n">0</th><th class="n">λ/4</th><th class="n">λ/2</th><th class="n">3λ/4</th><th class="n">λ</th></tr></thead><tbody><tr><td>Δφ</td><td class="n">0°</td><td class="n">90°</td><td class="n">180°</td><td class="n">270°</td><td class="n">360°</td></tr></tbody></table></div><p>Das kennt ihr vom Doppelspalt: Ein Gangunterschied von λ/2 macht aus Verstärkung Auslöschung, einer von λ ändert nichts.</p></div>'},
+ {t:'Gangunterschied im Interferometer',h:'<p>Jetzt kommen beide Regeln zusammen. Die Strahlteiler legen fest, wie die Zeiger bei gleich langen Wegen stehen: bei D1 beide bei 90°, bei D2 bei 180° und 0°. Ein Gangunterschied Δs dreht Zeiger B zusätzlich um 360° · Δs/λ.</p><p>Mit dem Regler macht ihr Weg B länger. Die Zeigerdiagramme zeigen das Ergebnis für beide Detektoren.</p>'+D(['Verschiebt den Regler langsam und beobachtet, wie sich die violette Welle gegenüber der gelben verschiebt.','Stellt Δs = λ/4 ein, sendet 100 Photonen und vergleicht mit den Zeigerdiagrammen.','Verschiebt den Regler, bis alle Photonen an D2 ankommen.','Stellt Δs = λ ein und sendet wieder 100 Photonen.']),w:function(r){mzi(r,{ctrl:['phase'],zeiger:true,wave:true});},
+  tasks:[{k:'num',tag:'Beobachtung',q:'Δs = λ/4: Wie groß ist P(D1)?',a:0.5,tol:.03,u:'',e:'Die Zeiger stehen senkrecht. Beide Detektoren sprechen gleich häufig an.'},
+   {k:'mc',tag:'Beobachtung',q:'Bei welchem Gangunterschied erreichen alle Photonen D2?',o:['λ/2','λ/4','λ'],c:0,e:'Ein halber Wellenlängen-Unterschied dreht Zeiger B um 180°. Die Rollen von D1 und D2 sind vertauscht.'},
+   {k:'mc',tag:'Beobachtung',q:'Δs = λ: Wo kommen die Photonen an?',o:['Alle an D1, wie bei gleich langen Wegen.','Alle an D2.','Je zur Hälfte an D1 und D2.'],c:0,e:'Eine volle Umdrehung mehr ändert nichts.'}],
+  post:['<div class="merk stack"><p><b>Beispiel Δs = λ/2.</b> Zeiger B dreht sich zusätzlich um 180°, Zeiger A bleibt, wie er war.</p><p><b>D1:</b> Zeiger A steht bei 90°, Zeiger B bei 90° + 180° = 270°. Die Zeiger zeigen in entgegengesetzte Richtungen: ½ − ½ = 0, also P(D1) = 0.</p><p><b>D2:</b> Zeiger A steht bei 180°, Zeiger B bei 0° + 180° = 180°. Die Zeiger zeigen in dieselbe Richtung: ½ + ½ = 1, also P(D2) = 1.</p><p>Die zusätzliche Drehung kehrt das Ergebnis um: Jetzt kommen alle Photonen an D2 an.</p></div>','<div class="merk stack"><p><b>Beispiel Δs = λ/4.</b> Zeiger B dreht sich um 90° weiter. Bei beiden Detektoren stehen die Zeiger dann senkrecht zueinander. Nach Pythagoras hat der Summenzeiger die Länge √(½² + ½²) = √½, also ist P = (√½)² = ½ für beide Detektoren.</p><div class="tw"><table><thead><tr><th>Δs</th><th>Δφ</th><th class="n">P(D1)</th><th class="n">P(D2)</th></tr></thead><tbody><tr><td>0</td><td>0°</td><td class="n">1</td><td class="n">0</td></tr><tr><td>λ/4</td><td>90°</td><td class="n">½</td><td class="n">½</td></tr><tr><td>λ/2</td><td>180°</td><td class="n">0</td><td class="n">1</td></tr><tr><td>3λ/4</td><td>270°</td><td class="n">½</td><td class="n">½</td></tr><tr><td>λ</td><td>360°</td><td class="n">1</td><td class="n">0</td></tr></tbody></table></div><p>Für jeden Gangunterschied gilt P(D1) = cos²(Δφ/2) und P(D2) = sin²(Δφ/2). Zusammen ergibt das immer 1: Jedes Photon wird an einem der beiden Detektoren nachgewiesen.</p></div>']},
+ {t:'Das Photon ist ein Quantenobjekt',h:'<p>Fasst zusammen, was die Experimente gezeigt haben.</p><div class="tw"><table><thead><tr><th>Verhalten</th><th>Beleg im Experiment</th></tr></thead><tbody><tr><td>teilchenartig</td><td>Pro Photon spricht genau ein Detektor an.</td></tr><tr><td>wellenartig</td><td>Die Zählraten hängen vom Gangunterschied beider Wege ab: Interferenz.</td></tr><tr><td>stochastisch</td><td>Das einzelne Ereignis ist zufällig. Fest steht nur die Wahrscheinlichkeit.</td></tr></tbody></table></div>',
+  tasks:[{k:'mc',q:'Welche Aussage passt zu allen drei Zeilen?',o:['Das Photon ist weder klassische Welle noch klassisches Teilchen. Es ist etwas Eigenes: ein Quantenobjekt.','Das Photon ist ein kleines Kügelchen.','Das Photon ist eine gewöhnliche Welle.'],c:0,e:'Auch Elektronen sind Quantenobjekte. Das kennt ihr vom Doppelspalt mit Elektronen.'}]},
+ {t:'Die Wellenfunktion',h:'<p>Der Zeiger am Ort eines Detektors hat einen Namen: Er ist der Wert der <b>Wellenfunktion ψ</b> an diesem Ort. ψ selbst kann man nicht messen. Messen kann man, wie oft ein Quantenobjekt an einem Ort nachgewiesen wird. Das bestimmt das Quadrat der Zeigerlänge, |ψ|².</p><p>Am Doppelspalt lässt sich das gut sehen. Jeder Punkt unten ist ein einzelnes Quantenobjekt, das auf dem Schirm nachgewiesen wurde.</p>'+D(['Sendet einzelne Objekte (+1) und beobachtet, wo sie landen.','Sendet insgesamt etwa 1000 Objekte.','Blendet |ψ|² ein und vergleicht mit dem Trefferbild.','Setzt zurück und wiederholt den Versuch.']),w:doubleSlit,
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Wo landet das einzelne Objekt?',o:['An einem zufälligen Ort, der sich nicht vorhersagen lässt.','Immer in der Mitte.','Immer abwechselnd links und rechts.'],c:0,e:'Das Einzelereignis ist zufällig.'},
+   {k:'mc',tag:'Beobachtung',q:'Was zeigt sich nach vielen Objekten, und zwar bei jeder Wiederholung?',o:['Dasselbe Streifenmuster. Wo |ψ|² groß ist, gibt es viele Treffer, an den Nullstellen keine.','Jedes Mal ein völlig anderes Bild.','Eine gleichmäßig gefüllte Fläche.'],c:0,e:'|ψ|² gibt die <b>Nachweiswahrscheinlichkeit</b> an.'+F('P(Nachweis bei x) ~ |ψ(x)|²')}]},
+ {t:'Superposition',h:'<p>Im Interferometer stehen dem Photon zwei Möglichkeiten offen: Weg A und Weg B. Solange sich nicht feststellen lässt, welche verwirklicht wird, überlagern sich beide. Der Zustand heißt <b>Superposition</b>:</p>'+F('ψ = ψ<sub>A</sub> + ψ<sub>B</sub>')+'<p>Die Zeiger werden erst addiert, dann wird quadriert. Beide Zeiger sollen die Länge a haben.</p><div class="tw"><table><thead><tr><th>Zeiger stehen</th><th>Länge der Summe</th><th>|ψ|²</th></tr></thead><tbody><tr><td>gleichgerichtet</td><td>2a</td><td>?</td></tr><tr><td>entgegengesetzt</td><td>0</td><td>0</td></tr></tbody></table></div>',
+  tasks:[{k:'num',q:'Welche Zahl gehört an die Stelle des Fragezeichens? |ψ|² = … · a²',a:4,tol:.01,u:'· a²',e:'(2a)² = 4a². Zum Vergleich: Würde das Photon entweder Weg A oder Weg B nehmen, ergäbe sich a² + a² = 2a², ganz gleich, wie die Zeiger stehen.'},
+   {k:'mc',q:'Woran erkennt man im Experiment eine Superposition?',o:['An der Interferenz: Es gibt Stellen mit besonders vielen und Stellen ganz ohne Nachweise.','Daran, dass Photonen geteilt werden.','Gar nicht.'],c:0,e:'Mehr als 2a² oder weniger als 2a² ist nur möglich, wenn beide Möglichkeiten zusammenwirken.'}]},
+ {t:'Festgelegt oder zufällig?',h:'<p>In der Quantenphysik ist beides zu finden. Die Wellenfunktion entwickelt sich streng nach einem Gesetz, der Schrödinger-Gleichung: Kennt man ψ jetzt, kennt man ψ auch für später. Das nennt man <b>Determiniertheit</b>. Zufällig ist nur das Ergebnis der einzelnen Messung.</p>',
+  tasks:[{k:'cls',q:'Ordnet zu. Denkt an eure Experimente.',cats:['festgelegt','zufällig'],items:[
+    {x:'Das Streifenmuster nach 1000 Objekten',c:0},{x:'Der Ort des nächsten einzelnen Treffers',c:1},{x:'Der Anteil der Photonen an D1 bei Δs = λ/4',c:0},{x:'Welcher Detektor beim nächsten Photon anspricht (Δs = λ/4)',c:1}]}]},
+ {t:'Ergebnis der Stunde 3',h:'<div class="merk"><ul><li>Einzelne Photonen stellt man mit Photonenpaaren und der Koinzidenzmethode her.</li><li>Das Photon verhält sich teilchenartig, wellenartig und stochastisch. Es ist ein Quantenobjekt.</li><li>Zeiger aller möglichen Wege werden addiert. Das Quadrat der Summenlänge ist die Nachweiswahrscheinlichkeit. Eine Reflexion am Strahlteiler dreht den Zeiger um 90°, ein Gangunterschied Δs um 360° · Δs/λ.</li><li>Die Wellenfunktion ψ beschreibt den Zustand, |ψ|² die Nachweiswahrscheinlichkeit.</li><li>Superposition: ψ = ψ<sub>A</sub> + ψ<sub>B</sub>. Man erkennt sie an der Interferenz.</li><li>Die Entwicklung von ψ ist festgelegt (Determiniertheit), das einzelne Messergebnis ist zufällig.</li></ul></div>'}
+]},
+{t:'Unbestimmtheit und Messprozess',steps:[
+ {t:'Das Wellenpaket',h:'<p><b>Worum es geht.</b> Die Wellenfunktion legt nur Wahrscheinlichkeiten fest. In dieser Stunde lernt ihr zwei Folgen kennen: Ort und Impuls eines Quantenobjekts sind nie zugleich scharf bestimmt, und eine Messung wirkt anders als in der klassischen Physik.</p><p><b>Das Wellenpaket.</b> Eine Welle mit einer einzigen Wellenlänge hat den scharfen Impuls p = h/λ, ist aber endlos ausgedehnt. Ein Quantenobjekt, das sich an einem Ort befindet, wird durch ein <b>Wellenpaket</b> beschrieben: eine Überlagerung vieler Wellen mit etwas verschiedenen Wellenlängen, also verschiedenen Impulsen.</p><p>Oben seht ihr das Wellenpaket, unten, welche Impulse daran beteiligt sind.</p>'+D(['Macht das Paket mit dem Regler schmal, dann breit.','Beobachtet dabei die Impulsverteilung und die drei Zahlenwerte.']),w:wavePacket,
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Was geschieht mit der Impulsverteilung, wenn das Paket schmaler wird?',o:['Sie wird breiter.','Sie wird schmaler.','Sie bleibt gleich.'],c:0,e:'Ein Paket an einem scharf bestimmten Ort braucht viele verschiedene Impulse.'},
+   {k:'mc',tag:'Beobachtung',q:'Welcher Zahlenwert bleibt beim Verschieben gleich?',o:['Das Produkt Δx · Δp','Δx','Δp'],c:0,e:'Wird Δx kleiner, wird Δp im selben Maß größer.'}]},
+ {t:'Heisenbergs Unbestimmtheitsrelation',h:'<p>Was ihr am Wellenpaket gesehen habt, gilt allgemein. Das Produkt aus Ortsunschärfe Δx und Impulsunschärfe Δp kann eine feste Grenze nicht unterschreiten:</p>'+F('Δx · Δp ≥ '+fr('h','4π'))+'<p>Ort und Impuls heißen <b>komplementäre Größen</b>: Je genauer die eine bestimmt ist, desto unbestimmter ist die andere.</p><p>Zwei Beispiele: Ein Elektron in einem Atom (Δx = 0,1 nm) hat eine Geschwindigkeitsunschärfe von mindestens 580 km/s. Ein Staubkorn (ein Millionstel Gramm, Δx = 1 µm) hat eine von nur 5·10<sup>−20</sup> m/s.</p>',
+  tasks:[{k:'mc',q:'Was sagt die Relation aus?',o:['Ein Quantenobjekt hat nie zugleich einen scharfen Ort und einen scharfen Impuls. Das liegt am Objekt, nicht am Messgerät.','Mit besseren Messgeräten könnte man beides beliebig genau bestimmen.','Der Ort lässt sich überhaupt nicht messen.'],c:0,
+    w:[null,'Die Relation folgt aus dem Wellenpaket selbst, nicht aus der Bauart der Geräte.','Der Ort allein lässt sich sehr genau festlegen. Dann ist aber der Impuls entsprechend unbestimmt.'],e:'Die Unbestimmtheit gehört zum Quantenobjekt.'},
+   {k:'mc',q:'Was folgt aus den beiden Beispielen?',o:['Im Atom gibt es keine Elektronenbahnen. Bei Alltagsobjekten ist die Unbestimmtheit bedeutungslos klein.','Auch Staubkörner haben keine Bahn.','Elektronen im Atom bewegen sich auf exakten Kreisen.'],c:0,e:'Eine Bahn verlangt zu jedem Zeitpunkt einen Ort und eine Geschwindigkeit. Für das Elektron im Atom ist das nicht erfüllbar.'}]},
+ {t:'Messen in der Quantenphysik',h:'<p>Im Interferometer ist das Photon in einer Superposition beider Wege. Was passiert, wenn man nachsieht, auf welchem Weg es ist?</p><p>Im Aufbau unten ist Strahlteiler 2 entfernt. Damit steht am Ende jedes Weges ein Detektor: D1 gehört zu Weg A, D2 zu Weg B.</p>'+D(['Sendet mehrmals ein einzelnes Photon.','Sendet 100 Photonen.']),w:function(r){mzi(r,{init:{st2:false}});},
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Was ergibt die Wegmessung?',o:['Jedes Photon wird auf genau einem Weg gefunden, zufällig auf A oder B.','Jedes Photon wird auf beiden Wegen gefunden.','Alle Photonen werden auf Weg A gefunden.'],c:0,e:'Vor der Messung: Superposition beider Wege. Nach der Messung: genau ein Weg.'},
+   {k:'mc',tag:'Deutung',q:'Hatte das Photon diesen Weg schon vor der Messung?',o:['Nein. Dann gäbe es im vollständigen Interferometer keine Interferenz. Erst die Messung macht einen der Wege zur Realität.','Ja. Die Messung zeigt nur, was vorher schon feststand.'],c:0,e:'Das unterscheidet die Quantenphysik von der klassischen Physik:<div class="tw"><table><thead><tr><th></th><th>klassisch</th><th>quantenphysikalisch</th></tr></thead><tbody><tr><td>Messwert vor der Messung</td><td>steht fest</td><td>steht im Allgemeinen nicht fest</td></tr><tr><td>Die Messung</td><td>liest ab</td><td>wählt zufällig einen möglichen Wert aus</td></tr><tr><td>Gleiche Ausgangslage führt zu</td><td>gleichem Ergebnis</td><td>gleicher Wahrscheinlichkeit</td></tr></tbody></table></div>'}]},
+ {t:'Unterscheidbare Wege',h:'<p>Ein Polarisationsfilter lässt nur Licht durch, das in seiner Durchlassrichtung schwingt. Die Photonen der Quelle schwingen unter 45°. Ein Filter mit 0° oder 90° lässt deshalb jedes zweite durch.</p><p>In Weg A kommt ein Filter mit 0° (waagrecht), in Weg B einer mit 90° (senkrecht). Damit werden die Wege <b>unterscheidbar</b>: An der Polarisation eines Photons ließe sich ablesen, welchen Weg es genommen hat.</p>'+D(['Sendet 100 Photonen ohne Filter.','Schaltet die Filter ein und sendet 100 Photonen.','Schaut euch bei D2 den Blick in den Strahl an.']),w:function(r){mzi(r,{ctrl:['pol'],wave:true});},
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Was ändert sich durch die Filter?',o:['D1 und D2 sprechen jetzt gleich häufig an. Die Interferenz ist verschwunden.','Weiterhin spricht nur D1 an.','Kein Photon wird mehr nachgewiesen.'],c:0,e:'Sobald der Weg erkennbar ist, gibt es keine Interferenz mehr.'},
+   {k:'mc',tag:'Deutung',q:'Ohne Filter löschen sich die Wellen bei D2 aus. Warum gelingt das mit Filtern nicht mehr?',o:['Die eine Welle schwingt waagrecht, die andere senkrecht. Eine waagrechte Schwingung kann eine senkrechte nicht aufheben.','Die Filter machen die Wellen stärker.','Weg B ist durch die Filter länger geworden.'],c:0,e:'Im Blick in den Strahl seht ihr: Es bleibt immer eine schräge Schwingung übrig. Deshalb spricht auch D2 an.'},
+   {k:'mc',tag:'Deutung',q:'In eurem Versuch hat niemand die Polarisation gemessen. Trotzdem ist die Interferenz verschwunden. Was ist also entscheidend?',o:['Dass die Wege grundsätzlich unterscheidbar sind. Ob jemand die Polarisation tatsächlich misst, spielt keine Rolle.','Dass ein Mensch den Weg kennt.'],c:0,e:'<div class="regel"><b>Regel.</b> Lassen sich die Wege nicht unterscheiden: Zeiger addieren, dann quadrieren. Lassen sie sich unterscheiden: jeden Zeiger einzeln quadrieren, dann die Wahrscheinlichkeiten addieren.</div>'}]},
+ {t:'Was der Radierer macht',h:'<p>In der nächsten Station kommt hinter das Interferometer ein dritter Filter unter 45°: der <b>Radierer</b>. Er lässt von jeder Schwingung nur den Anteil in seiner Durchlassrichtung durch.</p><p>Zum Vergleich ist auch ein Filter unter −45° gezeigt.</p>'+figProjektion(),
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Filter 45°: Wie schwingen die beiden durchgelassenen Anteile?',o:['In dieselbe Richtung.','Senkrecht zueinander.','Der Filter lässt nichts durch.'],c:0,e:'Hinter dem Filter lässt sich nicht mehr erkennen, von welchem Weg ein Anteil stammt.'},
+   {k:'mc',opt:true,tag:'Zusatz für Interessierte',q:'Filter −45°: Was geschieht mit dem Anteil von Weg B?',o:['Er zeigt in die Gegenrichtung: Aus einem Berg wird ein Tal.','Er wird vollständig durchgelassen.','Er verschwindet.'],c:0,e:'Das erklärt im Quantenradierer, warum D1 und D2 beim −45°-Filter die Rollen tauschen.'}]},
+ {t:'Der Quantenradierer',h:'<p>Die Filter 0° und 90° in den Wegen bleiben. Hinter das Interferometer kommt der Radierer unter 45°. Hinter ihm schwingen beide Anteile in derselben Richtung: Die Wege sind wieder <b>ununterscheidbar</b>.</p>'+D(['Sendet 100 Photonen ohne Radierer.','Wählt 45° und sendet 100 Photonen.','Verändert den Gangunterschied und wiederholt.']),w:function(r){mzi(r,{init:{pol:true},ctrl:['eraser','phase'],wave:true});},
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Radierer 45°, gleich lange Wege: Was zeigen die Zähler?',o:['Nachweise nur noch an D1. Die Interferenz ist zurück.','Weiterhin gleich viele an D1 und D2.','Nachweise nur an D2.'],c:0,e:'Der Radierer lässt von beiden Schwingungen den Anteil unter 45° durch. Danach überlagern sie sich wie ganz ohne Filter: bei D1 Berg auf Berg, bei D2 Berg auf Tal. Weil die Filter einen Teil absorbieren, kommen weniger Photonen an.'},
+   {k:'mc',tag:'Beobachtung',q:'Radierer 45°: Was geschieht, wenn ihr den Gangunterschied verändert?',o:['Die Photonen verteilen sich anders auf D1 und D2, genau wie im Interferometer ohne Filter.','Nichts. D1 und D2 sprechen immer gleich häufig an.','Kein Photon kommt mehr an.'],c:0,e:'Eine Verteilung, die vom Gangunterschied abhängt, ist das Kennzeichen von Interferenz.'},
+   {k:'mc',tag:'Deutung',q:'Warum heißt dieser Filter Quantenradierer?',o:['Er löscht die Weginformation. Die Wege sind wieder ununterscheidbar, deshalb gibt es wieder Interferenz.','Er löscht die Photonen aus.','Er entfernt die Filter in den Wegen.'],c:0,e:'Weginformation und Interferenz schließen einander aus. Man kann nur eines von beiden haben.'}]},
+ {t:'Was der Radierer verrät',h:'<p>Der Radierer steht <b>hinter</b> dem Interferometer. Wenn er wirkt, hat das Photon die beiden Wege schon hinter sich. Trotzdem kehrt die Interferenz zurück.</p><div class="tw"><table><thead><tr><th>Aufbau</th><th>Wege</th><th>Interferenz</th></tr></thead><tbody><tr><td>ohne Filter</td><td>ununterscheidbar</td><td>ja</td></tr><tr><td>Filter 0° und 90° in den Wegen</td><td>unterscheidbar</td><td>nein</td></tr><tr><td>zusätzlich Radierer 45°</td><td>wieder ununterscheidbar</td><td>ja</td></tr></tbody></table></div><div class="merk"><p><b>Merke.</b> Lassen sich die Wege eines Photons unterscheiden, gibt es keine Interferenz. Sind sie ununterscheidbar, tritt Interferenz auf. Die Unterscheidbarkeit lässt sich sogar hinter dem Interferometer noch aufheben: Das ist der Quantenradierer.</p></div>',
+  tasks:[{k:'mc',tag:'Deutung',q:'Hat das Photon im Interferometer doch einen bestimmten Weg genommen, den wir nur nicht kennen?',o:['Nein. Der Weg ist nicht bloß unbekannt, sondern objektiv unbestimmt.','Ja. Der Radierer verbirgt den Weg nur vor uns.'],c:0,e:'<b>Unbekannt</b> hieße: Der Weg steht fest, man kennt ihn nur nicht. <b>Unbestimmt</b> heißt: Es gibt keinen festgelegten Weg. Nur das passt zur Interferenz. Das Photon interferiert gewissermaßen mit sich selbst.'},
+   {k:'cls',q:'Gibt es Interferenz? Ordnet die Aufbauten zu.',cats:['Interferenz','keine Interferenz'],items:[
+    {x:'In beiden Wegen ein Filter mit 0°',c:0,e:'Beide Wege liefern dieselbe Polarisation. Sie sind nicht unterscheidbar.'},
+    {x:'Weg B ist blockiert',c:1,e:'Jedes nachgewiesene Photon kam über Weg A.'},
+    {x:'Filter 0° und 90° in den Wegen, dahinter der Radierer 45°',c:0}]},
+   {k:'mc',tag:'Deutung',q:'Was folgt daraus für eine Eigenschaft wie „den Weg des Photons“?',o:['Sie steht nicht unabhängig vom Versuchsaufbau fest.','Jedes Photon hat immer einen bestimmten Weg, egal wie der Aufbau ist.','Photonen haben überhaupt keine Eigenschaften.'],c:0,e:'Ob dem Photon ein Weg zukommt, hängt davon ab, ob der Aufbau die Wege unterscheidbar macht. Das gilt für alle Quantenobjekte, auch für Elektronen am Doppelspalt.'}]},
+ {t:'Zusatz: Radierer unter −45°',h:'<p>Diese Station ist freiwillig. Statt 45° wählt ihr jetzt −45°.</p>'+D(['Wählt −45° und sendet 100 Photonen.','Vergleicht mit 45°.']),w:function(r){mzi(r,{init:{pol:true},ctrl:['eraser','phase'],wave:true});},
+  tasks:[{k:'mc',opt:true,tag:'Zusatz für Interessierte',q:'Wählt −45°. Was zeigen die Zähler bei gleich langen Wegen?',o:['Nachweise nur an D2.','Nachweise nur an D1.','Gleich viele an D1 und D2.'],c:0,e:'Wieder Interferenz, nur mit vertauschten Rollen.'},
+   {k:'mc',opt:true,tag:'Zusatz für Interessierte',q:'Warum vertauschen sich beim −45°-Filter D1 und D2?',o:['Der Anteil von Weg B wird umgedreht: Aus einem Berg wird ein Tal. Wo sich die Wellen vorher verstärkt haben, löschen sie sich jetzt aus.','Der Filter blockiert Weg A.','Der Filter verlängert Weg B.'],c:0,e:'Das zeigt die Abbildung zum Radierer: Beim −45°-Filter zeigen die durchgelassenen Anteile in entgegengesetzte Richtungen.'}],
+  post:'<div class="merk"><p>Der Anteil von Weg B zeigt hinter dem −45°-Filter in die Gegenrichtung. Aus Berg wird Tal, deshalb tauschen D1 und D2 ihre Rollen.</p><p>Die Muster für 45° und −45° ergänzen sich: Zusammengezählt ergeben sie die gleichmäßige Verteilung ohne Radierer.</p></div>'},
+ {t:'Komplementarität',h:'<p>Weginformation und Interferenz schließen einander aus. Ebenso passen das Bild der Welle und das Bild des Teilchens nie zugleich auf dasselbe Experiment, und doch braucht man beide. Dieses Prinzip heißt <b>Komplementarität</b>.</p><p>Wörter aus dem Alltag wie „Weg“ oder „Bahn“ muss man bei Quantenobjekten deshalb mit Vorsicht benutzen.</p>',
+  tasks:[{k:'cls',q:'Ein Photon ist im Interferometer unterwegs, ohne Filter. Welche Sätze beschreiben das treffend?',cats:['treffend','irreführend'],items:[
+    {x:'„Das Photon teilt sich und läuft durch beide Wege.“',c:1,e:'Ein Photon wird nie geteilt. Nachgewiesen wird immer ein ganzes Photon.'},
+    {x:'„Das Photon nimmt einen Weg, wir wissen nur nicht, welchen.“',c:1,e:'Dann gäbe es keine Interferenz.'},
+    {x:'„Das Photon ist in einer Superposition beider Wege.“',c:0},
+    {x:'„Solange der Weg nicht erkennbar ist, hat das Photon keinen bestimmten Weg.“',c:0}]}]},
+ {t:'Ergebnis der Stunde 4',h:'<div class="merk"><ul><li>Ein Quantenobjekt an einem Ort wird durch ein Wellenpaket beschrieben.</li><li>Unbestimmtheitsrelation: Δx · Δp ≥ h/(4π). Ort und Impuls sind komplementäre Größen.</li><li>Messprozess: Die Messung wählt zufällig einen der möglichen Werte aus. Erst dadurch wird er Realität.</li><li>Ist der Weg erkennbar, gibt es keine Interferenz. Dafür muss niemand die Information ablesen.</li><li>Der Quantenradierer löscht die Weginformation, die Interferenz kehrt zurück.</li><li>Komplementarität: Weginformation und Interferenz schließen einander aus.</li></ul></div>'}
+]},
+{t:'Verzögerte Wahl, Dekohärenz und Anwendungen',steps:[
+ {t:'Wheelers Frage',h:'<p><b>Worum es geht.</b> Zum Abschluss testet ihr zwei besonders überraschende Aussagen der Quantenphysik, klärt, warum der Alltag trotzdem ganz normal aussieht, und lernt Anwendungen kennen.</p><p><b>Die Frage.</b> Mit Strahlteiler 2 zeigt das Photon Interferenz, ohne ihn nimmt es einen der Wege. „Weiß“ das Photon schon an Strahlteiler 1, welcher Fall vorliegt? Der Physiker John Wheeler schlug 1978 einen Test vor: Man entscheidet erst dann, ob Strahlteiler 2 eingesetzt wird, wenn das Photon schon unterwegs ist. Daher der Name <b>Delayed Choice</b>, verzögerte Wahl.</p><p>2007 gelang das Experiment mit einem 48 m langen Interferometer. Das Photon braucht dafür nur 160 Milliardstel Sekunden. In dieser Zeit schaltet ein Zufallsgenerator.</p>',
+  tasks:[{k:'mc',tag:'Vorhersage',q:'Angenommen, das Photon legt sich an Strahlteiler 1 fest und nimmt einen der Wege. Dann wird Strahlteiler 2 spät eingesetzt. Was müsste man erwarten?',o:['Strahlteiler 2 verteilt das Photon zufällig. Es gäbe auch Nachweise an D2.','Alle Photonen kommen an D1 an.'],c:0,e:'Mit dieser Vorhersage geht ihr ins Experiment.'}]},
+ {t:'Das Delayed-Choice-Experiment',h:figAblauf()+D(['Sendet einzelne Photonen und beobachtet die Wellen nach der Entscheidung.','Sendet mehrmals 100 Photonen und lest die Tabelle.']),w:function(r){mzi(r,{delayed:true,wave:true});},
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Strahlteiler 2 wurde spät eingesetzt: Was zeigen die Karten „bei D1“ und „bei D2“?',o:['Bei D1 verstärken sich die Wellen, bei D2 löschen sie sich aus.','Bei jedem Detektor kommt nur eine Welle an.','Bei beiden Detektoren löschen sich die Wellen aus.'],c:0,e:'Genau wie bei einem Interferometer, in dem Strahlteiler 2 von Anfang an stand.'},
+   {k:'mc',tag:'Beobachtung',q:'Was zeigt die Tabelle?',o:['Spät eingesetzt: nur D1. Spät entfernt: etwa halbe-halbe.','In beiden Zeilen etwa halbe-halbe.','In beiden Zeilen nur D1.'],c:0,e:'Das Ergebnis ist dasselbe, als hätte der Aufbau von Anfang an so gestanden. Die Vorhersage aus der vorigen Station ist widerlegt.'},
+   {k:'mc',tag:'Deutung',q:'Was folgt daraus?',o:['Das Photon legt sich an Strahlteiler 1 nicht fest. Es zählt der gesamte Aufbau im Moment des Nachweises.','Die späte Wahl verändert nachträglich die Vergangenheit.','Das Photon errät, was der Zufallsgenerator tun wird.'],c:0,
+    w:[null,'Das müsste man nur annehmen, wenn das Photon vorher schon „Welle“ oder „Teilchen“ gewesen wäre. Genau diese Annahme ist falsch.',null],e:'Vor dem Nachweis hat das Photon keinen bestimmten Weg. So erwartet es die Quantenphysik, und so zeigt es das Experiment.'}],
+  post:'<div class="merk stack"><p><b>Im Wellenbild ist das Ergebnis keine Überraschung.</b> Die Welle läuft immer über beide Wege. Ob sich an Strahlteiler 2 etwas überlagert, entscheidet sich erst dort, und zwar durch den Aufbau, der in diesem Moment steht.</p><p><b>Eingesetzt:</b> Beide Wellen treffen zusammen. Bei D1 trifft Berg auf Berg, bei D2 Berg auf Tal. Alle Photonen kommen an D1 an.</p><p><b>Entfernt:</b> Jede Welle läuft allein zu ihrem Detektor. Es gibt nichts zu überlagern, D1 und D2 sprechen je zur Hälfte an.</p><p>Überraschend ist das Ergebnis nur, wenn man sich vorstellt, das Photon müsse sich schon an Strahlteiler 1 für einen Weg oder für beide entscheiden. Diese Vorstellung passt nicht zu Quantenobjekten.</p></div>'},
+ {t:'Nicht-Lokalität',h:'<p>Ohne Strahlteiler 2 enden die beiden Wege an zwei Detektoren. Die könnten beliebig weit auseinander stehen, zum Beispiel zehn Meter. Die Wellenfunktion des einen Photons reicht bis zu beiden.</p>'+D(['Sendet viele einzelne Photonen.','Prüft: Sprechen jemals beide Detektoren beim selben Photon an?']),w:function(r){mzi(r,{init:{st2:false}});},
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Sprechen jemals beide Detektoren beim selben Photon an?',o:['Nein, nie.','Ja, manchmal.'],c:0,e:'Spricht D2 an, ist im selben Augenblick sicher, dass D1 stumm bleibt, ganz gleich wie weit D1 entfernt ist. Diese Eigenschaft heißt <b>Nicht-Lokalität</b>.'},
+   {k:'mc',tag:'Deutung',q:'Kann man damit eine Nachricht schneller als das Licht verschicken?',o:['Nein. Welcher Detektor anspricht, ist reiner Zufall und lässt sich nicht steuern.','Ja, mit genügend Photonen.'],c:0,e:'Deshalb gibt es keinen Widerspruch zur Relativitätstheorie. Für Experimente zur Nicht-Lokalität mit Photonenpaaren erhielten Alain Aspect, John Clauser und Anton Zeilinger 2022 den Nobelpreis.'}]},
+ {t:'Dekohärenz',h:'<p>Warum zeigen Fußbälle keine Interferenz? Ein Grund: Ihre de-Broglie-Wellenlänge ist unvorstellbar klein (etwa 10<sup>−34</sup> m). Es gibt einen zweiten, wichtigeren Grund. Ihn seht ihr im Experiment.</p><p>Große Moleküle aus 60 Kohlenstoffatomen fliegen einzeln durch ein Gitter. Im Hochvakuum zeigen sie Interferenz. Dann lässt man etwas Gas in die Apparatur.</p>'+D(['Die Moleküle fliegen laufend. Wartet bei Gasdruck 0, bis sich unten das Trefferbild aufgebaut hat. Mit „+1000“ geht es schneller.','Erhöht den Gasdruck auf etwa 30 %. Beobachtet oben die Stöße und unten das neue Trefferbild.','Stellt den vollen Gasdruck ein.']),w:function(r){doubleSlit(r,{pressure:true});},
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Hochvakuum: Was zeigt das Trefferbild?',o:['Ein Streifenmuster: Auch Moleküle zeigen Interferenz.','Eine gleichmäßige Verteilung ohne Streifen.'],c:0,e:'Dieses Experiment gelang 1999 in Wien. 2019 klappte es sogar mit Molekülen aus rund 2000 Atomen.'},
+   {k:'mc',tag:'Beobachtung',q:'Was geschieht mit dem Muster, wenn der Gasdruck steigt?',o:['Die Streifen verblassen und verschwinden schließlich.','Die Streifen werden schärfer.','Es ändert sich nichts.'],c:0,e:'Bei vollem Druck sind keine Streifen mehr zu erkennen.'},
+   {k:'mc',tag:'Deutung',q:'Warum zerstört das Gas die Interferenz? Denkt an die Polarisationsfilter aus Stunde 4.',o:['Jeder Stoß mit einem Gasteilchen verrät, wo das Molekül gerade ist. Die Umgebung erhält Weginformation.','Das Gas macht die Moleküle schwerer.','Das Gas hält alle Moleküle auf.'],c:0,e:'Dieser Vorgang heißt <b>Dekohärenz</b>: Durch den ständigen Kontakt mit der Umgebung geht die Superposition verloren. Je größer und wärmer ein Objekt ist, desto schneller geschieht das.'}]},
+ {t:'Von der Quantenwelt zum Alltag',h:'<p>Ein Fußball stößt in jeder Sekunde mit unzähligen Luftteilchen zusammen und wird von Licht getroffen. Seine Superpositionen zerfallen sofort. Deshalb verhalten sich Alltagsobjekte klassisch, obwohl sie aus Quantenobjekten bestehen.</p><p>Eine Frage bleibt offen: Dekohärenz erklärt, warum keine Interferenz mehr zu sehen ist. Warum bei einer einzelnen Messung genau ein Ergebnis eintritt, erklärt sie nicht. Darüber diskutiert die Physik bis heute.</p>',
+  tasks:[{k:'mc',q:'Welche zwei Gründe verhindern Interferenz bei Alltagsobjekten?',o:['Die winzige de-Broglie-Wellenlänge und die Dekohärenz.','Alltagsobjekte bestehen nicht aus Quantenobjekten.','Die Quantenphysik gilt nur im Labor.'],c:0,e:'Die Quantenphysik gilt überall. Ihre auffälligen Effekte sind im Alltag nur nicht zu beobachten.'},
+   {k:'mc',q:'Schrödingers Katze sitzt mit einem radioaktiven Atom, einem Detektor und einer Giftflasche in einer Kiste. Ist die Katze „zugleich tot und lebendig“, bis jemand nachsieht?',o:['Nein. Schon der Detektor ist ein großes Objekt in ständigem Kontakt mit der Umgebung. Die Superposition endet dort.','Ja, bis ein Mensch die Kiste öffnet.'],c:0,e:'Aussagen über Superpositionen darf man nicht einfach auf Katzen oder Menschen übertragen.'}]},
+ {t:'Quantenphysik als Technik',h:'<p>Die Eigenschaften von Quantenobjekten werden technisch genutzt. <b>Quantencomputer</b> rechnen mit Qubits, die in einer Superposition von 0 und 1 sein können. Ihr größtes Problem ist die Dekohärenz, deshalb werden sie oft bis nahe an den absoluten Nullpunkt gekühlt.</p><p><b>Quantenkryptographie</b> verteilt geheime Schlüssel mit einzelnen Photonen. Der Sender verschickt jedes Bit (0 oder 1) als Polarisation eines Photons und wählt dafür zufällig eine von zwei Messrichtungen, genannt Basis (+ oder ×). Der Empfänger wählt seine Basis ebenfalls zufällig. Behalten werden nur die Bits, bei denen beide dieselbe Basis hatten.</p>'+D(['Übertragt mehrmals 200 Photonen ohne Lauscher und achtet auf die Zahl der Fehler.','Schaltet den Lauscher ein und übertragt erneut.']),w:bb84,
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Ohne Lauscher: Wie viele Fehler gibt es in den behaltenen Bits?',o:['Keine.','Etwa jedes vierte Bit ist falsch.','Alle Bits sind falsch.'],c:0,e:'Bei gleicher Basis misst der Empfänger genau das gesendete Bit.'},
+   {k:'mc',tag:'Beobachtung',q:'Mit Lauscher: Was ändert sich?',o:['Etwa jedes vierte behaltene Bit ist jetzt falsch.','Nichts.','Es kommen keine Photonen mehr an.'],c:0,e:'Sender und Empfänger vergleichen einen Teil ihrer Bits. Finden sie Fehler, wissen sie: Jemand hat mitgehört.'},
+   {k:'mc',tag:'Deutung',q:'Warum verrät sich der Lauscher?',o:['Er muss die Photonen messen, und eine Messung verändert den Zustand eines Quantenobjekts.','Er bremst die Photonen ab.','Er macht die Photonen heller.'],c:0,e:'Genutzt wird der quantenphysikalische Messprozess aus Stunde 4.'}]},
+ {t:'„Quanten“ als Etikett',h:'<p>Mit dem guten Ruf der Quantenphysik wird auch Geld verdient, zum Beispiel mit „Quantenheilung“. Vier Prüffragen helfen bei Texten, die sich auf Quantenphysik berufen:</p><ol><li>Werden Fachbegriffe wie Energie, Schwingung oder Verschränkung so benutzt wie in der Physik?</li><li>Passt die Aussage zu dem, was ihr gelernt habt? Wird die Dekohärenz übergangen?</li><li>Gibt es Messungen und nachprüfbare Quellen?</li><li>Wer schreibt, und soll etwas verkauft werden?</li></ol>',
+  tasks:[{k:'cls',q:'Beurteilt die Aussagen.',cats:['seriös','unseriös'],items:[
+    {x:'„Ein Qubit kann in einer Superposition von 0 und 1 sein.“',c:0},
+    {x:'„Weil der Beobachter das Ergebnis bestimmt, erschafft ihr mit euren Gedanken eure Wirklichkeit.“',c:1,e:'Messen heißt: Kontakt mit einem Messgerät. Mit Gedanken hat das nichts zu tun, und das Ergebnis ist zufällig.'},
+    {x:'„Dieses Armband bringt die Quantenschwingungen eurer Zellen in Einklang.“',c:1,e:'Der Begriff ist erfunden, es gibt keine Messung dazu. Zellen sind groß und warm: Dekohärenz.'},
+    {x:'„Große Moleküle zeigen im Hochvakuum Interferenz.“',c:0},
+    {x:'„Durch Verschränkung tauschen Menschen ohne Zeitverzug Gedanken aus.“',c:1,e:'Nicht-Lokalität überträgt keine Nachrichten (Station 3).'}]}]},
+ {t:'Rückblick und Ausblick',h:'<p>Geschafft. Hakt ab, was ihr jetzt könnt.</p><ul class="checklist"><li><label><input type="checkbox" id="ck1"> <span>Ich erkläre den Photoeffekt mit Photonen und der Einstein-Gleichung.</span></label></li><li><label><input type="checkbox" id="ck2"> <span>Ich beschreibe, wie man h mit der Gegenfeldmethode bestimmt.</span></label></li><li><label><input type="checkbox" id="ck3"> <span>Ich gebe Energie und Impuls des Photons an.</span></label></li><li><label><input type="checkbox" id="ck4"> <span>Ich erkläre die Versuche am Mach-Zehnder-Interferometer mit Zeigern.</span></label></li><li><label><input type="checkbox" id="ck5"> <span>Ich erläutere Wellenfunktion, Nachweiswahrscheinlichkeit, Superposition und Determiniertheit.</span></label></li><li><label><input type="checkbox" id="ck6"> <span>Ich erläutere die Unbestimmtheitsrelation und die Komplementarität.</span></label></li><li><label><input type="checkbox" id="ck7"> <span>Ich beschreibe den Messprozess, den Quantenradierer und das Delayed-Choice-Experiment.</span></label></li><li><label><input type="checkbox" id="ck8"> <span>Ich erkläre Nicht-Lokalität und Dekohärenz und erkenne unseriöse „Quanten“-Aussagen.</span></label></li></ul><div class="merk"><b>Ausblick.</b> Als Nächstes sperrt ihr ein Elektron auf engem Raum ein. Seine Wellenfunktion bildet dann stehende Wellen, wie eine Gitarrensaite. Daraus folgt, dass seine Energie nur ganz bestimmte Werte annehmen kann. Das ist der Schlüssel zum Atommodell der Quantenphysik.</div>'}
+]}
+];
+
+/* ---------- Zustand ---------- */
+var KEY='lernpfad-qp13-v3';
+/* Nur übernehmen, was zum Kurs passt: bekannte Stationen, ganze Zahlen, plausible Messwerte */
+function cleanState(o){var st={done:{},L:0,S:0,P:0,meas:{},td:{},ft:{},name:'',free:false,view:'step',fin:null},k;
+  if(!o||typeof o!=='object'||Array.isArray(o))return st;
+  function idx(v){return typeof v==='number'&&isFinite(v)&&v>=0?Math.floor(v):0;}
+  if(o.done&&typeof o.done==='object'&&!Array.isArray(o.done))for(k in o.done){var m=/^(\d+)-(\d+)$/.exec(k);if(m&&o.done[k]&&lessons[+m[1]]&&lessons[+m[1]].steps[+m[2]])st.done[k]=1;}
+  st.L=idx(o.L);if(st.L>=lessons.length)st.L=0;
+  st.S=idx(o.S);if(st.S>=lessons[st.L].steps.length)st.S=0;
+  st.P=idx(o.P);
+  if(o.td&&typeof o.td==='object'&&!Array.isArray(o.td))for(k in o.td){var m3=/^(\d+)-(\d+)-(\d+)$/.exec(k),ls=m3&&lessons[+m3[1]],ss=ls&&ls.steps[+m3[2]];if(o.td[k]&&ss&&(ss.tasks||[])[+m3[3]])st.td[k]=1;}
+  if(o.ft&&typeof o.ft==='object'&&!Array.isArray(o.ft))for(k in o.ft)if(st.td[k])st.ft[k]=o.ft[k]?1:0;
+  if(typeof o.name==='string')st.name=o.name.slice(0,60);
+  st.free=o.free===true;st.view=o.view==='cert'?'cert':'step';
+  if(typeof o.fin==='string'&&!isNaN(Date.parse(o.fin)))st.fin=o.fin;
+  if(o.meas&&typeof o.meas==='object'&&!Array.isArray(o.meas))HG.forEach(function(h){var v=o.meas[h[0]],ug=1239.84/h[0]-1.94;if(typeof v==='number'&&isFinite(v)&&Math.abs(v-ug)<=0.05)st.meas[h[0]]=Math.round(v*100)/100;});
+  return st;}
+var state=cleanState(null);
+if(!SOLUTION)try{var raw=localStorage.getItem(KEY);if(raw)state=cleanState(JSON.parse(raw));}catch(e){state=cleanState(null);}
+if(SOLUTION)state.meas={'578':0.21,'546':0.34,'436':0.91,'405':1.13,'365':1.46};
+function save(){if(SOLUTION)return;try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+var total=0;lessons.forEach(function(l){total+=l.steps.length;});
+function sid(L,S){return L+'-'+S;}
+function markDone(L,S){if(SOLUTION)return;if(!state.done[sid(L,S)]){state.done[sid(L,S)]=1;if(allDone()&&!state.fin)state.fin=new Date().toISOString();save();header();}}
+/* ---------- Sperre ---------- */
+var order=[];lessons.forEach(function(l,L){l.steps.forEach(function(_,S){order.push([L,S]);});});
+function gidx(L,S){var n=0;for(var i=0;i<L;i++)n+=lessons[i].steps.length;return n+S;}
+function locked(){return LOCK&&!SOLUTION&&!state.free;}
+function frontier(){for(var i=0;i<order.length;i++)if(!state.done[sid(order[i][0],order[i][1])])return i;return order.length;}
+function reachable(L,S){return !locked()||gidx(L,S)<=frontier();}
+function allDone(){return frontier()>=order.length;}
+function toFrontier(){var f=order[Math.min(frontier(),order.length-1)];state.L=f[0];state.S=f[1];state.P=0;}
+if(locked()&&!reachable(state.L,state.S))toFrontier();
+function toast(m){var t=document.getElementById('toast');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(toast.id);toast.id=setTimeout(function(){t.classList.remove('show');},3400);}
+function countDone(L){var n=0;lessons[L].steps.forEach(function(_,i){if(state.done[sid(L,i)])n++;});return n;}
+
+/* ---------- Aufgaben ---------- */
+function taskMC(t,done,seed){
+  var box=el('div','task');box.appendChild(el('p','tag',t.tag||'Frage'));box.appendChild(el('p','q',t.q));
+  var opts=el('div','opts'),fb=el('div');box.appendChild(opts);box.appendChild(fb);
+  var order=orderFor(t.o.length,seed),wrong=0;
+  order.forEach(function(i){var b=el('button',null,t.o[i]);b.type='button';b.setAttribute('data-i',i);
+    b.addEventListener('click',function(){
+      if(i===t.c){b.className='right';Array.prototype.forEach.call(opts.children,function(x){x.disabled=true;});fb.className='fb good';fb.innerHTML='<b>Richtig.</b> '+(t.e||'');done(wrong===0);}
+      else{wrong++;b.className='wrong';b.disabled=true;fb.className='fb bad';fb.innerHTML=(t.w&&t.w[i])?t.w[i]:'Das trifft es noch nicht. Prüft die Aussage an den Beobachtungen.';}
+    });opts.appendChild(b);});
+  return box;
+}
+function taskNum(t,done,idp){
+  var box=el('div','task');box.appendChild(el('p','tag',t.tag||'Rechnung'));box.appendChild(el('p','q',t.q));
+  var row=el('div','numrow'),inp=el('input');inp.type='text';inp.id=idp;inp.setAttribute('inputmode','text');inp.setAttribute('autocomplete','off');inp.setAttribute('aria-label','Ergebnis');
+  var btn=el('button','btn small','Prüfen');btn.type='button';
+  row.appendChild(inp);if(t.u)row.appendChild(el('span','unit',t.u));row.appendChild(btn);box.appendChild(row);
+  box.appendChild(el('p','hint','Eingabe mit Komma oder Punkt.'));
+  var fb=el('div');box.appendChild(fb);var tries=0,fin=false,sol=null;
+  function finish(ok){fin=true;inp.disabled=true;btn.disabled=true;if(sol)sol.remove();fb.className=ok?'fb good':'fb neutral';fb.innerHTML=(ok?'<b>Richtig.</b> ':'<b>Lösungsweg.</b> ')+(t.e||'');done(ok&&tries===0);}
+  function check(){if(fin)return;var v=parseNum(inp.value);
+    if(isNaN(v)){fb.className='fb bad';fb.innerHTML='Die Eingabe wurde nicht als Zahl erkannt.';return;}
+    if(numOK(v,t.a,t.tol)){finish(true);return;}
+    tries++;var msg='Noch nicht. '+(t.hint||'Prüft Ansatz, Umrechnungen und Rundung.');
+    if(t.a!==0&&v!==0){var lg=Math.log10(Math.abs(v/t.a));if(Math.abs(lg-Math.round(lg))<0.02&&Math.round(lg)!==0)msg='Die Ziffernfolge stimmt, die Zehnerpotenz oder die Einheit noch nicht.';}
+    fb.className='fb bad';fb.innerHTML=msg;
+    if(tries>=2&&!sol){sol=el('button','btn small','Lösungsweg anzeigen');sol.type='button';sol.addEventListener('click',function(){finish(false);});box.appendChild(sol);}
+  }
+  btn.addEventListener('click',check);inp.addEventListener('keydown',function(e){if(e.key==='Enter')check();});
+  return box;
+}
+function taskRev(t,done){
+  var box=el('div','task');box.appendChild(el('p','tag',t.tag||'Formulieren'));box.appendChild(el('p','q',t.q));
+  var b=el('button','btn small',t.btn||'Vergleichslösung zeigen');b.type='button';var fb=el('div');
+  b.addEventListener('click',function(){b.remove();fb.className='fb neutral';fb.innerHTML=t.s;done(true);});
+  box.appendChild(b);box.appendChild(fb);return box;
+}
+function taskCls(t,done){
+  var box=el('div','task');box.appendChild(el('p','tag',t.tag||'Zuordnen'));box.appendChild(el('p','q',t.q));
+  var list=el('div','cls'),left=t.items.length,miss=false;box.appendChild(list);
+  t.items.forEach(function(it){var item=el('div','item');item.appendChild(el('div',null,it.x));var ch=el('div','choices'),fb=el('div');
+    t.cats.forEach(function(c,ci){var b=el('button','btn small',c);b.type='button';b.setAttribute('data-ci',ci);b.addEventListener('click',function(){
+      if(ci===it.c){item.className='item ok';Array.prototype.forEach.call(ch.children,function(x){x.disabled=true;});fb.className='';fb.innerHTML='<b>'+c+'.</b> '+(it.e||'');left--;if(left===0)done(!miss);}
+      else{miss=true;fb.className='fb bad';fb.innerHTML='Das passt nicht. Prüft die Aussage noch einmal.';}
+    });ch.appendChild(b);});
+    item.appendChild(ch);item.appendChild(fb);list.appendChild(item);});
+  return box;
+}
+
+function taskMeas(t,done){
+  var box=el('div','task');box.appendChild(el('p','tag','Messung'));box.appendChild(el('p','q',t.q));
+  var stat=el('div','fb neutral'),fin=false;box.appendChild(stat);
+  function upd(){if(!box.isConnected)return;var n=measCount();
+    if(n>=5){stat.className='fb good';stat.innerHTML='<b>Messreihe vollständig.</b> Alle fünf Linien sind gemessen.';if(!fin){fin=true;done(true);}}
+    else stat.innerHTML=n+' von 5 Linien gemessen. Wählt eine Linie, sucht U<sub>G</sub> und übernehmt den Wert.';}
+  measSubs.push({n:box,f:upd});setTimeout(upd,0);
+  return box;
+}
+
+/* ---------- Darstellung ---------- */
+function header(){
+  var d=0,k;for(k in state.done)d++;
+  document.getElementById('overallText').textContent=d+' von '+total+' Stationen bearbeitet';
+  document.getElementById('overallBar').style.width=(100*d/total)+'%';
+  var nav=document.getElementById('nav');nav.innerHTML='';
+  lessons.forEach(function(l,i){var b=el('button',null,'<b><span class="sw">Stunde </span>'+(i+1)+'</b><span>'+(SOLUTION?l.steps.length+' Stat.':countDone(i)+'/'+l.steps.length)+'</span>');b.type='button';b.style.setProperty('--lc','var(--hg'+(i+1)+')');
+    if(i===state.L&&state.view!=='cert')b.setAttribute('aria-current','true');if(!reachable(i,0)){b.disabled=true;b.title='Erst die vorige Stunde abschließen';}b.addEventListener('click',function(){var f=0;for(var j=0;j<l.steps.length;j++){if(!state.done[sid(i,j)]){f=j;break;}}go(i,f);});nav.appendChild(b);});
+  var lh=document.getElementById('lessonhead'),L=lessons[state.L];
+  lh.innerHTML='<h2>Stunde '+(state.L+1)+': '+L.t+'</h2><p>'+L.steps.length+' Stationen · etwa 45 Minuten</p>';
+  var dots=el('div','dots');L.steps.forEach(function(s,i){var b=el('button',state.done[sid(state.L,i)]?'done':null,String(i+1));b.type='button';b.setAttribute('aria-label','Station '+(i+1)+': '+s.t);
+    if(i===state.S)b.setAttribute('aria-current','true');if(!reachable(state.L,i)){b.disabled=true;b.title='Erst die vorige Station bearbeiten';}b.addEventListener('click',function(){go(state.L,i);});dots.appendChild(b);});
+  lh.appendChild(dots);
+  var cb=document.getElementById('certBtn');if(cb)cb.hidden=SOLUTION||!(allDone()||!locked());
+}
+function go(L,S,scroll,P){if(locked()&&!reachable(L,S))return;state.view='step';state.L=L;state.S=S;state.P=P||0;save();render();if(scroll!==false&&!(window.matchMedia&&window.matchMedia('(min-width:1000px) and (min-height:560px)').matches)){var c=document.getElementById('lessonhead');if(c.scrollIntoView)c.scrollIntoView({block:'start'});}}
+var curParts=null;
+/* Bis zu welcher Folie darf man gehen? Bis zur ersten ungelösten Pflichtaufgabe. */
+function maxPart(){var c=curParts;if(!c||!c.els.length)return 0;if(!locked()||state.done[sid(state.L,state.S)])return c.els.length-1;
+  for(var i=0;i<c.els.length;i++)if(c.block[i]&&!c.solved[i])return i;return c.els.length-1;}
+function refreshNav(){var c=curParts;if(!c)return;var p=state.P,mx=maxPart(),L=state.L,S=state.S;
+  c.pills.forEach(function(b,i){b.disabled=i>mx;b.title=i>mx?'Erst die vorige Aufgabe lösen':'';});
+  var lastSt=S===lessons[L].steps.length-1,lastP=p>=c.els.length-1,end=lastSt&&L===lessons.length-1;
+  var blocked=locked()&&!state.done[sid(L,S)]&&!!c.block[p]&&!c.solved[p];
+  c.prev.disabled=(L===0&&S===0&&p===0);c.next.disabled=blocked;
+  c.next.textContent=blocked?'Weiter nach der Lösung':!lastP?'Weiter':end?(SOLUTION?'Ende':'Lernpfad abschließen'):lastSt?'Weiter zu Stunde '+(L+2):'Nächste Station';}
+function showPart(p){
+  var c=curParts;if(!c)return;p=Math.max(0,Math.min(c.els.length-1,p,maxPart()));state.P=p;save();
+  c.els.forEach(function(e,i){e.hidden=i!==p;});
+  c.pills.forEach(function(b,i){if(i===p)b.setAttribute('aria-current','true');else b.removeAttribute('aria-current');});
+  refreshNav();
+  if(window.matchMedia&&!window.matchMedia('(min-width:1000px) and (min-height:560px)').matches){var e=c.els[p];if(e&&e.scrollIntoView&&c.moved)e.scrollIntoView({block:'nearest'});}
+  c.moved=true;
+}
+/* Bereits gelöste Aufgaben nach dem Neuladen wieder als gelöst zeigen */
+function restore(b,t){try{
+  if(t.k==='mc'){var x=b.querySelector('.opts button[data-i="'+t.c+'"]');if(x)x.click();}
+  else if(t.k==='num'){var inp=b.querySelector('input');inp.value=String(t.a).replace('.',',');b.querySelector('.numrow .btn').click();}
+  else if(t.k==='cls'){Array.prototype.forEach.call(b.querySelectorAll('.cls .item'),function(it,k){var y=it.querySelector('button[data-ci="'+t.items[k].c+'"]');if(y)y.click();});}
+  else if(t.k==='rev'){var z=b.querySelector('.btn');if(z)z.click();}
+}catch(e){}}
+function showMain(on){['nav','lessonhead','card','foot'].forEach(function(x){document.getElementById(x).hidden=!on;});document.getElementById('cert').hidden=on;document.body.classList.toggle('certmode',!on);}
+function render(){
+  if(state.view==='cert'&&!SOLUTION){if(!locked()||allDone())return renderCert();state.view='step';}
+  showMain(true);
+  header();
+  var L=state.L,S=state.S,step=lessons[L].steps[S],card=document.getElementById('card');
+  card.innerHTML='';liveFns=alive(liveFns);measSubs=alive(measSubs);card.style.setProperty('--lc','var(--hg'+(L+1)+')');
+  var chead=el('div','chead');chead.appendChild(el('p','eyebrow','Stunde '+(L+1)+' · Station '+(S+1)+' von '+lessons[L].steps.length));chead.appendChild(el('h3',null,step.t));card.appendChild(chead);
+  var tasks=step.tasks||[],hasTasks=tasks.length>0,colA=el('div','col colA'),colB=el('div','col colB'),colC=el('div','col colC');
+  var withsim=!!step.w;
+  card.classList.toggle('single',!withsim&&!hasTasks&&!step.post);card.classList.toggle('nosim',!withsim&&(hasTasks||!!step.post));card.classList.toggle('withsim',withsim);
+  card.appendChild(colA);card.appendChild(colB);card.appendChild(colC);
+  var els=[],labels=[],block=[],todo=[],pcol=withsim?colC:colB;
+  // Einführungstext: neben dem Experiment als eigene Folie, sonst dauerhaft links
+  var intro=el('div',withsim?'body o1 part':'body o1',step.h);
+  if(step.h2)intro.appendChild(el('div','body',step.h2));
+  if(withsim){pcol.appendChild(intro);els.push(intro);block.push(false);labels.push('Einführung');var wr=el('div','o2');colB.appendChild(wr);try{step.w(wr);}catch(e){wr.innerHTML='<div class="sim"><p class="hint">Das Experiment konnte auf diesem Gerät nicht gestartet werden. Ladet die Seite neu oder nutzt einen aktuellen Browser.</p></div>';if(window.console&&console.error)console.error(e);}}
+  else colA.appendChild(intro);
+  var nd=0,need=tasks.filter(function(t){return !t.opt;}).length;
+  tasks.forEach(function(t,i){
+    var b;
+    if(SOLUTION)b=solTask(t,L,S,i);
+    else{var tk=L+'-'+S+'-'+i,pi=els.length;
+      var done=function(first){
+        if(!state.td[tk]){state.td[tk]=1;if(/^(mc|num|cls)$/.test(t.k)&&!t.opt&&!(tk in state.ft))state.ft[tk]=first?1:0;save();}
+        if(!t.opt)nd++;if(nd===need)markDone(L,S);
+        if(curParts){curParts.solved[pi]=true;var pl=curParts.pills[pi];if(pl)pl.classList.add('done');refreshNav();}};
+      b=t.k==='mc'?taskMC(t,done,seedOf(L,S,i)):t.k==='num'?taskNum(t,done,'in-'+L+'-'+S+'-'+i):t.k==='rev'?taskRev(t,done):t.k==='meas'?taskMeas(t,done):taskCls(t,done);}
+    b.classList.add('o4','part');pcol.appendChild(b);els.push(b);block.push(!t.opt&&!SOLUTION);labels.push(t.opt?'+':String(i+1));if(!SOLUTION&&state.td[L+'-'+S+'-'+i])todo.push([b,t]);});
+  var posts=step.post?[].concat(step.post):[];posts.forEach(function(ph,pi){var pb=el('div','task post o5 part','<p class="tag">Erklärung'+(posts.length>1?' '+(pi+1)+' von '+posts.length:'')+'</p><div class="body">'+ph+'</div>');pcol.appendChild(pb);els.push(pb);block.push(false);labels.push(posts.length>1?'Erklärung '+(pi+1):'Erklärung');});
+  // Folienleiste
+  var pills=[];
+  if(els.length>1){var pr=el('div','parts');labels.forEach(function(lb,i){var b=el('button',null,lb);b.type='button';b.setAttribute('aria-label','Folie '+(i+1)+' von '+els.length);b.addEventListener('click',function(){showPart(i);});pr.appendChild(b);pills.push(b);});chead.appendChild(pr);}
+  var foot=document.getElementById('foot');foot.innerHTML='';
+  var prev=el('button','btn','Zurück');prev.type='button';
+  var next=el('button','btn primary','Weiter');next.type='button';
+  curParts={els:els,pills:pills,prev:prev,next:next,moved:false,block:block,solved:block.map(function(){return false;})};
+  prev.addEventListener('click',function(){if(state.P>0)return showPart(state.P-1);if(S>0)go(L,S-1,true,99);else if(L>0)go(L-1,lessons[L-1].steps.length-1,true,99);});
+  next.addEventListener('click',function(){if(next.disabled)return;if(state.P<els.length-1)return showPart(state.P+1);
+    if(!hasTasks||need===0)markDone(L,S);var last=S===lessons[L].steps.length-1;
+    if(last&&L===lessons.length-1){if(SOLUTION){header();next.textContent='Abgeschlossen';return;}state.view='cert';save();render();return;}
+    if(last)go(L+1,0);else go(L,S+1);});
+  foot.appendChild(prev);foot.appendChild(next);
+  todo.forEach(function(x){restore(x[0],x[1]);});
+  showPart(els.length?Math.min(state.P||0,els.length-1):0);
+}
+/* ---------- Urkunde ---------- */
+function certStats(){var N=0,M=0;lessons.forEach(function(l,L){l.steps.forEach(function(s,S){(s.tasks||[]).forEach(function(t,i){if(t.opt||!/^(mc|num|cls)$/.test(t.k))return;N++;if(state.ft[L+'-'+S+'-'+i])M++;});});});return {N:N,M:M};}
+function renderCert(){
+  curParts=null;showMain(false);header();
+  var host=document.getElementById('cert'),open=0,k;for(k=0;k<order.length;k++)if(!state.done[sid(order[k][0],order[k][1])])open++;
+  var cols=['#c99700','#4f9a00','#2f48d8','#7a2fc0','#6b5a85'],st=certStats(),d=state.fin?new Date(state.fin):new Date();
+  var date=d.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'});
+  var motif='<svg class="umotiv" viewBox="0 0 160 100" aria-hidden="true"><path d="M4 22 q4 -6 8 0 t8 0 t8 0" fill="none" stroke="#586574" stroke-width="2"/><rect x="30" y="14" width="16" height="16" fill="none" stroke="#17212c" stroke-width="1.5"/><line x1="30" y1="14" x2="46" y2="30" stroke="#17212c" stroke-width="1.5"/>'+
+    '<path d="M46 22 H124 V72" fill="none" stroke="'+cols[3]+'" stroke-width="2.5"/><path d="M38 30 V80 H116" fill="none" stroke="'+cols[0]+'" stroke-width="2.5"/>'+
+    '<line x1="118" y1="15" x2="130" y2="27" stroke="#17212c" stroke-width="3"/><line x1="32" y1="74" x2="44" y2="86" stroke="#17212c" stroke-width="3"/>'+
+    '<rect x="116" y="72" width="16" height="16" fill="#fffdf7" stroke="#17212c" stroke-width="1.5"/><line x1="116" y1="72" x2="132" y2="88" stroke="#17212c" stroke-width="1.5"/><path d="M132 80 H156" stroke="#17212c" stroke-width="3.5"/></svg>';
+  var key=['E = h · f','e · U<sub>G</sub> = E<sub>kin,max</sub>','ψ = ψ<sub>A</sub> + ψ<sub>B</sub>','Δx · Δp ≥ h/(4π)','Dekohärenz'];
+  var list='';lessons.forEach(function(l,i){list+='<li style="--c:'+cols[i]+'"><b>Stunde '+(i+1)+'</b>'+l.t+'<em>'+(key[i]||'')+'</em></li>';});
+  host.innerHTML='<div class="certctl">'+(open?'<p class="fb neutral"><b>Vorschau.</b> Noch '+(open===1?'ist eine Station':'sind '+open+' Stationen')+' offen.</p>':'')+
+    '<p>Tragt euren Namen in die Urkunde ein. Beim Drucken erscheint nur die Urkunde im Querformat. Als PDF speichert ihr sie, indem ihr im Druckdialog „Als PDF speichern“ wählt.</p>'+
+    '<div class="row"><button type="button" class="btn primary" id="certPrint">Urkunde drucken oder als PDF speichern</button><button type="button" class="btn" id="certBack">Zurück zum Lernpfad</button></div></div>'+
+    '<div class="urkunde"><div class="ubar">'+cols.map(function(c){return '<i style="background:'+c+'"></i>';}).join('')+'</div>'+motif+
+    '<p class="ukicker">Physik 13 · erhöhtes Anforderungsniveau · Lernbereich 1</p><h2 class="utitle">Urkunde</h2><p class="ufor">für</p>'+
+    '<input class="uname" id="certName" maxlength="60" autocomplete="off" placeholder="Vor- und Nachname" aria-label="Name auf der Urkunde">'+
+    '<p class="utext">hat den <b>Lernpfad Quantenphysik</b> vollständig bearbeitet: '+order.length+' Stationen in fünf Unterrichtsstunden, vom Photoeffekt bis zur Quantenkryptographie.</p>'+
+    '<ol class="ulist">'+list+'</ol>'+
+    '<p class="ustat">Von '+st.N+' Aufgaben wurden '+st.M+' im ersten Versuch richtig gelöst.</p>'+
+    '<div class="usign"><div><span>'+date+'</span><i></i><small>Datum</small></div><div><span></span><i></i><small>Lehrkraft</small></div></div></div>';
+  var nm=document.getElementById('certName');nm.value=state.name||'';
+  nm.addEventListener('input',function(){state.name=nm.value.slice(0,60);save();});
+  document.getElementById('certPrint').addEventListener('click',function(){nm.blur();window.print();});
+  document.getElementById('certBack').addEventListener('click',function(){state.view='step';var t=order[order.length-1];state.L=t[0];state.S=t[1];state.P=0;save();render();});
+  var u=host.querySelector('.urkunde');
+  function scale(){var w=host.clientWidth||1000;u.style.zoom=w<1000?String(Math.max(0.3,w/1000)):'';}
+  onLayout(host,scale);scale();
+  if(typeof fitSoon==='function')fitSoon();
+}
+/* ---------- Lösungsansicht ---------- */
+function solNote(h){return el('div','solnote',h);}
+function solTask(t,L,S,i){
+  var tags={mc:'Frage',num:'Rechnung',rev:'Formulieren',cls:'Zuordnen',meas:'Messung'};
+  var box=el('div','task');box.appendChild(el('p','tag',t.tag||tags[t.k]));box.appendChild(el('p','q',t.q));
+  if(t.k==='mc'){var opts=el('div','opts');orderFor(t.o.length,seedOf(L,S,i)).forEach(function(k){var b=el('button',k===t.c?'solopt':null,t.o[k]);b.type='button';b.disabled=true;opts.appendChild(b);});box.appendChild(opts);if(t.e)box.appendChild(solNote(t.e));}
+  else if(t.k==='num'){var row=el('div','numrow');row.appendChild(el('span','solval',t.sol||t.a.toLocaleString('de-DE',{maximumSignificantDigits:3})));if(t.u)row.appendChild(el('span','unit',t.u));box.appendChild(row);if(t.e)box.appendChild(solNote(t.e));}
+  else if(t.k==='rev'){box.appendChild(solNote(t.s));}
+  else if(t.k==='meas'){box.appendChild(solNote('U<sub>G</sub> ≈ 0,21 V (gelb, 578 nm) · 0,34 V (grün, 546 nm) · 0,91 V (blau, 436 nm) · 1,13 V (violett, 405 nm) · 1,46 V (ultraviolett, 365 nm)'));}
+  else{var list=el('div','cls');t.items.forEach(function(it){var item=el('div','item');item.appendChild(el('div',null,it.x));var ch=el('div','choices');t.cats.forEach(function(c,ci){var b=el('button','btn small'+(ci===it.c?' solopt':''),c);b.type='button';b.disabled=true;ch.appendChild(b);});item.appendChild(ch);if(it.e)item.appendChild(solNote(it.e));list.appendChild(item);});box.appendChild(list);}
+  return box;
+}
+window.__lernpfad={parseNum:parseNum,numOK:numOK,lessons:lessons,orderFor:orderFor,seedOf:seedOf};
+/* ---------- Bildschirm: Station an die Fensterhöhe anpassen ---------- */
+var DESK=window.matchMedia?window.matchMedia('(min-width:1000px) and (min-height:560px)'):null,fitRaf=0;
+var fitKey='',fitZ=1;
+function fitView(){var w=document.querySelector('.wrap'),docEl=document.documentElement,z=1;if(!w)return;
+  if(DESK&&DESK.matches){
+    var key=(state.view==='cert'?'cert':state.L+'-'+state.S+'-'+state.P)+'|'+window.innerWidth+'x'+window.innerHeight;
+    if(key===fitKey)z=fitZ;
+    fitKey=key;w.style.zoom=z<1?String(z):'';
+    /* Innerhalb einer Folie wird nur verkleinert, nie wieder vergrößert. */
+    while(z>0.7&&docEl.scrollHeight>docEl.clientHeight+1){z=Math.max(0.7,Math.round((z-0.02)*100)/100);w.style.zoom=String(z);}
+    fitZ=z;
+  }else{fitKey='';if(w.style.zoom)w.style.zoom='';}
+  if(Math.abs(z-curZoom)>0.001){curZoom=z;window.dispatchEvent(new Event('resize'));}}
+function fitSoon(){cancelAnimationFrame(fitRaf);fitRaf=requestAnimationFrame(fitView);}
+window.addEventListener('resize',fitSoon);
+if(window.ResizeObserver){var fro=new ResizeObserver(fitSoon);fro.observe(document.getElementById('card'));}
+document.addEventListener('click',function(){setTimeout(fitSoon,30);});
+if(SOLUTION){var ov=document.querySelector('.overall');if(ov)ov.hidden=true;}
+document.getElementById('certBtn').addEventListener('click',function(){state.view='cert';save();render();});
+if(LOCK&&!SOLUTION){var taps=[];document.querySelector('header h1').addEventListener('click',function(){var n=Date.now();taps=taps.filter(function(t){return n-t<3000;});taps.push(n);
+  if(taps.length>=5){taps=[];state.free=!state.free;if(!state.free&&!reachable(state.L,state.S))toFrontier();save();
+    toast(state.free?'Lehrkraft-Modus: Alle Stationen und Folien sind frei.':'Lehrkraft-Modus beendet. Die Sperre gilt wieder.');render();}});}
+render();
+fitSoon();
+})();
+</script>
+</body>
+</html>
