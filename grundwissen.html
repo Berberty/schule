@@ -187,6 +187,14 @@ main{max-width:1140px;margin:0 auto;padding-block:18px 56px;padding-left:max(16p
 .slot.is-ok{border-color:var(--ok);background:var(--ok-bg);border-style:solid}
 .slot.is-no{border-color:var(--no);background:var(--no-bg);border-style:solid}
 .slot .fr{font-size:.85em}
+/* Eingeblendete Lösung: gelb abgesetzt von dem, was selbst gefunden wurde */
+.slot.is-shown{border-color:var(--gold-edge);background:var(--warn-bg);border-style:solid}
+.order-slot.shown{border-color:var(--gold-edge);background:var(--warn-bg)}
+.match .chip.shown{border-color:var(--gold-edge);background:var(--warn-bg);opacity:1;color:var(--ink)}
+.match .chip.shown b{color:var(--ink2)}
+.plot .pt.shown{fill:var(--paper);stroke:var(--gold-edge);stroke-width:2.6}
+.acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn.reveal{align-self:flex-start}
 .figwrap{position:relative;background:var(--bench);border-radius:12px;padding:6px}
 .figwrap svg{display:block;width:100%;height:auto}
 .figwrap .pos{position:absolute;transform:translate(-50%,-50%)}
@@ -413,6 +421,9 @@ const tbl = (head, rows, hl) => `<div class="tabwrap"><table class="mtab"><tbody
 function scoreTries(max, tries) { return tries <= 1 ? max : tries === 2 ? Math.floor(max / 2) : 0; }
 const SECOND = 'Ein zweiter Versuch bringt noch die halbe Punktzahl.';
 const Task = {};
+/* Niemand bleibt vor einer Aufgabe stehen: Nach einem eigenen Versuch lässt sich die Lösung einblenden. */
+const REVEAL_AT = 3, REVEAL_NOW = ' Die Lösung lässt sich jetzt einblenden.';
+function revealBtn(fn) { const b = el('button', { class: 'btn small ghost reveal', type: 'button', text: 'Lösung zeigen' }); b.hidden = true; b.addEventListener('click', fn); return b; }
 
 /* Eine richtige Antwort */
 Task.mc = o => ctx => {
@@ -490,7 +501,7 @@ Task.classify = o => ctx => {
 /* Paare bilden */
 Task.match = o => ctx => {
   const n = o.pairs.length, R = shuffle(o.pairs.map((p, i) => i)), grid = el('div', { class: 'match' });
-  let selL = null, selR = null, errors = 0, done = 0; const lb = [], rb = [];
+  let selL = null, selR = null, errors = 0, done = 0, over = false; const lb = [], rb = [];
   if (o.heads) grid.append(el('div', { class: 'gh', text: o.heads[0] }), el('div', { class: 'gh', text: o.heads[1] }));
   const press = (arr, i) => arr.forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
   const tryPair = () => {
@@ -500,20 +511,28 @@ Task.match = o => ctx => {
       done++;
       [lbn, rbn].forEach(b => { b.disabled = true; b.classList.add('done', 'is-ok'); b.prepend(el('b', { text: String(done) })); });
       ctx.clearNote();
-      if (done === n) ctx.finish(Math.max(0, ctx.max - errors), T(o.ok), errors ? 'part' : 'ok', errors ? `<b>${errors} ${errors === 1 ? 'Fehlversuch' : 'Fehlversuche'}.</b> ` : '');
+      if (done === n) { over = true; show.remove(); ctx.finish(Math.max(0, ctx.max - errors), T(o.ok), errors ? 'part' : 'ok', errors ? `<b>${errors} ${errors === 1 ? 'Fehlversuch' : 'Fehlversuche'}.</b> ` : ''); }
     } else {
       errors++;
       [lbn, rbn].forEach(b => { b.classList.add('shake'); setTimeout(() => b.classList.remove('shake'), 400); });
-      ctx.note('no', T(o.no || 'Diese beiden gehören nicht zusammen.'));
+      if (errors >= REVEAL_AT) show.hidden = false;
+      ctx.note('no', T(o.no || 'Diese beiden gehören nicht zusammen.') + (errors >= REVEAL_AT ? REVEAL_NOW : ''));
     }
   };
+  const show = revealBtn(() => {
+    if (over) return; over = true;
+    const found = done; let k = done;
+    for (let l = 0; l < n; l++) if (!lb[l].disabled) { k++; [lb[l], rb[R.indexOf(l)]].forEach(b => { b.disabled = true; b.classList.add('done', 'shown'); b.prepend(el('b', { text: String(k) })); }); }
+    press(lb, -1); press(rb, -1); show.remove();
+    ctx.finish(Math.max(0, Math.floor(ctx.max * found / n + 1e-9) - errors), T(o.ok), 'part', `<b>${found} von ${n} Paaren gefunden, ${errors} Fehlversuche. Die übrigen Paare sind eingeblendet.</b> `);
+  });
   for (let k = 0; k < n; k++) {
     const l = el('button', { class: 'chip', type: 'button', 'aria-pressed': 'false', html: T(o.pairs[k][0]) }), r = el('button', { class: 'chip', type: 'button', 'aria-pressed': 'false', html: T(o.pairs[R[k]][1]) });
     l.addEventListener('click', () => { selL = selL === k ? null : k; press(lb, selL == null ? -1 : selL); tryPair(); });
     r.addEventListener('click', () => { selR = selR === k ? null : k; press(rb, selR == null ? -1 : selR); tryPair(); });
     lb.push(l); rb.push(r); grid.append(l, r);
   }
-  ctx.ui.append(el('p', { class: 'how', text: 'Links und rechts je einen Begriff antippen.' }), grid);
+  ctx.ui.append(el('p', { class: 'how', text: 'Links und rechts je einen Begriff antippen.' }), grid, show);
 };
 
 /* Reihenfolge herstellen */
@@ -526,12 +545,19 @@ Task.order = o => ctx => {
     b.addEventListener('click', () => {
       if (it.i === next) {
         slots[next].innerHTML = T(it.t); slots[next].classList.add('filled'); b.remove(); next++; ctx.clearNote();
-        if (next === o.items.length) ctx.finish(errors === 0 ? ctx.max : errors <= 2 ? Math.floor(ctx.max / 2) : 0, T(o.ok), errors ? 'part' : 'ok');
-      } else { errors++; b.classList.add('shake'); setTimeout(() => b.classList.remove('shake'), 400); ctx.note('no', T(o.no || 'Dieser Schritt kommt erst später.')); }
+        if (next === o.items.length) { show.remove(); ctx.finish(errors === 0 ? ctx.max : errors <= 2 ? Math.floor(ctx.max / 2) : 0, T(o.ok), errors ? 'part' : 'ok'); }
+      } else { errors++; b.classList.add('shake'); setTimeout(() => b.classList.remove('shake'), 400); if (errors >= REVEAL_AT) show.hidden = false; ctx.note('no', T(o.no || 'Dieser Schritt kommt erst später.') + (errors >= REVEAL_AT ? REVEAL_NOW : '')); }
     });
     pool.append(b);
   });
-  ctx.ui.append(el('p', { class: 'how', text: T(o.how || '{Tippe|Tippt} die Karten in der richtigen Reihenfolge an.') }), list, pool);
+  const show = revealBtn(() => {
+    if (next >= o.items.length) return;
+    const found = next;
+    for (; next < o.items.length; next++) { slots[next].innerHTML = T(o.items[next]); slots[next].classList.add('filled', 'shown'); }
+    pool.remove(); show.remove();
+    ctx.finish(0, T(o.ok), 'part', `<b>${found} von ${o.items.length} Karten gesetzt, ${errors} Fehlversuche. Die übrigen sind eingeblendet.</b> `);
+  });
+  ctx.ui.append(el('p', { class: 'how', text: T(o.how || '{Tippe|Tippt} die Karten in der richtigen Reihenfolge an.') }), list, pool, show);
 };
 
 /* Zahlenwert mit Einheit */
@@ -582,6 +608,7 @@ Task.slots = o => ctx => {
   host.querySelectorAll('.slot').forEach(b => { const i = +b.dataset.i; cells[i] = { b, want: [].concat(o.want[i]), val: null }; });
   const pool = el('div', { class: 'chips' }), chips = new Map();
   let sel = null, first = null, over = false;
+  host.__cells = cells;
   const place = (cell, val) => { cell.val = val; cell.b.innerHTML = val == null ? '&nbsp;' : chips.get(val).h; cell.b.classList.toggle('filled', val != null); cell.b.classList.remove('is-no', 'is-ok'); };
   const refresh = () => {
     for (const [v, c] of chips) { c.b.disabled = over || (!o.reuse && cells.some(x => x.val === v)); c.b.setAttribute('aria-pressed', String(sel === v)); }
@@ -593,24 +620,48 @@ Task.slots = o => ctx => {
     b.addEventListener('click', () => { sel = sel === c.v ? null : c.v; refresh(); });
     chips.set(c.v, { b, h: c.h }); pool.append(b);
   });
+  /* Welche Lücken stimmen bei dieser Belegung? */
+  const judge = vals => {
+    const bad = vals.map(() => false);
+    (o.distinct || []).forEach(g => { const seen = new Set(); g.forEach(i => { if (vals[i] != null && seen.has(vals[i])) bad[i] = true; seen.add(vals[i]); }); });
+    /* pairs: [formelA, einheitA, formelB, einheitB] – Einheit muss zur gewählten Formel passen */
+    (o.pairs || []).forEach(([f1, u1, f2, u2]) => { const pos = v => [].concat(o.want[f1]).indexOf(v); [[f1, u1], [f2, u2]].forEach(([f, u]) => { const k = pos(vals[f]); if (k >= 0 && vals[u] !== [].concat(o.want[u1])[k]) bad[u] = true; }); });
+    return vals.map((v, i) => cells[i].want.includes(v) && !bad[i]);
+  };
+  /* Vollständige richtige Belegung; was schon stimmt, bleibt stehen */
+  const solve = keep => {
+    const out = cells.map((x, i) => keep[i] ? x.val : null), open = out.map((v, i) => i).filter(i => !keep[i]);
+    const rec = k => {
+      if (k === open.length) return judge(out).every(Boolean);
+      const i = open[k];
+      for (const v of cells[i].want) { if (!o.reuse && out.some((w, j) => j !== i && w === v)) continue; out[i] = v; if (rec(k + 1)) return true; }
+      out[i] = null; return false;
+    };
+    return rec(0) ? out : null;
+  };
   const check = el('button', { class: 'btn small ghost', type: 'button', text: 'Prüfen', disabled: true });
   check.addEventListener('click', () => {
-    cells.forEach(x => { x.dup = false; });
-    (o.distinct || []).forEach(g => { const seen = new Set(); g.forEach(i => { const c = cells[i]; if (c.val != null && seen.has(c.val)) c.dup = true; seen.add(c.val); }); });
-    /* pairs: [formelA, einheitA, formelB, einheitB] – Einheit muss zur gewählten Formel passen */
-    (o.pairs || []).forEach(([f1, u1, f2, u2]) => { const pos = v => [].concat(o.want[f1]).indexOf(v); [[f1, u1], [f2, u2]].forEach(([f, u]) => { const k = pos(cells[f].val); if (k >= 0 && cells[u].val !== [].concat(o.want[u1])[k]) cells[u].dup = true; }); });
-    const okc = x => x.want.includes(x.val) && !x.dup;
-    const right = cells.filter(okc).length;
+    const vals = cells.map(x => x.val), ok = judge(vals), right = ok.filter(Boolean).length;
     if (first == null) first = right;
     if (right === cells.length) {
-      over = true; cells.forEach(x => { x.b.classList.add('is-ok'); x.b.disabled = true; }); refresh();
+      over = true; cells.forEach(x => { x.b.classList.add('is-ok'); x.b.disabled = true; }); refresh(); show.remove();
       ctx.finish(Math.floor(ctx.max * first / cells.length + 1e-9), T(o.ok), first === cells.length ? 'ok' : 'part', first === cells.length ? '' : `<b>Beim ersten Prüfen: ${first} von ${cells.length} richtig.</b> `);
     } else {
-      cells.forEach(x => { if (!okc(x)) { x.b.classList.add('is-no'); setTimeout(() => { if (!over && !okc(x)) place(x, null); refresh(); }, 900); } else x.b.classList.add('is-ok'); });
-      ctx.note('no', T((o.no ? o.no + ' ' : '') + `${right} von ${cells.length} Lücken stimmen. Die übrigen Karten kommen zurück.`));
+      cells.forEach((x, i) => { if (!ok[i]) { x.b.classList.add('is-no'); setTimeout(() => { if (!over && x.val === vals[i] && x.b.classList.contains('is-no')) place(x, null); refresh(); }, 900); } else x.b.classList.add('is-ok'); });
+      show.hidden = false;
+      ctx.note('no', T((o.no ? o.no + ' ' : '') + `${right} von ${cells.length} Lücken stimmen. Die übrigen Karten kommen zurück. Weiter probieren oder die Lösung zeigen lassen: Beides ist möglich.`));
     }
   });
-  ctx.ui.append(el('p', { class: 'how', text: T(o.how || '{Tippe|Tippt} eine Karte an und dann die passende Lücke.') }), host, pool, check);
+  const show = revealBtn(() => {
+    if (over || first == null) return;
+    const was = judge(cells.map(x => x.val)), sol = solve(was) || solve(was.map(() => false));
+    if (!sol) return;
+    over = true; sel = null;
+    cells.forEach((x, i) => { if (x.val !== sol[i] || !was[i]) { place(x, sol[i]); x.b.classList.add('is-shown'); } else x.b.classList.add('is-ok'); x.b.disabled = true; });
+    refresh(); show.remove();
+    ctx.finish(Math.floor(ctx.max * first / cells.length + 1e-9), T(o.ok), 'part', `<b>Beim ersten Prüfen: ${first} von ${cells.length} richtig. Die Lösung ist eingeblendet.</b> `);
+  });
+  ctx.ui.append(el('p', { class: 'how', text: T(o.how || '{Tippe|Tippt} eine Karte an und dann die passende Lücke.') }), host, pool, el('div', { class: 'acts' }, check, show));
 };
 /* Beschriftung einer Tafelgrafik: Lücken an Positionen in Prozent */
 function labelFig(svg, pos) { return `${svg}${pos.map((p, i) => `<span class="pos" style="left:${p[0]}%;top:${p[1]}%">[[${i}]]</span>`).join('')}`; }
@@ -637,6 +688,18 @@ Task.plot = o => ctx => {
   const left = o.pts.map((p, i) => ({ p, i, done: false }));
   let errors = 0, over = false;
   const sx = o.x.snap, sy = o.y.snap;
+  const lines = () => {
+    if (o.ideal) gp.prepend(svgN('line', { class: 'ideal', x1: A.X(0), y1: A.Y(0), x2: A.X(o.x.max), y2: A.Y(o.ideal * o.x.max) }));
+    if (o.fit) { const xe = Math.min(o.x.max, o.y.max / o.fit); gp.prepend(svgN('line', { class: 'fit', x1: A.X(0), y1: A.Y(0), x2: A.X(xe), y2: A.Y(o.fit * xe) })); }
+  };
+  const show = revealBtn(() => {
+    if (over) return; over = true;
+    const found = left.filter(l => l.done).length;
+    left.forEach(l => { if (!l.done) gp.append(svgN('circle', { class: 'pt shown', cx: A.X(l.p[0]), cy: A.Y(l.p[1]), r: 5.5 })); });
+    lines(); show.remove();
+    read.innerHTML = 'Die hohlen Punkte sind eingeblendet.';
+    ctx.finish(0, T(o.ok), 'part', `<b>${found} von ${left.length} Messpunkten eingetragen, ${errors} Fehlversuche. Die übrigen sind eingeblendet.</b> `);
+  });
   svg.addEventListener('click', ev => {
     if (over) return;
     const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
@@ -651,9 +714,7 @@ Task.plot = o => ctx => {
       hit.done = true; gp.append(svgN('circle', { class: 'pt', cx: A.X(hit.p[0]), cy: A.Y(hit.p[1]), r: 5.5 }));
       read.innerHTML = `Getroffen: ${txt}.`;
       if (left.every(l => l.done)) {
-        over = true;
-        if (o.ideal) gp.prepend(svgN('line', { class: 'ideal', x1: A.X(0), y1: A.Y(0), x2: A.X(o.x.max), y2: A.Y(o.ideal * o.x.max) }));
-        if (o.fit) { const xe = Math.min(o.x.max, o.y.max / o.fit); gp.prepend(svgN('line', { class: 'fit', x1: A.X(0), y1: A.Y(0), x2: A.X(xe), y2: A.Y(o.fit * xe) })); }
+        over = true; show.remove(); lines();
         ctx.finish(errors === 0 ? ctx.max : errors <= 2 ? Math.floor(ctx.max / 2) : 0, T(o.ok), errors ? 'part' : 'ok', errors ? `<b>${errors} Fehlversuche.</b> ` : '');
       }
     } else {
@@ -661,10 +722,11 @@ Task.plot = o => ctx => {
       const cx = A.X(x), cy = A.Y(y), g = svgN('g', {});
       g.append(svgN('line', { class: 'miss', x1: cx - 5, y1: cy - 5, x2: cx + 5, y2: cy + 5 }), svgN('line', { class: 'miss', x1: cx + 5, y1: cy - 5, x2: cx - 5, y2: cy + 5 }));
       gp.append(g); setTimeout(() => g.remove(), 1100);
-      read.innerHTML = `Getippt: ${txt}. Dort liegt kein Messpunkt.`;
+      if (errors >= REVEAL_AT) show.hidden = false;
+      read.innerHTML = `Getippt: ${txt}. Dort liegt kein Messpunkt.` + (errors >= REVEAL_AT ? REVEAL_NOW : '');
     }
   });
-  ctx.ui.append(el('div', { class: 'plotbox' }, svg), read);
+  ctx.ui.append(el('div', { class: 'plotbox' }, svg), read, show);
 };
 
 /* ===== Tafelgrafik: Grundbausteine (dunkle Tafel) ===== */
@@ -3168,7 +3230,7 @@ function showStart() {
       el('div', { class: 'card' }, el('h2', { text: 'Jahrgangsstufe wählen' }), levels, allCert),
       el('div', { class: 'card' }, el('h2', { text: 'Wer arbeitet?' }), modes, names,
         el('p', { class: 'note', text: 'Zu zweit: Eine Person antwortet und tippt, die andere begründet die Antwort laut. An jeder Station wird getauscht.' }),
-        el('p', { class: 'note', text: 'Wertung: volle Punktzahl beim ersten Versuch, die halbe beim zweiten. Ein Hinweis kostet einen Punkt. Nach jeder Aufgabe erscheint der passende Grundwissen-Eintrag. Der Fortschritt bleibt in diesem Browser gespeichert.' })))));
+        el('p', { class: 'note', text: 'Wertung: volle Punktzahl beim ersten Versuch, die halbe beim zweiten. Ein Hinweis kostet einen Punkt. Nach einem eigenen Versuch lässt sich die Lösung einblenden, dann geht es weiter. Nach jeder Aufgabe erscheint der passende Grundwissen-Eintrag. Der Fortschritt bleibt in diesem Browser gespeichert.' })))));
 }
 function enterLevel(li) {
   S.lvl = li; if (S.open[li] == null) S.open[li] = 0; S.names = S.names.filter((x, i) => i < 2);
