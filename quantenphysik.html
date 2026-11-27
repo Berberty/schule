@@ -794,7 +794,8 @@ function mzi(root,opts){
     g+='<line class="ink" stroke-width="4" x1="136" y1="196" x2="164" y2="224"/><text class="mut" x="128" y="228" text-anchor="end" font-size="15">Spiegel</text>';
     if(s2==='pending')g+='<rect class="box" x="364" y="194" width="32" height="32" stroke-dasharray="4 3"/><text x="380" y="216" text-anchor="middle" font-size="18">?</text>';
     else if(show2){g+='<rect class="box" x="364" y="194" width="32" height="32"'+(opts.delayed?' stroke-dasharray="4 3"':'')+'/><line class="ln" x1="364" y1="194" x2="396" y2="226"/>';}
-    g+='<text x="356" y="240" text-anchor="end" font-size="16">ST 2'+(opts.delayed?' (Zufallsgenerator)':'')+'</text>';
+    if(show2||opts.delayed)g+='<text x="356" y="240" text-anchor="end" font-size="16">ST 2'+(opts.delayed?' (Zufallsgenerator)':'')+'</text>';
+    else g+='<rect x="364" y="194" width="32" height="32" fill="none" class="ln" stroke-dasharray="4 3"/><text class="mut" x="356" y="240" text-anchor="end" font-size="15">'+(opts.st2note||'ST 2 entfernt')+'</text>';
     g+='<text class="mut" x="215" y="'+(W8?52:62)+'" text-anchor="middle" font-size="15">Weg B</text><text class="mut" x="'+(W8?166:158)+'" y="172" font-size="15">Weg A</text>';
     if(st.pol){g+='<rect class="'+(fl==='pa'?'fillbad':'fillacc')+'" x="136" y="128" width="28" height="9"/><text x="128" y="137" text-anchor="end" font-size="15">0°</text><rect class="'+(fl==='pb'?'fillbad':'fillacc')+'" x="296" y="56" width="9" height="28"/><text x="300" y="50" text-anchor="middle" font-size="15">90°</text>';}
     if(st.er!==0){var lab=(st.er>0?'':'−')+'45°';g+='<rect class="'+(fl==='e1'?'fillbad':'fillacc')+'" x="421" y="196" width="9" height="28"/><text x="425" y="190" text-anchor="middle" font-size="15">'+lab+'</text><rect class="'+(fl==='e2'?'fillbad':'fillacc')+'" x="366" y="238" width="28" height="9"/><text x="400" y="247" font-size="15">'+lab+'</text>';}
@@ -994,15 +995,15 @@ function doubleSlit(root,opts){
 function coincSim(root){
   var id='k'+(++uid);
   root.innerHTML='<div class="sim"><div id="'+id+'f"></div><div class="simctl"><button type="button" class="btn small" id="'+id+'b">Neue Messung</button></div><div class="simout" id="'+id+'o"></div></div>';
-  function X(t){return 16+t*328;}
+  function X(t){return 30+t*580;}
   function run(){var i,np=6+Math.floor(Math.random()*4),nd=2+Math.floor(Math.random()*3),nt=1+Math.floor(Math.random()*2),t;
-    var g='<svg viewBox="0 0 360 126" role="img" aria-label="Zeitverlauf der Signale an Triggerdetektor und Messdetektor"><text x="16" y="14" font-size="12">Triggerdetektor T</text><line class="grid" x1="16" x2="344" y1="50" y2="50"/><text x="16" y="78" font-size="12">Detektor D im Experiment</text><line class="grid" x1="16" x2="344" y1="114" y2="114"/>';
-    for(i=0;i<np;i++){t=X(Math.random()).toFixed(1);g+='<rect class="fillacc" opacity=".14" x="'+(t-4)+'" y="22" width="8" height="92"/><line class="acc" stroke-width="2.5" x1="'+t+'" x2="'+t+'" y1="24" y2="50"/><line class="acc" stroke-width="2.5" x1="'+t+'" x2="'+t+'" y1="88" y2="114"/>';}
-    for(i=0;i<nt;i++){t=X(Math.random()).toFixed(1);g+='<line class="ln" stroke-width="2.5" x1="'+t+'" x2="'+t+'" y1="24" y2="50"/>';}
-    for(i=0;i<nd;i++){t=X(Math.random()).toFixed(1);g+='<line class="ln" stroke-width="2.5" x1="'+t+'" x2="'+t+'" y1="88" y2="114"/>';}
-    g+='<text class="mut" x="344" y="124" text-anchor="end" font-size="11">Zeit</text></svg>';
+    var g='<svg viewBox="0 0 640 190" role="img" aria-label="Zeitverlauf der Signale an Triggerdetektor und Messdetektor"><text x="20" y="18" font-size="15">Triggerdetektor T</text><line class="grid" x1="20" x2="620" y1="74" y2="74"/><text x="20" y="108" font-size="15">Detektor D im Experiment</text><line class="grid" x1="20" x2="620" y1="164" y2="164"/>';
+    for(i=0;i<np;i++){t=X(Math.random()).toFixed(1);g+='<rect class="fillacc" opacity=".14" x="'+(t-6)+'" y="28" width="12" height="136"/><line class="acc" stroke-width="3" x1="'+t+'" x2="'+t+'" y1="32" y2="74"/><line class="acc" stroke-width="3" x1="'+t+'" x2="'+t+'" y1="122" y2="164"/>';}
+    for(i=0;i<nt;i++){t=X(Math.random()).toFixed(1);g+='<line class="ln" stroke-width="3" x1="'+t+'" x2="'+t+'" y1="32" y2="74"/>';}
+    for(i=0;i<nd;i++){t=X(Math.random()).toFixed(1);g+='<line class="ln" stroke-width="3" x1="'+t+'" x2="'+t+'" y1="122" y2="164"/>';}
+    g+='<text class="mut" x="620" y="184" text-anchor="end" font-size="14">Zeit →</text></svg>';
     root.querySelector('#'+id+'f').innerHTML=g;
-    root.querySelector('#'+id+'o').innerHTML='<span>Signale an D: <b>'+(np+nd)+'</b></span><span>davon gleichzeitig mit T: <b>'+np+'</b></span><span>ohne Triggersignal: <b>'+nd+'</b></span>';}
+    root.querySelector('#'+id+'o').innerHTML='<span>Signale an D: <b>'+(np+nd)+'</b></span><span>davon gleichzeitig mit T: <b>'+np+'</b></span><span>an D ohne T: <b>'+nd+'</b></span><span>an T ohne D: <b>'+nt+'</b></span>';}
   root.querySelector('#'+id+'b').addEventListener('click',run);run();
 }
 
@@ -1108,10 +1109,11 @@ var lessons=[
  {t:'Ergebnis der Stunde 2',h:'<div class="merk"><ul><li>Gegenfeldmethode: Bei der Gegenspannung U<sub>G</sub> verschwindet der Photostrom. Es gilt e·U<sub>G</sub> = E<sub>kin,max</sub>.</li><li>Im U<sub>G</sub>-f-Diagramm entsteht eine Gerade mit der Steigung h/e und dem Achsenabschnitt −W<sub>A</sub>/e.</li><li>h = 6,626·10'+H+' Js ist eine universelle Naturkonstante.</li><li>Messunsicherheiten streuen zufällig, Messabweichungen verschieben in eine Richtung.</li><li>Photon: Energie E = h·f, Impuls p = h/λ, Masse 0.</li></ul></div>'}
 ]},
 {t:'Das Photon als Quantenobjekt',steps:[
- {t:'Ein Photon nach dem anderen',h:'<p><b>Worum es geht.</b> Der Photoeffekt zeigt: Licht gibt Energie in Portionen ab. Die Interferenz zeigt: Licht breitet sich als Welle aus. In dieser Stunde untersucht ihr, wie beides zusammenpasst. Dazu braucht man Experimente mit einzelnen Photonen.</p><p><b>Die Quelle.</b> Ein abgeschwächter Laser genügt nicht, denn bei ihm kommen zufällig auch zwei Photonen zugleich. Man nutzt einen besonderen Kristall: Er wandelt ab und zu ein Laserphoton in ein <b>Paar</b> von Photonen um, die gleichzeitig entstehen. Eines läuft zum Triggerdetektor T, das andere in das Experiment zum Detektor D.</p>'+figPaar()+'<p>Unten seht ihr, wann T und D während einer kurzen Messzeit ansprechen. Jeder Strich ist ein Signal. Startet einige Messungen.</p>',w:coincSim,
-  tasks:[{k:'mc',tag:'Beobachtung',q:'Vergleicht die beiden Zeilen. Was fällt auf?',o:['Die meisten Signale an D kommen gleichzeitig mit einem Signal an T, einige aber nicht.','T und D sprechen nie gleichzeitig an.','Beide Zeilen sind immer exakt gleich.'],c:0,e:'Signale ohne Partner stammen von Störlicht oder vom Detektor selbst.'},
+ {t:'Ein Photon nach dem anderen',h:['<p><b>Worum es geht.</b> Der Photoeffekt zeigt: Licht gibt Energie in Portionen ab. Die Interferenz zeigt: Licht breitet sich als Welle aus.</p><p>In dieser Stunde untersucht ihr, wie beides zusammenpasst. Dazu braucht man Experimente mit einzelnen Photonen.</p>',
+  '<p><b>Die Quelle.</b> Ein abgeschwächter Laser genügt nicht: Zufällig kommen auch zwei Photonen zugleich. Ein besonderer Kristall wandelt ab und zu ein Laserphoton in ein <b>Paar</b> gleichzeitig entstehender Photonen um.</p>'+figPaar()+'<p>Die Zeitleiste zeigt, wann T und D ansprechen. Jeder Strich ist ein Signal. Startet einige Messungen.</p>'],w:coincSim,
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Vergleicht die beiden Zeilen. Was fällt auf?',o:['Die meisten Signale an D kommen gleichzeitig mit einem Signal an T, einige aber nicht.','T und D sprechen nie gleichzeitig an.','Beide Zeilen sind immer exakt gleich.'],c:0,e:'Signale an D ohne Partner stammen von Störlicht oder vom Detektor selbst. Spricht T allein an, wurde das Partnerphoton nicht nachgewiesen: Kein Detektor erfasst jedes Photon.'},
    {k:'mc',tag:'Deutung',q:'Man zählt ein Signal an D nur, wenn T gleichzeitig angesprochen hat (Koinzidenzmethode). Was gewinnt man?',o:['Man weiß: In diesem Moment war genau ein Photon im Experiment. Störsignale werden aussortiert.','Die Zählrate verdoppelt sich.','Die Photonen erhalten mehr Energie.'],c:0,e:'So präpariert man einzelne Photonen.'}]},
- {t:'Ein Photon am Strahlteiler',h:'<p>Ein Strahlteiler (ST) ist ein halbdurchlässiger Spiegel: Von einem Lichtstrahl lässt er die Hälfte durch, die andere Hälfte reflektiert er. Was macht er mit einem einzelnen Photon, das sich nicht halbieren lässt?</p>'+D(['Sendet zehnmal ein einzelnes Photon und beobachtet, welcher Detektor aufleuchtet.','Sendet dann mehrmals 100 Photonen und vergleicht die Zählerstände.']),w:function(r){mzi(r,{init:{st2:false}});},
+ {t:'Ein Photon am Strahlteiler',h:'<p>Ein Strahlteiler (ST) ist ein halbdurchlässiger Spiegel: Von einem Lichtstrahl lässt er die Hälfte durch, die andere Hälfte reflektiert er. Was macht er mit einem einzelnen Photon, das sich nicht halbieren lässt?</p>'+D(['Sendet zehnmal ein einzelnes Photon und beobachtet, welcher Detektor aufleuchtet.','Sendet dann mehrmals 100 Photonen und vergleicht die Zählerstände.']),w:function(r){mzi(r,{init:{st2:false},st2note:'hier kommt später ST 2 hin'});},
   tasks:[{k:'mc',tag:'Beobachtung',q:'Was zeigt sich bei jedem einzelnen Photon?',o:['Genau ein Detektor spricht an, nie beide zugleich.','Beide Detektoren sprechen gleichzeitig an.'],c:0,e:'Das Photon wird nie geteilt. Darin verhält es sich <b>teilchenartig</b>.'},
    {k:'mc',tag:'Beobachtung',q:'Was zeigen die Zählerstände nach vielen Photonen?',o:['Etwa die Hälfte an D1, die Hälfte an D2. Beim einzelnen Photon ist nicht vorhersagbar, wohin es geht.','Die Detektoren wechseln sich regelmäßig ab.','Fast alle Photonen landen an D1.'],c:0,e:'Vorhersagen lässt sich nur die Wahrscheinlichkeit, hier je 50 %. Dieses Verhalten heißt <b>stochastisch</b>.'}]},
  {t:'Das Mach-Zehnder-Interferometer',h:'<p>Jetzt führt ein zweiter Strahlteiler die beiden Wege wieder zusammen. Die Wege sind exakt gleich lang.</p><p><b>Vermutung:</b> Jedes Photon nimmt an Strahlteiler 1 zufällig einen der Wege. Strahlteiler 2 verteilt es dann wieder zufällig. Es müssten je 50 % an D1 und D2 ankommen.</p>'+D(['Sendet mehrmals 100 Photonen und prüft die Vermutung.','Blockiert Weg B und sendet wieder mehrmals 100 Photonen.']),w:function(r){mzi(r,{ctrl:['block']});},
@@ -1129,7 +1131,7 @@ var lessons=[
    {k:'mc',tag:'Beobachtung',q:'Δs = λ: Wie stehen die Zeiger am Ende?',o:['Wieder in derselben Richtung wie bei Δs = 0.','In entgegengesetzten Richtungen.','Senkrecht zueinander.'],c:0,e:'Eine ganze Wellenlänge mehr ist eine volle Umdrehung mehr. Danach wiederholt sich alles.'}],
   post:'<div class="merk stack"><p><b>Merke.</b> Ist Weg B um Δs länger als Weg A, dreht sich Zeiger B zusätzlich um</p>'+F('Δφ = 360° · '+fr('Δs','λ'))+'<div class="tw"><table><thead><tr><th>Δs</th><th class="n">0</th><th class="n">λ/4</th><th class="n">λ/2</th><th class="n">3λ/4</th><th class="n">λ</th></tr></thead><tbody><tr><td>Δφ</td><td class="n">0°</td><td class="n">90°</td><td class="n">180°</td><td class="n">270°</td><td class="n">360°</td></tr></tbody></table></div><p>Das kennt ihr vom Doppelspalt: Ein Gangunterschied von λ/2 macht aus Verstärkung Auslöschung, einer von λ ändert nichts.</p></div>'},
  {t:'Gangunterschied im Interferometer',h:'<p>Jetzt kommen beide Regeln zusammen. Die Strahlteiler legen fest, wie die Zeiger bei gleich langen Wegen stehen: bei D1 beide bei 90°, bei D2 bei 180° und 0°. Ein Gangunterschied Δs dreht Zeiger B zusätzlich um 360° · Δs/λ.</p><p>Mit dem Regler macht ihr Weg B länger. Die Zeigerdiagramme zeigen das Ergebnis für beide Detektoren.</p>'+D(['Verschiebt den Regler langsam und beobachtet, wie sich die violette Welle gegenüber der gelben verschiebt.','Stellt Δs = λ/4 ein, sendet 100 Photonen und vergleicht mit den Zeigerdiagrammen.','Verschiebt den Regler, bis alle Photonen an D2 ankommen.','Stellt Δs = λ ein und sendet wieder 100 Photonen.']),w:function(r){mzi(r,{ctrl:['phase'],zeiger:true,wave:true});},
-  tasks:[{k:'num',tag:'Beobachtung',q:'Δs = λ/4: Wie groß ist P(D1)?',a:0.5,tol:.03,u:'',e:'Die Zeiger stehen senkrecht. Beide Detektoren sprechen gleich häufig an.'},
+  tasks:[{k:'num',tag:'Beobachtung',q:'Δs = λ/4: Wie groß ist P(D1)?',a:0.5,tol:.03,u:'',hint:'Gebt die Wahrscheinlichkeit als Zahl zwischen 0 und 1 an.',e:'Die Zeiger stehen senkrecht. Beide Detektoren sprechen gleich häufig an.'},
    {k:'mc',tag:'Beobachtung',q:'Bei welchem Gangunterschied erreichen alle Photonen D2?',o:['λ/2','λ/4','λ'],c:0,e:'Ein halber Wellenlängen-Unterschied dreht Zeiger B um 180°. Die Rollen von D1 und D2 sind vertauscht.'},
    {k:'mc',tag:'Beobachtung',q:'Δs = λ: Wo kommen die Photonen an?',o:['Alle an D1, wie bei gleich langen Wegen.','Alle an D2.','Je zur Hälfte an D1 und D2.'],c:0,e:'Eine volle Umdrehung mehr ändert nichts.'}],
   post:['<div class="merk stack"><p><b>Beispiel Δs = λ/2.</b> Zeiger B dreht sich zusätzlich um 180°, Zeiger A bleibt, wie er war.</p><p><b>D1:</b> Zeiger A steht bei 90°, Zeiger B bei 90° + 180° = 270°. Die Zeiger zeigen in entgegengesetzte Richtungen: ½ − ½ = 0, also P(D1) = 0.</p><p><b>D2:</b> Zeiger A steht bei 180°, Zeiger B bei 0° + 180° = 180°. Die Zeiger zeigen in dieselbe Richtung: ½ + ½ = 1, also P(D2) = 1.</p><p>Die zusätzliche Drehung kehrt das Ergebnis um: Jetzt kommen alle Photonen an D2 an.</p></div>','<div class="merk stack"><p><b>Beispiel Δs = λ/4.</b> Zeiger B dreht sich um 90° weiter. Bei beiden Detektoren stehen die Zeiger dann senkrecht zueinander. Nach Pythagoras hat der Summenzeiger die Länge √(½² + ½²) = √½, also ist P = (√½)² = ½ für beide Detektoren.</p><div class="tw"><table><thead><tr><th>Δs</th><th>Δφ</th><th class="n">P(D1)</th><th class="n">P(D2)</th></tr></thead><tbody><tr><td>0</td><td>0°</td><td class="n">1</td><td class="n">0</td></tr><tr><td>λ/4</td><td>90°</td><td class="n">½</td><td class="n">½</td></tr><tr><td>λ/2</td><td>180°</td><td class="n">0</td><td class="n">1</td></tr><tr><td>3λ/4</td><td>270°</td><td class="n">½</td><td class="n">½</td></tr><tr><td>λ</td><td>360°</td><td class="n">1</td><td class="n">0</td></tr></tbody></table></div><p>Für jeden Gangunterschied gilt P(D1) = cos²(Δφ/2) und P(D2) = sin²(Δφ/2). Zusammen ergibt das immer 1: Jedes Photon wird an einem der beiden Detektoren nachgewiesen.</p></div>']},
@@ -1234,7 +1236,7 @@ function cleanState(o){var st={done:{},L:0,S:0,P:0,meas:{},td:{},ft:{},name:'',f
   if(o.td&&typeof o.td==='object'&&!Array.isArray(o.td))for(k in o.td){var m3=/^(\d+)-(\d+)-(\d+)$/.exec(k),ls=m3&&lessons[+m3[1]],ss=ls&&ls.steps[+m3[2]];if(o.td[k]&&ss&&(ss.tasks||[])[+m3[3]])st.td[k]=1;}
   if(o.ft&&typeof o.ft==='object'&&!Array.isArray(o.ft))for(k in o.ft)if(st.td[k])st.ft[k]=o.ft[k]?1:0;
   if(typeof o.name==='string')st.name=o.name.slice(0,60);
-  st.free=o.free===true;st.view=o.view==='cert'?'cert':'step';
+  st.free=o.free===true;st.cs=o.cs===1;st.view=o.view==='cert'?'cert':'step';
   if(typeof o.fin==='string'&&!isNaN(Date.parse(o.fin)))st.fin=o.fin;
   if(o.meas&&typeof o.meas==='object'&&!Array.isArray(o.meas))HG.forEach(function(h){var v=o.meas[h[0]],ug=1239.84/h[0]-1.94;if(typeof v==='number'&&isFinite(v)&&Math.abs(v-ug)<=0.05)st.meas[h[0]]=Math.round(v*100)/100;});
   return st;}
@@ -1249,10 +1251,13 @@ function markDone(L,S){if(SOLUTION)return;if(!state.done[sid(L,S)]){state.done[s
 var order=[];lessons.forEach(function(l,L){l.steps.forEach(function(_,S){order.push([L,S]);});});
 function gidx(L,S){var n=0;for(var i=0;i<L;i++)n+=lessons[i].steps.length;return n+S;}
 function locked(){return LOCK&&!SOLUTION&&!state.free;}
-function frontier(){for(var i=0;i<order.length;i++)if(!state.done[sid(order[i][0],order[i][1])])return i;return order.length;}
-function reachable(L,S){return !locked()||gidx(L,S)<=frontier();}
-function allDone(){return frontier()>=order.length;}
-function toFrontier(){var f=order[Math.min(frontier(),order.length-1)];state.L=f[0];state.S=f[1];state.P=0;}
+/* Jede Stunde ist frei wählbar. Innerhalb einer Stunde geht es der Reihe nach. */
+function frontierIn(L){var n=lessons[L].steps.length;for(var j=0;j<n;j++)if(!state.done[sid(L,j)])return j;return n;}
+function reachable(L,S){return !locked()||S<=frontierIn(L);}
+function allDone(){for(var i=0;i<lessons.length;i++)if(frontierIn(i)<lessons[i].steps.length)return false;return true;}
+function openLessons(){var o=[];for(var i=0;i<lessons.length;i++)if(frontierIn(i)<lessons[i].steps.length)o.push(i+1);return o;}
+function wouldComplete(L,S){for(var i=0;i<order.length;i++){var o=order[i];if((o[0]!==L||o[1]!==S)&&!state.done[sid(o[0],o[1])])return false;}return true;}
+function toFrontier(){state.S=Math.min(frontierIn(state.L),lessons[state.L].steps.length-1);state.P=0;}
 if(locked()&&!reachable(state.L,state.S))toFrontier();
 function toast(m){var t=document.getElementById('toast');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(toast.id);toast.id=setTimeout(function(){t.classList.remove('show');},3400);}
 function countDone(L){var n=0;lessons[L].steps.forEach(function(_,i){if(state.done[sid(L,i)])n++;});return n;}
@@ -1274,16 +1279,23 @@ function taskNum(t,done,idp){
   var row=el('div','numrow'),inp=el('input');inp.type='text';inp.id=idp;inp.setAttribute('inputmode','text');inp.setAttribute('autocomplete','off');inp.setAttribute('aria-label','Ergebnis');
   var btn=el('button','btn small','Prüfen');btn.type='button';
   row.appendChild(inp);if(t.u)row.appendChild(el('span','unit',t.u));row.appendChild(btn);box.appendChild(row);
-  box.appendChild(el('p','hint','Eingabe mit Komma oder Punkt.'));
+  box.appendChild(el('p','hint','Eingabe mit Komma oder Punkt, dann „Prüfen“ oder Eingabetaste.'));
   var fb=el('div');box.appendChild(fb);var tries=0,fin=false,sol=null;
-  function finish(ok){fin=true;inp.disabled=true;btn.disabled=true;if(sol)sol.remove();fb.className=ok?'fb good':'fb neutral';fb.innerHTML=(ok?'<b>Richtig.</b> ':'<b>Lösungsweg.</b> ')+(t.e||'');done(ok&&tries===0);}
+  var right=(t.sol||t.a.toLocaleString('de-DE',{maximumSignificantDigits:3}))+(t.u?' '+t.u:'');
+  function shown(){var d=document.createElement('span');d.textContent=inp.value.trim();return d.innerHTML;}
+  /* ok: richtig gelöst. Sonst wird die Lösung gezeigt, damit es weitergeht. */
+  function finish(ok,own){fin=true;inp.disabled=true;btn.disabled=true;if(sol)sol.remove();fb.className=ok?'fb good':'fb neutral';
+    fb.innerHTML=ok?'<b>Richtig.</b> '+(t.e||''):(own?'Eure Eingabe '+own+' passt nicht. ':'')+'<b>Richtig ist '+right+'.</b> '+(t.e||'');done(ok&&tries===0);}
   function check(){if(fin)return;var v=parseNum(inp.value);
-    if(isNaN(v)){fb.className='fb bad';fb.innerHTML='Die Eingabe wurde nicht als Zahl erkannt.';return;}
+    if(isNaN(v)){fb.className='fb bad';fb.innerHTML=inp.value.trim()===''?'Tragt zuerst einen Wert ein.':'„'+shown()+'“ wurde nicht als Zahl erkannt. Gebt nur die Zahl ein, zum Beispiel 0,75.';inp.focus();return;}
     if(numOK(v,t.a,t.tol)){finish(true);return;}
-    tries++;var msg='Noch nicht. '+(t.hint||'Prüft Ansatz, Umrechnungen und Rundung.');
+    tries++;
+    if(tries>=2){finish(false,shown());return;}
+    var msg=(v>t.a?'Der Wert ist zu groß. ':'Der Wert ist zu klein. ')+(t.hint||'Prüft Ansatz, Umrechnungen und Rundung.');
     if(t.a!==0&&v!==0){var lg=Math.log10(Math.abs(v/t.a));if(Math.abs(lg-Math.round(lg))<0.02&&Math.round(lg)!==0)msg='Die Ziffernfolge stimmt, die Zehnerpotenz oder die Einheit noch nicht.';}
-    fb.className='fb bad';fb.innerHTML=msg;
-    if(tries>=2&&!sol){sol=el('button','btn small','Lösungsweg anzeigen');sol.type='button';sol.addEventListener('click',function(){finish(false);});box.appendChild(sol);}
+    fb.className='fb bad';fb.innerHTML='<b>'+shown()+' stimmt noch nicht.</b> '+msg+' Ihr habt noch einen Versuch.';
+    if(!sol){sol=el('button','btn small','Lösung anzeigen');sol.type='button';sol.addEventListener('click',function(){finish(false);});box.appendChild(sol);}
+    inp.focus();if(inp.select)inp.select();
   }
   btn.addEventListener('click',check);inp.addEventListener('keydown',function(e){if(e.key==='Enter')check();});
   return box;
@@ -1323,7 +1335,7 @@ function header(){
   document.getElementById('overallBar').style.width=(100*d/total)+'%';
   var nav=document.getElementById('nav');nav.innerHTML='';
   lessons.forEach(function(l,i){var b=el('button',null,'<b><span class="sw">Stunde </span>'+(i+1)+'</b><span>'+(SOLUTION?l.steps.length+' Stat.':countDone(i)+'/'+l.steps.length)+'</span>');b.type='button';b.style.setProperty('--lc','var(--hg'+(i+1)+')');
-    if(i===state.L&&state.view!=='cert')b.setAttribute('aria-current','true');if(!reachable(i,0)){b.disabled=true;b.title='Erst die vorige Stunde abschließen';}b.addEventListener('click',function(){var f=0;for(var j=0;j<l.steps.length;j++){if(!state.done[sid(i,j)]){f=j;break;}}go(i,f);});nav.appendChild(b);});
+    if(i===state.L&&state.view!=='cert')b.setAttribute('aria-current','true');b.addEventListener('click',function(){var f=0;for(var j=0;j<l.steps.length;j++){if(!state.done[sid(i,j)]){f=j;break;}}go(i,f);});nav.appendChild(b);});
   var lh=document.getElementById('lessonhead'),L=lessons[state.L];
   lh.innerHTML='<h2>Stunde '+(state.L+1)+': '+L.t+'</h2><p>'+L.steps.length+' Stationen · etwa 45 Minuten</p>';
   var dots=el('div','dots');L.steps.forEach(function(s,i){var b=el('button',state.done[sid(state.L,i)]?'done':null,String(i+1));b.type='button';b.setAttribute('aria-label','Station '+(i+1)+': '+s.t);
@@ -1341,7 +1353,8 @@ function refreshNav(){var c=curParts;if(!c)return;var p=state.P,mx=maxPart(),L=s
   var lastSt=S===lessons[L].steps.length-1,lastP=p>=c.els.length-1,end=lastSt&&L===lessons.length-1;
   var blocked=locked()&&!state.done[sid(L,S)]&&!!c.block[p]&&!c.solved[p];
   c.prev.disabled=(L===0&&S===0&&p===0);c.next.disabled=blocked;
-  c.next.textContent=blocked?'Weiter nach der Lösung':!lastP?'Weiter':end?(SOLUTION?'Ende':'Lernpfad abschließen'):lastSt?'Weiter zu Stunde '+(L+2):'Nächste Station';}
+  var fin=lastSt&&!SOLUTION&&!state.cs&&wouldComplete(L,S);
+  c.next.textContent=blocked?'Weiter nach der Lösung':!lastP?'Weiter':fin?'Lernpfad abschließen':end?(SOLUTION?'Ende':(locked()&&!allDone()?'Stunde '+(L+1)+' abschließen':'Lernpfad abschließen')):lastSt?'Weiter zu Stunde '+(L+2):'Nächste Station';}
 function showPart(p){
   var c=curParts;if(!c)return;p=Math.max(0,Math.min(c.els.length-1,p,maxPart()));state.P=p;save();
   c.els.forEach(function(e,i){e.hidden=i!==p;});
@@ -1371,9 +1384,11 @@ function render(){
   card.appendChild(colA);card.appendChild(colB);card.appendChild(colC);
   var els=[],labels=[],block=[],todo=[],pcol=withsim?colC:colB;
   // Einführungstext: neben dem Experiment als eigene Folie, sonst dauerhaft links
-  var intro=el('div',withsim?'body o1 part':'body o1',step.h);
+  var hs=[].concat(step.h),intro=el('div',withsim?'body o1 part':'body o1',hs[0]),intros=[intro];
   if(step.h2)intro.appendChild(el('div','body',step.h2));
-  if(withsim){pcol.appendChild(intro);els.push(intro);block.push(false);labels.push('Einführung');var wr=el('div','o2');colB.appendChild(wr);try{step.w(wr);}catch(e){wr.innerHTML='<div class="sim"><p class="hint">Das Experiment konnte auf diesem Gerät nicht gestartet werden. Ladet die Seite neu oder nutzt einen aktuellen Browser.</p></div>';if(window.console&&console.error)console.error(e);}}
+  if(!withsim)for(var hi=1;hi<hs.length;hi++)intro.appendChild(el('div','body',hs[hi]));
+  else for(var hj=1;hj<hs.length;hj++)intros.push(el('div','body o1 part',hs[hj]));
+  if(withsim){intros.forEach(function(x,xi){pcol.appendChild(x);els.push(x);block.push(false);labels.push(intros.length>1?'Einführung '+(xi+1):'Einführung');});var wr=el('div','o2');colB.appendChild(wr);try{step.w(wr);}catch(e){wr.innerHTML='<div class="sim"><p class="hint">Das Experiment konnte auf diesem Gerät nicht gestartet werden. Ladet die Seite neu oder nutzt einen aktuellen Browser.</p></div>';if(window.console&&console.error)console.error(e);}}
   else colA.appendChild(intro);
   var nd=0,need=tasks.filter(function(t){return !t.opt;}).length;
   tasks.forEach(function(t,i){
@@ -1394,10 +1409,13 @@ function render(){
   var prev=el('button','btn','Zurück');prev.type='button';
   var next=el('button','btn primary','Weiter');next.type='button';
   curParts={els:els,pills:pills,prev:prev,next:next,moved:false,block:block,solved:block.map(function(){return false;})};
-  prev.addEventListener('click',function(){if(state.P>0)return showPart(state.P-1);if(S>0)go(L,S-1,true,99);else if(L>0)go(L-1,lessons[L-1].steps.length-1,true,99);});
+  prev.addEventListener('click',function(){if(state.P>0)return showPart(state.P-1);if(S>0)go(L,S-1,true,99);else if(L>0)go(L-1,Math.min(frontierIn(L-1),lessons[L-1].steps.length-1),true,99);});
   next.addEventListener('click',function(){if(next.disabled)return;if(state.P<els.length-1)return showPart(state.P+1);
     if(!hasTasks||need===0)markDone(L,S);var last=S===lessons[L].steps.length-1;
-    if(last&&L===lessons.length-1){if(SOLUTION){header();next.textContent='Abgeschlossen';return;}state.view='cert';save();render();return;}
+    if(last&&!SOLUTION&&!state.cs&&allDone()){state.view='cert';save();render();return;}
+    if(last&&L===lessons.length-1){if(SOLUTION){header();next.textContent='Abgeschlossen';return;}
+      if(locked()&&!allDone()){var op=openLessons();header();refreshNav();toast('Stunde '+(L+1)+' ist abgeschlossen. Für die Urkunde '+(op.length===1?'fehlt noch Stunde '+op[0]:'fehlen noch die Stunden '+op.slice(0,-1).join(', ')+' und '+op[op.length-1])+'.');return;}
+      state.view='cert';save();render();return;}
     if(last)go(L+1,0);else go(L,S+1);});
   foot.appendChild(prev);foot.appendChild(next);
   todo.forEach(function(x){restore(x[0],x[1]);});
@@ -1406,6 +1424,7 @@ function render(){
 /* ---------- Urkunde ---------- */
 function certStats(){var N=0,M=0;lessons.forEach(function(l,L){l.steps.forEach(function(s,S){(s.tasks||[]).forEach(function(t,i){if(t.opt||!/^(mc|num|cls)$/.test(t.k))return;N++;if(state.ft[L+'-'+S+'-'+i])M++;});});});return {N:N,M:M};}
 function renderCert(){
+  if(allDone()&&!state.cs){state.cs=1;save();}
   curParts=null;showMain(false);header();
   var host=document.getElementById('cert'),open=0,k;for(k=0;k<order.length;k++)if(!state.done[sid(order[k][0],order[k][1])])open++;
   var cols=['#c99700','#4f9a00','#2f48d8','#7a2fc0','#6b5a85'],st=certStats(),d=state.fin?new Date(state.fin):new Date();
