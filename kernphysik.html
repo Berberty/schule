@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lernpfad Kern- und Teilchenphysik</title>
+<style>
+/* Layout: eine Lesespalte; oben fünf Stunden als Leiste, darunter Stationen einer Stunde, jeweils eine Station sichtbar. */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#17212c; --muted:#586574; --line:#d3dae2;
+  --accent:#2742c4; --accent-soft:#e7ebfb;
+  --sol:#c8102e; --good:#1b7a48; --good-soft:#e3f4ea; --bad:#b0362e; --bad-soft:#fbe9e7;
+  --hg1:#0f7c8a; --hg2:#7a2fc0; --hg3:#c4561a; --hg4:#3a8a1e; --hg5:#b08900;
+  --font-display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --font-body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-math:"Cambria Math","STIX Two Math","Times New Roman",Georgia,serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0f141a; --surface:#18202a; --ink:#e7ecf1; --muted:#9ba8b6; --line:#2d3945;
+    --accent:#8fa8ff; --accent-soft:#1f2a4d;
+    --sol:#ff6b6b; --good:#62cf95; --good-soft:#143524; --bad:#ff8f85; --bad-soft:#3d1c19;
+    --hg1:#3cc4d4; --hg2:#b784f0; --hg3:#f0894f; --hg4:#7ccb5a; --hg5:#e6c23a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0f141a; --surface:#18202a; --ink:#e7ecf1; --muted:#9ba8b6; --line:#2d3945;
+  --accent:#8fa8ff; --accent-soft:#1f2a4d;
+  --sol:#ff6b6b; --good:#62cf95; --good-soft:#143524; --bad:#ff8f85; --bad-soft:#3d1c19;
+  --hg1:#3cc4d4; --hg2:#b784f0; --hg3:#f0894f; --hg4:#7ccb5a; --hg5:#e6c23a;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.55}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 56px;display:flex;flex-direction:column;gap:16px}
+header h1{font-family:var(--font-display);font-size:1.75rem;line-height:1.15;margin:0 0 4px;text-wrap:balance;font-weight:600}
+header p{margin:0;color:var(--muted);font-size:.95rem}
+.overall{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.simctl label{flex-wrap:wrap;max-width:100%}
+.simctl select{max-width:100%;min-width:0}
+.card,.lessonhead,.all{overflow-wrap:break-word;min-width:0}
+nav.stunden{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+@media (max-width:380px){nav.stunden .sw{display:none}nav.stunden button b{font-size:1.05rem}}
+nav.stunden button{font:inherit;font-size:.82rem;line-height:1.2;padding:8px 4px 7px;border:1px solid var(--line);border-top:4px solid var(--lc);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer;min-height:54px;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav.stunden button b{font-size:.95rem}
+nav.stunden button span{color:var(--muted);font-variant-numeric:tabular-nums}
+nav.stunden button[aria-current="true"]{background:var(--accent-soft);border-color:var(--accent);border-top-color:var(--lc)}
+.lessonhead h2{font-family:var(--font-display);font-size:1.3rem;margin:0;line-height:1.2;text-wrap:balance;font-weight:600}
+.lessonhead p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.dots button{font:inherit;font-size:.8rem;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;font-variant-numeric:tabular-nums}
+.dots button.done{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.dots button[aria-current="true"]{border:2px solid var(--accent);color:var(--ink);font-weight:700}
+.card{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--lc);border-radius:8px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:14px}
+.card h3{font-family:var(--font-display);font-size:1.2rem;margin:0;line-height:1.25;text-wrap:balance;font-weight:600}
+.eyebrow{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
+.body{display:flex;flex-direction:column;gap:12px}
+.body p,.body ul,.body ol{margin:0}
+.body ul,.body ol{padding-left:1.25em;display:flex;flex-direction:column;gap:6px}
+.formel{font-family:var(--font-math);font-size:1.15rem;text-align:center;padding:10px 8px;background:var(--bg);border-radius:6px;overflow-x:auto;white-space:nowrap}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.2;margin:0 .15em}
+.frac>span:first-child{border-bottom:1px solid currentColor;padding:0 .3em 1px}
+.frac>span:last-child{padding:1px .3em 0}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--bg);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.merk.stack{display:flex;flex-direction:column;gap:10px}
+.merk{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 14px;border-radius:0 6px 6px 0}
+.regel{border:1px solid var(--line);background:var(--bg);padding:10px 12px;border-radius:6px}
+.durch{border:1px dashed var(--muted);padding:10px 12px;border-radius:6px;display:flex;flex-direction:column;gap:6px}
+.durch>b{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.meter{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.meter>div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column}
+.meter span{font-size:.8rem;color:var(--muted)}
+.meter b{font-size:1.35rem;font-variant-numeric:tabular-nums}
+.task{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:10px}
+.task .q{margin:0;font-weight:600}
+.task .tag{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:0}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opts button,.btn{font:inherit;text-align:left;padding:11px 13px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer;min-height:46px}
+.opts button:hover:not(:disabled),.btn:hover:not(:disabled){border-color:var(--accent)}
+.opts button.right{background:var(--good-soft);border-color:var(--good)}
+.opts button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--muted)}
+.opts button:disabled{cursor:default}
+.btn{text-align:center;font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.btn.small{min-height:40px;padding:7px 12px;font-weight:500;font-size:.92rem}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.numrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.numrow input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);width:11.5em;max-width:100%;min-height:46px}
+.numrow .unit{color:var(--muted)}
+.hint{font-size:.82rem;color:var(--muted);margin:0}
+.fb{padding:10px 12px;border-radius:6px;font-size:.95rem}
+.fb.good{background:var(--good-soft);border-left:4px solid var(--good)}
+.fb.bad{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.fb.neutral{background:var(--bg);border-left:4px solid var(--muted)}
+.cls{display:flex;flex-direction:column;gap:10px}
+.cls .item{border:1px solid var(--line);border-radius:6px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.cls .item.ok{border-color:var(--good);background:var(--good-soft)}
+.cls .choices{display:flex;flex-wrap:wrap;gap:8px}
+.foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.foot .btn{flex:1 1 140px}
+.sim{border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.sim svg{width:100%;height:auto;display:block}
+.sim canvas{width:100%;display:block;border-radius:4px;background:var(--surface);border:1px solid var(--line)}
+.simctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.simctl label{display:flex;align-items:center;gap:8px;font-size:.92rem;min-height:40px}
+.simctl label.wide{flex:1 1 100%;flex-wrap:wrap}
+.simctl label b{white-space:nowrap}
+.simctl input[type=range]{flex:1;min-width:120px;accent-color:var(--accent)}
+.simctl input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent)}
+.simctl select{font:inherit;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);min-height:40px}
+.simout{font-size:.93rem;font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;gap:4px 16px}
+.simout b{font-weight:600}
+.zeiger{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.zeiger>div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px;text-align:center;font-size:.9rem;font-variant-numeric:tabular-nums}
+.zeiger svg{max-width:150px;margin:0 auto}
+.zcol{display:flex;flex-direction:column;gap:6px}
+.zhead{font-weight:600}
+.wrows{display:flex;flex-direction:column;gap:4px}
+.wrow{display:flex;align-items:center;gap:6px;text-align:left}
+.wl{flex:0 0 5.4em;font-size:.76rem;line-height:1.15;display:flex;align-items:center;gap:3px;font-weight:600}
+.sim canvas.wc{flex:1;min-width:0;height:30px;border:none;background:transparent;border-radius:0}
+.wnote{margin:0;font-size:.8rem;line-height:1.35;color:var(--muted);text-align:left}
+.pico{flex:none}
+.wrow.r2d{flex-direction:column;align-items:flex-start;gap:2px}
+.sim .wrow.r2d canvas.wc{flex:none;width:68px;min-width:68px;align-self:center}
+.wrow.r2d .wl{flex:none}
+.sim svg.pico,.zeiger svg.pico{width:14px;height:14px;max-width:none;margin:0}
+svg text{font-family:var(--font-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lnoff{stroke:var(--line);stroke-width:1.5;fill:none;stroke-dasharray:4 4}
+svg .ink{stroke:var(--ink);fill:none}
+svg .box{fill:var(--surface);stroke:var(--muted);stroke-width:1.5}
+svg .det{fill:var(--surface);stroke:var(--accent);stroke-width:2}
+svg .det.hit{fill:var(--accent)}
+svg .det.hit+text{fill:var(--surface)}
+svg .fillink{fill:var(--ink)}
+svg .fillmut{fill:var(--muted)}
+svg .acc{stroke:var(--accent);fill:none}
+svg .fillacc{fill:var(--accent)}
+svg .fillbad{fill:var(--bad)}
+svg .grid{stroke:var(--line);stroke-width:1}
+.checklist{list-style:none;padding:0 !important}
+.checklist label{display:flex;gap:10px;align-items:flex-start}
+.checklist label span{min-width:0}
+.checklist input{width:20px;height:20px;margin-top:3px;flex:none;accent-color:var(--accent)}
+footer{color:var(--muted);font-size:.82rem;display:flex;flex-direction:column;gap:6px}
+.spectrum{display:flex;height:5px;border-radius:3px;overflow:hidden}
+.spectrum i{flex:1}
+@media (max-width:420px){
+  body{font-size:16px}
+  .card{padding:14px 13px}
+  nav.stunden button{font-size:.75rem}
+  .zeiger{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion: reduce){.bar>i{transition:none}}
+/* Handy und Tablet: Spalten lösen sich auf, Reihenfolge Text, Experiment, Erklärung, Fragen */
+.chead{display:flex;flex-direction:column;gap:6px;order:0}
+.col{display:contents}
+.mzl,.mzr{display:contents}
+.o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}
+.part[hidden]{display:none!important}
+.parts{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.parts button{font:inherit;font-size:.78rem;min-width:30px;height:28px;padding:0 9px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;font-variant-numeric:tabular-nums}
+.parts button.done{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.parts button[aria-current="true"]{border:2px solid var(--lc,var(--accent));color:var(--ink);font-weight:700}
+.task.part{border-top:none;padding-top:0}
+.task.part>.q{font-size:1.08rem;line-height:1.4}
+.post.part{border-top:none;padding-top:0}
+/* Bildschirm: alles auf einer Seite. Text | Experiment | Fragen */
+@media (min-width:1000px) and (min-height:560px){
+  body{font-size:15px;line-height:1.45}
+  .wrap{max-width:1640px;padding:8px 20px 6px;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto auto auto;column-gap:20px;row-gap:6px}
+  header{grid-column:1/-1;display:flex;align-items:baseline;gap:4px 16px;flex-wrap:wrap}
+  header h1{font-size:1.3rem;margin:0}
+  header p{font-size:.82rem}
+  .overall{margin:0 0 0 auto;min-width:260px}
+  nav.stunden{grid-column:1;grid-row:2;width:460px;align-self:center}
+  nav.stunden button{min-height:40px;padding:4px;font-size:.78rem}
+  .lessonhead{grid-column:2;grid-row:2;display:flex;align-items:center;gap:4px 14px;flex-wrap:wrap}
+  .lessonhead h2{font-size:1.05rem}
+  .lessonhead p{display:none}
+  .dots{margin:0;gap:5px}
+  .dots button{width:auto;min-width:28px;height:28px;padding:0 5px;border-radius:14px;font-size:.75rem;white-space:nowrap}
+  .card{grid-column:1/-1;grid-row:3;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) minmax(0,1fr);grid-template-rows:auto auto;grid-template-areas:"h h h" "a b c";gap:8px 22px;padding:10px 16px 12px}
+  .card.nosim{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"h h" "a b"}
+  .card.withsim{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);grid-template-areas:"h h" "b c"}
+  .card.withsim .colA{display:none}
+  .colC .sim svg{max-height:26vh}
+  .parts{margin-left:auto}
+  body{font-size:16px}
+  .card.single{grid-template-columns:minmax(0,1fr);grid-template-areas:"h" "a"}
+  .card.single .colB,.card.single .colC,.card.nosim .colC{display:none}
+  .card.single .colA{max-width:920px}
+  .chead{grid-area:h;gap:0 14px;flex-direction:row;align-items:baseline;flex-wrap:wrap}
+  .chead h3{font-size:1.1rem}
+  .colA{grid-area:a}.colB{grid-area:b}.colC{grid-area:c}
+  .col{display:flex;flex-direction:column;gap:10px;min-width:0}
+  .body{gap:9px}
+  .durch{padding:7px 10px;gap:3px;font-size:.93rem}
+  .merk{padding:9px 12px}
+  .regel{padding:8px 10px}
+  .formel{padding:6px;font-size:1.05rem}
+  .sim{padding:8px;gap:6px}
+  .colB .sim svg{max-height:40vh}
+  .gfa,.gfb{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .colB .sim.gf{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:10px;align-items:start}
+  .colB .sim.mzi{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:10px;align-items:start}
+  .colB .sim.mzi:not(:has(.mzr)){grid-template-columns:minmax(0,1fr)}
+  .mzl,.mzr{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .colB .sim.mzi svg{max-height:40vh}
+  .colB .fitwrap{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.5fr);gap:10px;align-items:start}
+  .colB .fitwrap>.hint{grid-column:1/-1}
+  .colA .sim svg{max-height:22vh}
+  .colA .sim.ablauf svg{max-height:15vh}
+  .colB .sim.mzi>.hint{font-size:.72rem}
+  .colB .sim.mzi .zeiger svg{max-width:100px}
+  .wnote{font-size:.74rem}
+  .hint{font-size:.76rem}
+  .simctl{gap:4px 12px}
+  .simctl label{min-height:32px;font-size:.88rem}
+  .btn.small{min-height:32px;padding:4px 10px;font-size:.85rem}
+  .simout{font-size:.85rem}
+  .meter b{font-size:1.1rem}
+  .zeiger{gap:6px}
+  .zeiger>div{padding:4px}
+  .zeiger svg{max-width:110px}
+  .task{padding-top:8px;gap:7px}
+  .task:first-child{border-top:none;padding-top:0}
+  .opts{gap:6px}
+  .opts button,.btn{min-height:36px;padding:6px 10px}
+  .numrow input{min-height:36px;padding:6px 10px}
+  .cls{gap:6px}.cls .item{padding:6px 9px;gap:5px}
+  .fb{padding:7px 10px;font-size:.9rem}
+  .foot{grid-column:1/-1;grid-row:4}
+  .foot .btn{min-height:36px;padding:4px 12px}
+  footer{grid-column:1/-1;grid-row:5;font-size:.7rem;gap:0}
+  footer .spectrum,footer span:first-of-type{display:none}
+}
+
+
+.all{display:flex;flex-direction:column;gap:16px}
+.all .lessonhead{margin-top:12px;scroll-margin-top:12px}
+.opts button.solopt,.btn.solopt{color:var(--sol);border:2px solid var(--sol);font-weight:700}
+.solval{color:var(--sol);font-weight:700;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:10px 12px;min-width:7em;font-variant-numeric:tabular-nums}
+.solnote{color:var(--sol);font-size:.95rem}
+.solnote>*+*{margin-top:8px}
+.solnote .regel,.solnote table{color:var(--sol)}
+@media print{nav.stunden{display:none}.task{break-inside:avoid}}
+/* Sperre */
+#nav[hidden],#lessonhead[hidden],#card[hidden],#foot[hidden],#cert[hidden],#certBtn[hidden]{display:none!important}
+.dots button:disabled,nav.stunden button:disabled,.parts button:disabled{opacity:.4;cursor:not-allowed}
+.foot .btn:disabled{opacity:.55;cursor:not-allowed}
+.certbtn{min-height:30px!important;padding:3px 12px!important;border-color:var(--hg1);font-weight:600}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;max-width:90vw}
+.toast.show{opacity:1}
+/* Urkunde */
+#cert{grid-column:1/-1;grid-row:2/5;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0}
+.certctl{width:100%;max-width:1000px;display:flex;flex-direction:column;gap:8px}
+.certctl p{margin:0}
+.certctl .row{display:flex;gap:10px;flex-wrap:wrap}
+.certctl .row .btn{flex:1 1 200px}
+.urkunde{box-sizing:border-box;width:1000px;height:707px;flex:none;position:relative;overflow:hidden;background:#fffdf7;color:#17212c;border:1px solid #d8d1bd;box-shadow:0 2px 16px rgba(0,0,0,.14);padding:52px 76px 46px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;font-family:var(--font-body);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.urkunde::before{content:"";position:absolute;inset:16px;border:2px solid #2742c4;outline:1px solid #2742c4;outline-offset:5px;pointer-events:none}
+.ubar{position:absolute;left:30px;right:30px;top:30px;height:6px;display:flex}
+.ubar i{flex:1}
+.umotiv{position:absolute;right:54px;top:56px;width:150px;height:auto}
+.ukicker{margin:20px 0 0;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:#586574}
+.utitle{font-family:var(--font-display);font-size:84px;line-height:1;margin:6px 0 0;font-weight:600;letter-spacing:.06em;color:#17212c}
+.ufor{margin:4px 0 0;font-size:19px;color:#586574;font-style:italic;font-family:var(--font-display)}
+.uname{font:600 34px/1.25 var(--font-display);text-align:center;width:640px;max-width:100%;border:none;border-bottom:1.5px solid #17212c;background:transparent;color:#17212c;padding:2px 8px;outline:none;border-radius:0}
+.urkunde .uname:focus,.urkunde .uname:focus-visible{background:#eef1fd;border-bottom-color:#2742c4;outline:none}
+.uname::placeholder{color:#9aa4ae;font-weight:400}
+.utext{font-size:19px;line-height:1.5;max-width:800px;margin:12px 0 0}
+.ulist{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;width:100%}
+.ulist li{display:flex;flex-direction:column;border-top:4px solid var(--c);padding:9px 4px 0;font-size:14.5px;line-height:1.35;text-align:left;color:#17212c}
+.ulist b{display:block;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:#586574;margin-bottom:3px;font-weight:600}
+.ulist em{display:block;margin-top:auto!important;padding-top:6px;font-style:normal;font-family:var(--font-display);font-size:17px;margin-top:6px;color:#17212c;white-space:nowrap}
+.ustat{font-size:15px;color:#586574;margin:14px 0 0}
+.usign{margin-top:auto;display:flex;justify-content:space-between;width:100%;gap:90px}
+.usign div{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.usign span{font-size:17px;min-height:24px;font-family:var(--font-display)}
+.usign i{display:block;width:100%;border-top:1.5px solid #17212c}
+.usign small{font-size:11.5px;color:#586574;letter-spacing:.1em;text-transform:uppercase}
+@media print{
+  @page{size:A4 landscape;margin:0}
+  html,body.certmode{background:#fff!important}
+  body.certmode .wrap{zoom:1!important;max-width:none!important;padding:0!important;margin:0!important;display:block!important}
+  body.certmode .wrap>*:not(#cert),body.certmode .toast{display:none!important}
+  body.certmode .certctl{display:none!important}
+  body.certmode #cert{display:block!important}
+  body.certmode .urkunde{zoom:1.118!important;border:none;box-shadow:none}
+  .urkunde .uname{background:transparent!important;outline:none!important}
+  .uname::placeholder{color:transparent}
+}
+
+
+/* Kern- und Teilchenphysik */
+:root{--stage:#e4ebf4}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--stage:#0b1118}}
+:root[data-theme="dark"]{--stage:#0b1118}
+.sim{background:linear-gradient(165deg,var(--surface) 0%,var(--stage) 100%)}
+.colC .formel,.colA .formel{font-size:1.15rem}
+svg .plotbg{fill:var(--surface);stroke:var(--line)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}
+.chip{display:inline-block;width:13px;height:13px;border-radius:2px;vertical-align:-2px;margin-right:4px}
+.chip.st{background:var(--ink)}.chip.bm{background:#3f7fd9}.chip.bp{background:#e0475c}.chip.al{background:#f2c230}
+.qbtn{min-width:56px;font-size:1.1rem!important}
+.qbtn small{font-size:.7rem;color:var(--muted);font-weight:400}
+.smgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.smh{font-size:.75rem;color:var(--muted);text-align:center}
+.smb{font:inherit;display:flex;flex-direction:column;align-items:center;padding:4px 2px;border-radius:6px;border:1px solid var(--line);border-left:5px solid var(--c);background:var(--surface);color:var(--ink);cursor:pointer;min-height:46px;min-width:0}
+.smb b{font-size:1.15rem;line-height:1.2}.smb span{font-size:.72rem;color:var(--muted)}
+.smb.q{--c:#7a2fc0}.smb.l{--c:#3a8a1e}.smb.x{--c:#e07b00}.smb.h{--c:#7d8a96;grid-column:4}
+.smb[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.smi{display:flex;flex-direction:column;gap:2px;font-size:.92rem;min-height:4.8em;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.react .rx{font-size:1.2rem;text-align:center;margin:0 0 6px;font-family:var(--font-math)}
+td.okc{color:var(--good);font-weight:600}td.noc{color:var(--bad);font-weight:600}
+@media (min-width:1000px) and (min-height:560px){
+  .colA .sim.fig svg{max-height:46vh}
+  .colA .sim.fig.big svg{max-height:46vh}
+  .colB .sim.xray svg{max-height:46vh}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Lernpfad Kern- und Teilchenphysik</h1>
+    <p>Physik 13 (erhöhtes Anforderungsniveau) · Lernbereiche 3, 4 und 5 · fünf Unterrichtsstunden</p>
+    <div class="overall"><span id="overallText"></span><div class="bar"><i id="overallBar"></i></div><button type="button" class="btn small certbtn" id="certBtn" hidden>Urkunde</button></div>
+  </header>
+  <nav class="stunden" id="nav" aria-label="Stunden"></nav>
+  <section class="lessonhead" id="lessonhead"></section>
+  <main class="card" id="card"></main>
+  <div class="foot" id="foot"></div>
+  <section id="cert" hidden></section>
+  <footer>
+    <div class="spectrum" aria-hidden="true"><i style="background:var(--hg1)"></i><i style="background:var(--hg2)"></i><i style="background:var(--hg3)"></i><i style="background:var(--hg4)"></i><i style="background:var(--hg5)"></i></div>
+    <span>Stunde 1: Strukturuntersuchung · Stunde 2: Standardmodell · Stunden 3 und 4: Kernphysik · Stunde 5: Radioaktivität und Kernenergie</span>
+    <span>Konstanten: h = 6,626·10<sup>−34</sup> Js · c = 2,998·10<sup>8</sup> m/s · e = 1,602·10<sup>−19</sup> C · 1 u = 1,6605·10<sup>−27</sup> kg ≙ 931,5 MeV · h·c = 1240 eV·nm = 1240 MeV·fm · 1 fm = 10<sup>−15</sup> m. Der Bearbeitungsstand wird nur in diesem Browser gespeichert.</span>
+  </footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+var SOLUTION=false;
+var LOCK=true; /* Sperre: Aufgabe lösen, dann weiter. Lehrkraft: fünfmal schnell auf den Titel tippen. */
+var uid=0;
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+function fr(a,b){return '<span class="frac"><span>'+a+'</span><span>'+b+'</span></span>';}
+function F(h){return '<div class="formel">'+h+'</div>';}
+function de(v,d){return v.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function sci(v,d){if(v===0)return '0';var e=Math.floor(Math.log10(Math.abs(v)));var m=Number((v/Math.pow(10,e)).toFixed(d));if(Math.abs(m)>=10){m/=10;e++;}return de(m,d)+'·10<sup>'+String(e).replace('-','−')+'</sup>';}
+var curZoom=1;function pxr(){return (window.devicePixelRatio||1)*curZoom;}
+/* Zeichenfläche vorbereiten: Die Anzeigehöhe ist fest, die Auflösung folgt Bildschirm und Verkleinerung. */
+function cvs(cv,hh){var w=cv.clientWidth||320,r=pxr(),bw=Math.max(1,Math.round(w*r)),bh=Math.max(1,Math.round(hh*r));
+  if(cv.width!==bw||cv.height!==bh){cv.width=bw;cv.height=bh;}
+  var sh=(hh+cv.offsetHeight-cv.clientHeight)+'px';if(cv.style.height!==sh)cv.style.height=sh; /* Rahmen zählt zur Höhe */
+  var c=cv.getContext('2d');c.setTransform(bw/w,0,0,bh/hh,0,0);c.clearRect(0,0,w,hh);
+  c.globalAlpha=1;c.setLineDash([]);c.textAlign='left';c.textBaseline='alphabetic';c.lineCap='butt';c.lineJoin='miter';
+  return {c:c,w:w};}
+/* Neuzeichnen bei Größenänderung und Messwert-Meldungen: zentral verwaltet, verwaiste Einträge werden entfernt */
+var liveFns=[],measSubs=[];
+function alive(list){return list.filter(function(x){return x.n.isConnected;});}
+function onLayout(node,fn){liveFns.push({n:node,f:fn});}
+function measChanged(){measSubs=alive(measSubs);measSubs.forEach(function(x){x.f();});}
+window.addEventListener('resize',function(){liveFns=alive(liveFns);liveFns.forEach(function(x){try{x.f();}catch(e){}});});
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+/* ---------- Zahleneingabe ---------- */
+function parseNum(s){
+  s=String(s).trim().toLowerCase().replace(/\s+/g,'').replace(/[−–]/g,'-').replace(/,/g,'.');
+  s=s.replace(/^½$/,'0.5').replace(/^¼$/,'0.25').replace(/^¾$/,'0.75');
+  var pct=/%$/.test(s),v;
+  s=s.replace(/[a-zµ%°\/²³·*]+$/,'');
+  var m=s.match(/^(-?\d*\.?\d*)[·*x×]?10\^\(?(-?\d+)\)?$/);
+  if(m){var man=(m[1]===''||m[1]==='-')?m[1]+'1':m[1];v=parseFloat(man)*Math.pow(10,parseInt(m[2],10));return isFinite(v)?v:NaN;}
+  var fm=s.match(/^(-?\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+  if(fm){var dn=parseFloat(fm[2]);return dn?parseFloat(fm[1])/dn:NaN;}
+  if(s==='')return NaN;
+  v=Number(s);if(!isFinite(v))return NaN;return pct?v/100:v;
+}
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function orderFor(n,seed){var r=rng(seed*7919+13),o=[],i;for(i=0;i<n;i++)o.push(i);for(i=n-1;i>0;i--){var j=Math.floor(r()*(i+1)),tmp=o[i];o[i]=o[j];o[j]=tmp;}return o;}
+function seedOf(L,S,i){return 1+L*997+S*31+i;}
+function numOK(v,a,tol){if(a===0)return Math.abs(v)<=0.01;return Math.abs(v-a)<=tol*Math.abs(a);}
+
+/* ---------- Werkzeuge für Abbildungen und Simulationen ---------- */
+function D(items){return '<div class="durch"><b>Durchführung</b><ol><li>'+items.join('</li><li>')+'</li></ol></div>';}
+function SV(w,h,inner,lab){return '<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+(lab||'')+'">'+inner+'</svg>';}
+function FIG(w,h,inner,lab,cls){return '<div class="sim fig'+(cls?' '+cls:'')+'">'+SV(w,h,inner,lab)+'</div>';}
+function f1(v){return (Math.round(v*10)/10).toFixed(1);}
+function T(x,y,s,o){o=o||{};return '<text x="'+f1(x)+'" y="'+f1(y)+'"'+(o.a?' text-anchor="'+o.a+'"':'')+' font-size="'+(o.f||12)+'"'+(o.c?' class="'+o.c+'"':'')+(o.w?' font-weight="'+o.w+'"':'')+(o.fill?' style="fill:'+o.fill+'"':'')+'>'+s+'</text>';}
+function LN(x1,y1,x2,y2,st){return '<line x1="'+f1(x1)+'" y1="'+f1(y1)+'" x2="'+f1(x2)+'" y2="'+f1(y2)+'" '+(st||'class="ln"')+'/>';}
+function PL(pts,st){return '<polyline points="'+pts.map(function(p){return f1(p[0])+','+f1(p[1]);}).join(' ')+'" fill="none" '+(st||'class="ln"')+'/>';}
+/* Kugeln: einfarbige Teilchen erhalten automatisch einen plastischen Farbverlauf */
+var KGD=null,KGS={},SVGNS='http://www.w3.org/2000/svg';
+function kdefs(){if(KGD)return KGD;var d=document.createElementNS(SVGNS,'svg');d.setAttribute('width','0');d.setAttribute('height','0');d.setAttribute('aria-hidden','true');d.style.position='absolute';d.style.overflow='hidden';
+  var df=document.createElementNS(SVGNS,'defs');d.appendChild(df);document.body.insertBefore(d,document.body.firstChild);KGD=df;
+  var f=document.createElementNS(SVGNS,'filter');f.setAttribute('id','kglow');f.setAttribute('filterUnits','userSpaceOnUse');f.setAttribute('x','-2000');f.setAttribute('y','-2000');f.setAttribute('width','5000');f.setAttribute('height','5000');
+  var b=document.createElementNS(SVGNS,'feGaussianBlur');b.setAttribute('stdDeviation','2.2');b.setAttribute('result','b');f.appendChild(b);
+  var mg=document.createElementNS(SVGNS,'feMerge');['b','SourceGraphic'].forEach(function(n){var q=document.createElementNS(SVGNS,'feMergeNode');q.setAttribute('in',n);mg.appendChild(q);});f.appendChild(mg);df.appendChild(f);return df;}
+function hmix(h,t,a){var p=function(x,i){return parseInt(x.substr(1+2*i,2),16);};return '#'+[0,1,2].map(function(i){var v=Math.round(p(h,i)*(1-a)+p(t,i)*a);return (v<16?'0':'')+v.toString(16);}).join('');}
+function kgrad(h){h=h.toLowerCase();var id='kg'+h.slice(1);if(!KGS[h]){var df=kdefs(),g=document.createElementNS(SVGNS,'radialGradient');g.setAttribute('id',id);g.setAttribute('cx','.4');g.setAttribute('cy','.38');g.setAttribute('r','.65');g.setAttribute('fx','.32');g.setAttribute('fy','.28');
+  [[0,hmix(h,'#ffffff',.62)],[.45,h],[1,hmix(h,'#000000',.32)]].forEach(function(q){var st=document.createElementNS(SVGNS,'stop');st.setAttribute('offset',q[0]);st.setAttribute('stop-color',q[1]);g.appendChild(st);});df.appendChild(g);KGS[h]=1;}
+  return 'url(#'+id+')';}
+function CI(x,y,r,st){st=st||'';if(r>=2.4&&r<=30)st=st.replace(/fill="(#[0-9a-fA-F]{6})"/,function(_,h){return 'fill="'+kgrad(h)+'"';});return '<circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="'+f1(r)+'" '+st+'/>';}
+var GLOW=' filter="url(#kglow)"';
+function RC(x,y,w,h,st){return '<rect x="'+f1(x)+'" y="'+f1(y)+'" width="'+f1(w)+'" height="'+f1(h)+'" '+st+'/>';}
+function AR(x1,y1,x2,y2,col,w){var a=Math.atan2(y2-y1,x2-x1),L=7+w;return LN(x1,y1,x2-Math.cos(a)*L*.6,y2-Math.sin(a)*L*.6,'stroke="'+col+'" stroke-width="'+w+'"')+'<path fill="'+col+'" d="M'+f1(x2)+' '+f1(y2)+'L'+f1(x2-L*Math.cos(a-.42))+' '+f1(y2-L*Math.sin(a-.42))+'L'+f1(x2-L*Math.cos(a+.42))+' '+f1(y2-L*Math.sin(a+.42))+'Z"/>';}
+var COL={a:'#e07b00',b:'#2c6fd1',g:'#8a3fc4',pos:'#c2185b',p:'#d64545',n:'#4f7fa8',nu:'#7d8a96',gold:'#d4a017',x:'#1f9d8f'};
+var RM=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+function mkSim(root,cls){var s=el('div','sim'+(cls?' '+cls:''));root.appendChild(s);var v=el('div','view');s.appendChild(v);var c=el('div','simctl');s.appendChild(c);var o=el('div','simout');s.appendChild(o);return {s:s,v:v,c:c,o:o};}
+function rangeCtl(p,lab,min,max,step,val,fmt,cb){var l=el('label','wide');l.appendChild(el('span',null,lab));var r=el('input');r.type='range';r.min=min;r.max=max;r.step=step;r.value=val;r.setAttribute('aria-label',lab.replace(/<[^>]+>/g,''));var o=el('b');l.appendChild(r);l.appendChild(o);p.appendChild(l);
+  function u(){o.innerHTML=fmt(+r.value);}u();r.addEventListener('input',function(){u();cb(+r.value);});return {get:function(){return +r.value;},set:function(v){r.value=v;u();},el:r};}
+function selCtl(p,lab,opts,cb){var l=el('label');l.appendChild(el('span',null,lab));var s=el('select');opts.forEach(function(o){var e=el('option',null,o[1]);e.value=o[0];s.appendChild(e);});l.appendChild(s);p.appendChild(l);s.addEventListener('change',function(){cb(s.value);});return {get:function(){return s.value;},set:function(v){s.value=v;},el:s};}
+function btnCtl(p,lab,cb,primary){var b=el('button','btn small'+(primary?' primary':''),lab);b.type='button';b.addEventListener('click',cb);p.appendChild(b);return b;}
+function chkCtl(p,lab,val,cb){var l=el('label');var c=el('input');c.type='checkbox';c.checked=!!val;l.appendChild(c);l.appendChild(el('span',null,lab));p.appendChild(l);c.addEventListener('change',function(){cb(c.checked);});return {get:function(){return c.checked;},set:function(v){c.checked=v;},el:c};}
+/* Animationsschleife: läuft nur, solange die Station angezeigt wird */
+function loop(node,fn){var last=null;function f(t){if(!node.isConnected)return;var dt=last===null?0:Math.min(0.05,(t-last)/1000);last=t;if(!document.hidden)fn(dt);requestAnimationFrame(f);}requestAnimationFrame(f);}
+function gauss(){var u=Math.random()||1e-9,v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function poisson(m){if(m<=0)return 0;if(m>40)return Math.max(0,Math.round(m+Math.sqrt(m)*gauss()));var L=Math.exp(-m),k=0,p=1;do{k++;p*=Math.random();}while(p>L);return k-1;}
+/* Diagrammrahmen: liefert Umrechnung und Achsen */
+function plot(o){var X=function(v){return o.x+(v-o.x0)/(o.x1-o.x0)*o.w;},Y=function(v){return o.y+o.h-(v-o.y0)/(o.y1-o.y0)*o.h;};
+  var s=RC(o.x,o.y,o.w,o.h,'class="plotbg"');
+  (o.xt||[]).forEach(function(t){s+=LN(X(t),o.y,X(t),o.y+o.h,'class="grid"')+T(X(t),o.y+o.h+13,o.xf?o.xf(t):String(t).replace('.',','),{a:'middle',f:11,c:'mut'});});
+  (o.yt||[]).forEach(function(t){s+=LN(o.x,Y(t),o.x+o.w,Y(t),'class="grid"')+T(o.x-4,Y(t)+4,o.yf?o.yf(t):String(t).replace('.',','),{a:'end',f:11,c:'mut'});});
+  s+=LN(o.x,o.y+o.h,o.x+o.w,o.y+o.h,'class="ink"')+LN(o.x,o.y,o.x,o.y+o.h,'class="ink"');
+  if(o.xl)s+=T(o.x+o.w,o.y+o.h+27,o.xl,{a:'end',f:11.5,c:'mut'});
+  if(o.yl)s+=T(o.x+4,o.y-6,o.yl,{f:11.5,c:'mut'});
+  return {X:X,Y:Y,s:s};}
+function eFmt(MeV){if(MeV<1)return de(MeV*1000,MeV*1000<10?1:0)+' keV';if(MeV<1000)return de(MeV,MeV<10?2:0)+' MeV';if(MeV<1e6)return de(MeV/1000,MeV<1e4?2:0)+' GeV';return de(MeV/1e6,1)+' TeV';}
+function wlColor(w){if(w<380)return '#8a78b8';var r=0,g=0,b=0;
+  if(w<440){r=-(w-440)/60;b=1;}else if(w<490){g=(w-440)/50;b=1;}else if(w<510){g=1;b=-(w-510)/20;}else if(w<580){r=(w-510)/70;g=1;}else if(w<645){r=1;g=-(w-645)/65;}else{r=1;}
+  var f=1;if(w<420)f=.3+.7*(w-380)/40;else if(w>700)f=.3+.7*(780-w)/80;
+  return 'rgb('+[r,g,b].map(function(c){return Math.round(255*Math.pow(Math.max(c,0)*f,.8));}).join(',')+')';}
+kdefs();
+
+/* ---------- Stunde 1: Methoden der Strukturuntersuchung ---------- */
+function figMethods(){
+  var s='',W=226,H=128,P=[[0,0],[234,0],[0,136],[234,136]],tt=['Interferenz','Energie','Streuung','Kollision'],G=' filter="url(#kglow)"';
+  P.forEach(function(p,i){var x=p[0],y=p[1],cx=x+W/2,cy=y+72;s+=RC(x+1,y+1,W-2,H-2,'rx="10" fill="#0f1b2d"')+T(x+12,y+21,tt[i],{f:13.5,w:600,fill:'#e8eef7'});
+    if(i===0){for(var a=0;a<4;a++)for(var b=0;b<4;b++)s+=CI(cx-26+a*16,cy-24+b*16,3.6,'fill="#8fb8d8"');
+      var w='M'+(x+12)+' '+(cy-4);for(var k=0;k<=36;k++)w+=' L'+f1(x+12+k*1.6)+' '+f1(cy-4+Math.sin(k*.9)*5);s+='<path d="'+w+'" fill="none" stroke="#3ee0c8" stroke-width="2"'+G+'/>';
+      s+=LN(x+W-24,cy-46,x+W-24,cy+46,'stroke="#55657a" stroke-width="3"');[-36,-12,12,36].forEach(function(o){s+=LN(cx+30,cy,x+W-26,cy+o,'stroke="#3ee0c8" stroke-width="1.2" opacity=".55"')+CI(x+W-24,cy+o,3.4,'fill="#9ffff0"'+G);});}
+    if(i===1){[0,18,30,36].forEach(function(e,k){s+=LN(x+18,cy+26-e,x+86,cy+26-e,'stroke="#c9d6e6" stroke-width="2"');});s+=CI(x+52,cy-10,4,'fill="#4d9bff"');s+=AR(x+52,cy-6,x+52,cy+22,'#ff7a6b',2.2);
+      s+=RC(x+104,cy-22,108,40,'rx="4" fill="#05080d"');[[434,0],[486,0],[656,0],[410,0]].forEach(function(l){var xx=x+104+(l[0]-400)/280*108;s+=LN(xx,cy-18,xx,cy+14,'stroke="'+wlColor(l[0])+'" stroke-width="3.2"'+G);});}
+    if(i===2){s+=CI(cx,cy,7,'fill="#f2c230"'+G);[[-24,0],[-12,0],[-5,1],[10,0],[22,0]].forEach(function(q){var b=q[0];if(q[1])s+='<path d="M'+(x+12)+' '+(cy+b)+' L'+(cx-14)+' '+(cy+b)+' Q'+(cx-2)+' '+(cy+b)+' '+(cx-12)+' '+(cy+b-14)+' L'+(x+20)+' '+(cy-40)+'" fill="none" stroke="#ff9d2e" stroke-width="2"'+G+'/>';
+      else s+='<path d="M'+(x+12)+' '+(cy+b)+' Q'+cx+' '+(cy+b*(1+18/Math.abs(b)))+' '+(x+W-12)+' '+f1(cy+b*(1+60/(b*b)))+'" fill="none" stroke="#ff9d2e" stroke-width="1.6" opacity=".85"/>';});}
+    if(i===3){s+=AR(x+14,cy,cx-14,cy,'#ff5a5a',2.4)+AR(x+W-14,cy,cx+14,cy,'#ff5a5a',2.4);var cs=['#3ee0c8','#ffd23e','#b98cff','#4d9bff','#ff7a6b','#7cf08a','#ffd23e'];
+      for(var j=0;j<7;j++){var an=j*Math.PI*2/7+.35,c=(j%2?1:-1)*.35;s+='<path d="M'+cx+' '+cy+' Q'+f1(cx+Math.cos(an+c)*24)+' '+f1(cy+Math.sin(an+c)*24)+' '+f1(cx+Math.cos(an)*48)+' '+f1(cy+Math.sin(an)*40)+'" fill="none" stroke="'+cs[j]+'" stroke-width="1.8"'+G+'/>';}s+=CI(cx,cy,5,'fill="#ffffff"'+G);}
+  });
+  return FIG(460,264,s,'Vier Methoden der Strukturuntersuchung');}
+
+function braggLab(root){
+  var m=mkSim(root,'bragg'),LAM=71,rec={};
+  var th=rangeCtl(m.c,'Glanzwinkel θ',3,35,0.05,5,function(v){return de(v,2)+'°';},draw);
+  var cr=selCtl(m.c,'Kristall',[['282','Kochsalz, d = 282 pm'],['201','Lithiumfluorid, d = 201 pm']],function(){rec={};draw();});
+  btnCtl(m.c,'Messkurve löschen',function(){rec={};draw();});
+  function I(t,d){var x=2*d*Math.sin(t*Math.PI/180)/LAM,n=Math.round(x);if(n<1)return .03;var a=[0,1,.45,.2,.1][n]||.08,dl=x-n;return .03+a*Math.exp(-dl*dl/(2*.03*.03));}
+  function draw(){
+    var t=th.get(),d=+cr.get(),r=t*Math.PI/180,i=I(t,d),s='';rec[t.toFixed(2)]=i;
+    var y0=112,dp=34,A=[140,y0],B=[140,y0+dp],v=[Math.cos(r),Math.sin(r)],w=[Math.cos(r),-Math.sin(r)],q=dp*Math.sin(r);
+    s+=T(8,16,'Röntgenröhre mit Molybdän-Anode, λ = 71 pm',{f:11.5,c:'mut'});
+    for(var k=0;k<3;k++){var y=y0+k*dp;s+=LN(14,y,262,y,'class="grid"');for(var x=22;x<262;x+=22)s+=CI(x,y,4,'fill="'+(k%2?'#6f9bb8':'#a9b7c3')+'"');}
+    s+=LN(36,y0,36,y0+dp,'stroke="var(--muted)" stroke-width="1"')+T(28,y0+dp/2+4,'d',{a:'end',f:12,c:'mut'});
+    s+=LN(A[0]-140*v[0],A[1]-140*v[1],A[0],A[1],'stroke="'+COL.x+'" stroke-width="2"')+LN(B[0]-170*v[0],B[1]-170*v[1],B[0],B[1],'stroke="'+COL.x+'" stroke-width="2"');
+    s+=AR(A[0],A[1],A[0]+118*w[0],A[1]+118*w[1],COL.x,2)+AR(B[0],B[1],B[0]+150*w[0],B[1]+150*w[1],COL.x,2);
+    s+=LN(B[0]-q*v[0],B[1]-q*v[1],B[0],B[1],'stroke="#e0475c" stroke-width="4.5" stroke-linecap="round"')+LN(B[0],B[1],B[0]+q*w[0],B[1]+q*w[1],'stroke="#e0475c" stroke-width="4.5" stroke-linecap="round"');
+    s+=T(150,y0+dp+22,'Umweg 2d · sin θ',{f:11.5,fill:'#e0475c',w:600});
+    s+='<path d="M'+(A[0]-34)+' '+A[1]+' A34 34 0 0 1 '+f1(A[0]-34*v[0])+' '+f1(A[1]-34*v[1])+'" fill="none" stroke="var(--ink)" stroke-width="1"/>'+T(A[0]-48,A[1]-4,'θ',{f:12});
+    var P=plot({x:300,y:30,w:150,h:150,x0:3,x1:35,y0:0,y1:1.1,xt:[5,15,25,35],yt:[],xl:'θ in °',yl:'Zählrate'});s+=P.s;
+    var ks=Object.keys(rec).map(Number).sort(function(a,b){return a-b;});
+    if(ks.length>1)s+=PL(ks.map(function(k){return [P.X(k),P.Y(rec[k.toFixed(2)])];}),'stroke="var(--accent)" stroke-width="1.6"');
+    s+=CI(P.X(t),P.Y(i),4,'class="fillacc"');
+    m.v.innerHTML=SV(460,215,s,'Bragg-Reflexion an den Netzebenen eines Kristalls');
+    var g=2*d*Math.sin(r);
+    m.o.innerHTML='<span>Umweg: <b>'+de(g,1)+' pm = '+de(g/LAM,2)+' λ</b></span><span>Zählrate: <b>'+Math.round(30+970*(i-.03)/0.97)+' pro Sekunde</b></span>';}
+  draw();}
+
+function eBeugung(root){
+  var m=mkSim(root,'ebeug'),L=135,d1=213,d2=123;
+  var U=rangeCtl(m.c,'Beschleunigungsspannung U',2,8,0.1,3,function(v){return de(v,1)+' kV';},draw);
+  function lam(kv){return 6.62607e-34/Math.sqrt(2*9.10938e-31*1.602177e-19*kv*1000)*1e12;}
+  function draw(){var u=U.get(),l=lam(u),r1=l*L/d1,r2=l*L/d2,s='';
+    s+=RC(6,96,46,22,'class="box" rx="4"')+CI(118,107,72,'class="box"');
+    s+=LN(14,100,14,114,'stroke="#d64545" stroke-width="2"')+T(14,132,'Kathode',{a:'middle',f:10.5,c:'mut'});
+    s+=RC(34,99,8,16,'fill="var(--muted)"')+T(38,90,'Anode',{a:'middle',f:10.5,c:'mut'});
+    s+=LN(62,99,62,115,'stroke="var(--ink)" stroke-width="3"')+T(62,148,'Graphit',{a:'middle',f:10.5,c:'mut'});
+    for(var k=0;k<5;k++)s+=CI(20+k*9,107,1.8,'fill="'+COL.b+'"');
+    var sc=1.6;[r1,r2].forEach(function(r,j){var a=Math.atan2(r*sc,128);s+=LN(62,107,62+128*Math.cos(a),107-128*Math.sin(a),'stroke="#57d163" stroke-width="1.2" opacity=".8"')+LN(62,107,62+128*Math.cos(a),107+128*Math.sin(a),'stroke="#57d163" stroke-width="1.2" opacity=".8"');});
+    s+=T(118,200,'Schirm im Abstand L = 13,5 cm',{a:'middle',f:10.5,c:'mut'});
+    var cx=340,cy=105,px=3;
+    s+=CI(cx,cy,100,'fill="#0e1a14" stroke="var(--muted)"');
+    [r1,r2].forEach(function(r){s+=CI(cx,cy,r*px,'fill="none" stroke="#57d163" stroke-opacity=".25" stroke-width="8"')+CI(cx,cy,r*px,'fill="none" stroke="#7cf08a" stroke-width="2.2"');});
+    s+=CI(cx,cy,5,'fill="#b8ffbf"');
+    s+=LN(cx,cy+2,cx+96,cy+2,'stroke="#f2f2f2" stroke-width="1"');
+    for(var mm=0;mm<=30;mm+=5)s+=LN(cx+mm*px,cy+2,cx+mm*px,cy+(mm%10?7:10),'stroke="#f2f2f2" stroke-width="1"')+(mm%10?'':T(cx+mm*px,cy+22,String(mm),{a:'middle',f:10,fill:'#f2f2f2'}));
+    s+=T(cx+92,cy+34,'mm',{a:'end',f:10,fill:'#f2f2f2'});
+    m.v.innerHTML=SV(460,215,s,'Elektronenbeugungsröhre mit Beugungsringen');
+    m.o.innerHTML='<span>λ = <b>'+de(l,1)+' pm</b></span><span>Radius innen: <b>'+de(r1,1)+' mm</b></span><span>Radius außen: <b>'+de(r2,1)+' mm</b></span>';}
+  draw();}
+
+var LAMPS={hg:['Quecksilber (bekannt)',[[578,'gelb'],[546.1,'grün'],[435.8,'blau'],[404.7,'violett']]],na:['Natrium',[[589.3,'gelb']]],he:['Helium',[[667.8,'rot'],[587.6,'gelb'],[501.6,'grün'],[492.2,'blaugrün'],[471.3,'blau'],[447.1,'blau']]],x:['unbekannte Lampe',[[656.3,'rot'],[486.1,'türkis'],[434.0,'blau'],[410.2,'violett']]]};
+function spektroLab(root){
+  var m=mkSim(root,'spektro'),g=1e6/600,id='cp'+(++uid);
+  var lp=selCtl(m.c,'Lampe',Object.keys(LAMPS).map(function(k){return [k,LAMPS[k][0]];}),draw);
+  var al=rangeCtl(m.c,'Fernrohr α',10,30,0.05,17,function(v){return de(v,2)+'°';},draw);
+  function draw(){var L=LAMPS[lp.get()],a=al.get(),cx=90,cy=196,R=300,s='',hit=null;
+    s+=RC(8,186,22,20,'fill="#444" rx="3"')+LN(30,196,cx,196,'stroke="#ddd" stroke-width="3"')+LN(cx,176,cx,216,'stroke="var(--ink)" stroke-width="4"')+T(cx,230-4,'Gitter',{a:'middle',f:10.5,c:'mut'});
+    for(var t=10;t<=30;t+=5){var r=t*Math.PI/180;s+=LN(cx+(R-6)*Math.cos(r),cy-(R-6)*Math.sin(r),cx+(R+4)*Math.cos(r),cy-(R+4)*Math.sin(r),'class="ink"')+T(cx+(R+16)*Math.cos(r),cy-(R+16)*Math.sin(r)+4,t+'°',{a:'middle',f:10.5,c:'mut'});}
+    s+='<path d="M'+f1(cx+R*Math.cos(Math.PI/18))+' '+f1(cy-R*Math.sin(Math.PI/18))+' A'+R+' '+R+' 0 0 0 '+f1(cx+R*Math.cos(Math.PI/6))+' '+f1(cy-R*Math.sin(Math.PI/6))+'" fill="none" class="grid"/>';
+    L[1].forEach(function(l){var t=Math.asin(l[0]/g),c=wlColor(l[0]);s+=LN(cx,cy,cx+R*Math.cos(t),cy-R*Math.sin(t),'stroke="'+c+'" stroke-width="1.6" opacity=".85"');var dd=t*180/Math.PI-a;if(Math.abs(dd)<.5&&(!hit||Math.abs(dd)<Math.abs(hit[1])))hit=[l,dd];});
+    var ra=a*Math.PI/180;s+=LN(cx+(R-70)*Math.cos(ra),cy-(R-70)*Math.sin(ra),cx+(R-12)*Math.cos(ra),cy-(R-12)*Math.sin(ra),'stroke="var(--ink)" stroke-width="9" stroke-linecap="round"');
+    s+='<clipPath id="'+id+'"><circle cx="62" cy="62" r="44"/></clipPath>'+CI(62,62,44,'fill="#0b0b0b" stroke="var(--muted)"');
+    if(hit)s+='<g clip-path="url(#'+id+')">'+LN(62+hit[1]*80,18,62+hit[1]*80,106,'stroke="'+wlColor(hit[0][0])+'" stroke-width="5"')+'</g>';
+    s+=LN(62,22,62,102,'stroke="#ddd" stroke-width=".8"')+LN(22,62,102,62,'stroke="#ddd" stroke-width=".8"')+T(62,124,'Blick ins Fernrohr',{a:'middle',f:10.5,c:'mut'});
+    m.v.innerHTML=SV(460,232,s,'Gitterspektrometer von oben');
+    var known=lp.get()==='hg';
+    m.o.innerHTML='<span>Winkel α = <b>'+de(a,2)+'°</b></span><span>'+(hit?'Im Fadenkreuz: <b>'+hit[0][1]+'e Linie'+(known?', λ = '+de(hit[0][0],1)+' nm':'')+'</b>':'Keine Linie im Fadenkreuz')+'</span>';}
+  draw();}
+
+var ANODE={cu:['Kupfer',8.98,154.1,139.2],mo:['Molybdän',20.0,71.1,63.2]};
+function xrayLab(root){
+  var m=mkSim(root,'xray');
+  var an=selCtl(m.c,'Anode',[['cu','Kupfer'],['mo','Molybdän']],draw);
+  var U=rangeCtl(m.c,'Röhrenspannung U',5,35,0.5,15,function(v){return de(v,1)+' kV';},draw);
+  var ref=1/(4*Math.pow(1240/35,2));
+  function draw(){var A=ANODE[an.get()],u=U.get(),lm=1240/u,on=u>A[1],s='';
+    var P=plot({x:50,y:14,w:395,h:150,x0:20,x1:200,y0:0,y1:1.08,xt:[20,50,100,150,200],yt:[],xl:'Wellenlänge λ in pm',yl:'Intensität'});s+=P.s;
+    var amp=on?Math.min(1,.3+.9*(u/A[1]-1)):0,pts=[];
+    for(var l=20;l<=200;l+=.5){var c=l>lm?.55*(l/lm-1)/(l*l)/ref:0;if(c>.6)c=.6;var y=c+amp*.42*Math.exp(-Math.pow(l-A[2],2)/(2*1.3*1.3))+amp*.12*Math.exp(-Math.pow(l-A[3],2)/(2*1.3*1.3));pts.push([P.X(l),P.Y(Math.min(1.07,y))]);}
+    s+='<polygon points="'+P.X(20)+','+P.Y(0)+' '+pts.map(function(p){return f1(p[0])+','+f1(p[1]);}).join(' ')+' '+P.X(200)+','+P.Y(0)+'" fill="var(--accent)" fill-opacity=".14"/>'+PL(pts,'stroke="var(--accent)" stroke-width="1.8"');
+    if(lm<=200)s+=LN(P.X(lm),P.Y(0),P.X(lm),P.Y(.95),'stroke="#e0475c" stroke-width="1.3" stroke-dasharray="4 3"')+T(P.X(lm)+4,P.Y(.88),'λ<tspan dy="3" font-size="9">min</tspan>',{f:12,fill:'#e0475c'});
+    if(on)s+=T(P.X(A[2])+5,P.Y(.5)+4,'K<tspan dy="3" font-size="9">α</tspan>',{f:12,w:600})+T(P.X(A[3])-14,P.Y(.25)+4,'K<tspan dy="3" font-size="9">β</tspan>',{f:12,w:600,a:'end'});
+    var y0=204,lv=[['K',282],['L',240],['M',214]];
+    lv.forEach(function(v){s+=LN(60,v[1],190,v[1],'class="ink"')+T(52,v[1]+4,v[0],{a:'end',f:12,w:600});});
+    for(var k=0;k<2;k++)s+=CI(110+k*30,282,4.5,k===0&&on?'fill="none" stroke="'+COL.b+'" stroke-dasharray="2 2"':'fill="'+COL.b+'"');
+    for(var k2=0;k2<4;k2++)s+=CI(80+k2*26,240,4.5,'fill="'+COL.b+'"');
+    if(on){s+=AR(124,244,112,276,'#e0475c',1.8)+AR(160,218,118,278,'#e0475c',1.2)+T(129,265,'K<tspan dy="3" font-size="9">α</tspan>',{f:11,fill:'#e0475c'})+T(168,234,'K<tspan dy="3" font-size="9">β</tspan>',{f:11,fill:'#e0475c'});
+      s+=T(206,232,'Ein Elektron der Anode wurde aus der',{f:11.5})+T(206,248,'K-Schale geschlagen. Elektronen aus L und M',{f:11.5})+T(206,264,'fallen nach und senden Photonen fester',{f:11.5})+T(206,280,'Energie aus: die charakteristischen Linien.',{f:11.5});}
+    else s+=T(206,240,'e·U = '+de(u,1)+' keV reicht nicht, um ein Elektron',{f:11.5})+T(206,256,'aus der K-Schale von '+A[0]+' zu schlagen.',{f:11.5})+T(206,272,'Dafür sind '+de(A[1],2)+' keV nötig.',{f:11.5});
+    m.v.innerHTML=SV(460,292,s,'Röntgenspektrum und Vorgänge in der Anode');
+    m.o.innerHTML='<span>λ<sub>min</sub> = <b>'+de(lm,1)+' pm</b></span><span>Charakteristische Linien: <b>'+(on?'sichtbar':'noch nicht')+'</b></span>';}
+  draw();}
+
+var XE={Fe:[26,6.40,7.06],Ni:[28,7.48,8.26],Cu:[29,8.05,8.90],Zn:[30,8.64,9.57],Ag:[47,22.16,24.94],Sn:[50,25.27,28.49]};
+var PROBEN=[['nagel','Eisennagel',{Fe:1}],['messing','Messingschraube',{Cu:.62,Zn:.38}],['ring','Silberring',{Ag:.92,Cu:.08}],['bronze','Bronzemedaille',{Cu:.88,Sn:.12}],['x','unbekannte Münze',{Cu:.75,Ni:.25}]];
+function xrfLab(root){
+  var m=mkSim(root,'xrf');
+  var pr=selCtl(m.c,'Probe',PROBEN.map(function(p){return [p[0],p[1]];}),draw);
+  var rg=selCtl(m.c,'Bereich',[['w','0 bis 30 keV'],['z','5 bis 10 keV']],draw);
+  var ln=chkCtl(m.c,'Linien der Tabelle',false,draw);
+  var tb=el('p','hint','K<sub>α</sub>-Linien: Fe 6,40 · Ni 7,48 · Cu 8,05 · Zn 8,64 · Ag 22,16 · Sn 25,27 keV');m.s.appendChild(tb);
+  function draw(){var p=PROBEN.filter(function(q){return q[0]===pr.get();})[0],z=rg.get()==='z',x0=z?5:0,x1=z?10:30,s='',r=rng(7+pr.el.selectedIndex*13);
+    var P=plot({x:46,y:34,w:400,h:140,x0:x0,x1:x1,y0:0,y1:1.1,xt:z?[5,6,7,8,9,10]:[0,5,10,15,20,25,30],yt:[],xl:'Photonenenergie in keV',yl:z?'Zählrate':''});s+=P.s;
+    var pts=[],sg=z?.09:.13;
+    for(var e=x0;e<=x1+1e-9;e+=(x1-x0)/400){var y=.03+.02*Math.exp(-Math.pow(e-15,2)/60);for(var k in p[2]){var L=XE[k],w=p[2][k];y+=w*(Math.exp(-Math.pow(e-L[1],2)/(2*sg*sg))+.17*Math.exp(-Math.pow(e-L[2],2)/(2*sg*sg)));}
+      y*=.95;y+=(r()-.5)*.025;pts.push([P.X(e),P.Y(Math.max(0,Math.min(1.08,y)))]);}
+    s+=PL(pts,'stroke="var(--accent)" stroke-width="1.5"');
+    if(ln.get()){var row=0;Object.keys(XE).forEach(function(k){var E=XE[k][1];if(E<x0||E>x1)return;s+=LN(P.X(E),P.Y(1.08),P.X(E),P.Y(0),'stroke="#e0475c" stroke-width="1" stroke-dasharray="3 3"')+T(P.X(E),z||row%2===0?27:14,k,{a:'middle',f:11,fill:'#e0475c',w:600});row++;});}
+    m.v.innerHTML=SV(460,210,s,'Röntgenfluoreszenzspektrum der Probe');
+    m.o.innerHTML='<span>Probe: <b>'+p[1]+'</b></span><span>'+(z?'Ausschnitt vergrößert':'Für eng beieinander liegende Linien den Bereich 5 bis 10 keV wählen.')+'</span>';}
+  draw();}
+
+function synchroLab(root){
+  var m=mkSim(root,'synchro'),cx=120,cy=122,R=84,ph=0,fl=[],last=0,E=6;
+  var ec=rangeCtl(m.c,'Energie der Elektronen',1,6,0.5,6,function(v){return de(v,1)+' GeV';},function(v){E=v;stat();});
+  var base='';
+  for(var k=0;k<8;k++){var a=k*Math.PI/4-Math.PI/2;base+='<rect x="'+f1(cx+R*Math.cos(a)-7)+'" y="'+f1(cy+R*Math.sin(a)-7)+'" width="14" height="14" rx="2" fill="#2f48d8" opacity=".85"/>';}
+  base+=CI(cx,cy,R,'fill="none" stroke="var(--muted)" stroke-width="5" opacity=".35"')+LN(cx,cy-R,300,cy-R,'stroke="var(--muted)" stroke-dasharray="4 3"')+RC(300,cy-R-14,62,28,'class="box" rx="4"')+T(331,cy-R+4,'Messplatz',{a:'middle',f:10.5});
+  base+=T(cx,cy+4,'Speicherring',{a:'middle',f:11,c:'mut'})+T(cx,226,'Öffnungswinkel stark vergrößert',{a:'middle',f:10.5,c:'mut'});
+  m.v.innerHTML=SV(460,232,base+'<g class="fl"></g><g class="sp"></g>'+CI(cx,cy-R,5,'class="bunch" fill="'+COL.b+'"'),'Elektronen im Speicherring senden Synchrotronstrahlung aus');
+  var svg=m.v.querySelector('svg'),gF=svg.querySelector('.fl'),gS=svg.querySelector('.sp'),bn=svg.querySelector('.bunch');
+  function stat(){var g=E*1000/0.511,ecr=2.218*Math.pow(E,3)/200;
+    var P=plot({x:300,y:118,w:150,h:84,x0:-2,x1:2,y0:0,y1:1.1,xt:[-2,0,2],xf:function(t){return t===-2?'0,01':t===0?'1':'100';},yt:[],xl:'Photonenenergie in keV',yl:'Spektrum'});
+    var pts=[];for(var lx=-2;lx<=2.001;lx+=.04){var x=Math.pow(10,lx)/ecr;pts.push([P.X(lx),P.Y(Math.min(1.08,1.6*Math.pow(x,1/3)*Math.exp(-x)))]);}
+    gS.innerHTML=P.s+PL(pts,'stroke="var(--accent)" stroke-width="1.8"');
+    m.o.innerHTML='<span>γ = E/(m<sub>e</sub>c²) = <b>'+de(g,0)+'</b></span><span>Öffnungswinkel ≈ 1/γ = <b>'+de(1000/g,3)+' mrad</b></span><span>Spektrum reicht bis etwa <b>'+de(ecr*3,1)+' keV</b> (Beispielring, Radius 200 m)</span>';}
+  stat();
+  function tick(dt){var prev=ph;ph+=dt*1.5;if(ph>Math.PI*2)ph-=Math.PI*2;var a=ph-Math.PI/2;bn.setAttribute('cx',f1(cx+R*Math.cos(a)));bn.setAttribute('cy',f1(cy+R*Math.sin(a)));
+    for(var k=0;k<8;k++){var mk=k*Math.PI/4;if((prev<mk&&ph>=mk)||(k===0&&prev>ph))fl.push({a:mk-Math.PI/2,t:0});}
+    var h='',half=Math.min(.6,.5/E);fl=fl.filter(function(f){f.t+=dt;return f.t<1.3;});
+    fl.forEach(function(f){var px=cx+R*Math.cos(f.a),py=cy+R*Math.sin(f.a),tx=-Math.sin(f.a),ty=Math.cos(f.a),Lg=40+f.t*150;
+      var l1=[tx*Math.cos(half)-ty*Math.sin(half),tx*Math.sin(half)+ty*Math.cos(half)],l2=[tx*Math.cos(-half)-ty*Math.sin(-half),tx*Math.sin(-half)+ty*Math.cos(-half)];
+      h+='<polygon points="'+f1(px)+','+f1(py)+' '+f1(px+l1[0]*Lg)+','+f1(py+l1[1]*Lg)+' '+f1(px+l2[0]*Lg)+','+f1(py+l2[1]*Lg)+'" fill="#f5b72e" opacity="'+f1(.75*(1-f.t/1.3))+'"/>';});
+    gF.innerHTML=h;}
+  if(RM){fl=[{a:-Math.PI/2,t:.4},{a:Math.PI/4-Math.PI/2,t:.8}];tick(0);}else loop(m.s,tick);}
+
+function malusLab(root){
+  var m=mkSim(root,'malus'),pts=[];
+  var ph=rangeCtl(m.c,'Drehwinkel φ des Analysators',0,180,1,30,function(v){return v+'°';},draw);
+  btnCtl(m.c,'Messpunkt aufnehmen',function(){var v=ph.get(),c=Math.cos(v*Math.PI/180);pts.push([v,Math.max(0,c*c+gauss()*.02)]);draw();},true);
+  btnCtl(m.c,'Punkte löschen',function(){pts=[];draw();});
+  var th=chkCtl(m.c,'Kurve I₀·cos² φ',false,draw);
+  function disc(x,a,lab){var r=a*Math.PI/180;return CI(x,100,30,'fill="var(--surface)" stroke="var(--muted)" stroke-width="2"')+LN(x-26*Math.sin(r),100-26*Math.cos(r),x+26*Math.sin(r),100+26*Math.cos(r),'stroke="var(--ink)" stroke-width="3"')+T(x,150,lab,{a:'middle',f:10.5,c:'mut'});}
+  function draw(){var v=ph.get(),c=Math.cos(v*Math.PI/180),I=c*c,s='';
+    s+=CI(22,100,12,'fill="#ffd54a"')+RC(36,96,26,8,'fill="#ffd54a" opacity=".85"')+disc(80,0,'Polarisator')+RC(110,96,30,8,'fill="#ffd54a" opacity=".85"')+disc(160,v,'Analysator')+RC(190,96,22,8,'fill="#ffd54a" opacity="'+f1(.05+.8*I)+'"')+RC(212,84,16,32,'fill="var(--surface)" stroke="var(--muted)" stroke-width="2"')+RC(214,86,12,28,'fill="#ffd54a" opacity="'+f1(.08+.9*I)+'"');
+    s+=T(220,72,'Messgerät',{a:'middle',f:10.5,c:'mut'});
+    var P=plot({x:276,y:20,w:174,h:150,x0:0,x1:180,y0:0,y1:1.05,xt:[0,45,90,135,180],yt:[0,.5,1],yf:function(t){return t===0?'0':t===1?'I₀':'0,5'},xl:'φ in °',yl:'I'});s+=P.s;
+    if(th.get()){var cu=[];for(var a=0;a<=180;a+=3){var cc=Math.cos(a*Math.PI/180);cu.push([P.X(a),P.Y(cc*cc)]);}s+=PL(cu,'stroke="var(--accent)" stroke-width="1.5"');}
+    pts.forEach(function(p){s+=CI(P.X(p[0]),P.Y(p[1]),3.2,'fill="#e0475c"');});
+    s+=LN(P.X(v),P.Y(0),P.X(v),P.Y(1.05),'stroke="var(--muted)" stroke-dasharray="2 3"');
+    m.v.innerHTML=SV(460,205,s,'Licht durch zwei Polarisationsfilter');
+    m.o.innerHTML='<span>Messgerät: <b>I = '+de(I,2)+' · I₀</b></span><span>'+pts.length+' Messpunkte</span>';}
+  draw();}
+
+/* ---------- Stunde 2: Teilchen und Kräfte ---------- */
+function rutherfordLab(root){
+  var m=mkSim(root,'ruth'),model='r',paths=[],cur=null,cnt=[0,0,0],n=0,D=45.5;
+  var md=selCtl(m.c,'Atommodell',[['r','Rutherford: winziger Kern'],['t','Thomson: Ladung über das Atom verteilt']],function(v){model=v;paths=[];cur=null;cnt=[0,0,0];n=0;frame();count();});
+  btnCtl(m.c,'100 000 α-Teilchen zählen',function(){n+=100000;if(model==='r'){var b=poisson(12.5),md2=poisson(1620);cnt[2]+=b;cnt[1]+=md2;cnt[0]+=100000-b-md2;}else cnt[0]+=100000;count();},true);
+  btnCtl(m.c,'Zähler auf null',function(){cnt=[0,0,0];n=0;count();});
+  function X(x){return 145+x*.8;}function Y(y){return 112+y*.8;}
+  function path(b){if(model==='t')return [[-176,b],[176,b]];var x=-176,y=b,vx=1,vy=0,p=[[x,y]],i=0;
+    while(i++<8000&&x<178&&x>-178&&Math.abs(y)<142){var r2=x*x+y*y,r=Math.sqrt(r2),dt=Math.min(2,Math.max(.04,.02*r)),ax=D/2*x/(r2*r),ay=D/2*y/(r2*r),hx=vx+ax*dt/2,hy=vy+ay*dt/2;x+=hx*dt;y+=hy*dt;r2=x*x+y*y;r=Math.sqrt(r2);ax=D/2*x/(r2*r);ay=D/2*y/(r2*r);vx=hx+ax*dt/2;vy=hy+ay*dt/2;if(i%3===0)p.push([x,y]);}
+    p.push([x,y]);var c=[0];for(var k=1;k<p.length;k++)c.push(c[k-1]+Math.hypot(p[k][0]-p[k-1][0],p[k][1]-p[k-1][1]));return {p:p,c:c};}
+  var base='<clipPath id="rc'+(++uid)+'"><rect x="4" y="4" width="282" height="216"/></clipPath>';
+  m.v.innerHTML=SV(460,225,base+'<g class="bg"></g><g class="old" clip-path="url(#rc'+uid+')"></g><polyline class="cur" fill="none" stroke="'+COL.a+'" stroke-width="2.2" filter="url(#kglow)"/><circle class="dot" r="4" fill="'+COL.a+'"/><g class="cnt"></g>','Streuung von α-Teilchen');
+  var svg=m.v.querySelector('svg'),gB=svg.querySelector('.bg'),gO=svg.querySelector('.old'),pc=svg.querySelector('.cur'),dot=svg.querySelector('.dot'),gC=svg.querySelector('.cnt');
+  function frame(){var s=RC(4,4,282,216,'class="plotbg"');
+    if(model==='r')s+=CI(X(0),Y(0),7,'fill="'+COL.gold+'"'+GLOW)+T(X(0)+10,Y(0)+22,'Goldkern',{f:11,c:'mut'})+T(10,214,'Ausschnitt: 0,0004 nm breit',{f:10.5,c:'mut'});
+    else{s+=RC(4,4,282,216,'fill="#e0475c" opacity=".07"');for(var k=0;k<9;k++)s+=CI(30+(k*61)%250,25+(k*47)%180,3,'fill="'+COL.b+'"');s+=T(10,214,'Positive Ladung gleichmäßig verteilt',{f:10.5,c:'mut'});}
+    s+=AR(8,16,40,16,COL.a,1.5)+T(46,20,'α, 5 MeV',{f:10.5,c:'mut'});gB.innerHTML=s;gO.innerHTML='';pc.setAttribute('points','');}
+  function count(){var s=T(300,24,'Zählung an der Folie',{f:12,w:600})+T(300,40,n?de(n,0)+' α-Teilchen':'noch nicht gezählt',{f:10.5,c:'mut'}),lab=['unter 10°','10° bis 90°','über 90°'];
+    lab.forEach(function(l,i){var y=64+i*48;s+=T(300,y,'abgelenkt '+l,{f:11})+RC(300,y+6,150,16,'fill="var(--bg)" stroke="var(--line)"');var fr2=n?cnt[i]/n:0,w=n?Math.max(cnt[i]?2:0,150*Math.pow(fr2,.25)):0;s+=RC(300,y+6,w,16,'fill="'+COL.a+'" opacity=".75"')+T(448,y+19,de(cnt[i],0),{a:'end',f:11,w:600});});
+    s+=T(300,212,'Balken gestaucht dargestellt',{f:10,c:'mut'});gC.innerHTML=s;}
+  function spawn(){var u=Math.random(),b=(u<.5?-1:1)*(4+136*Math.pow(Math.random(),1.3));cur=path(b);cur.s=0;}
+  function tick(dt){if(!cur)spawn();cur.s+=dt*150;var p=cur.p,c=cur.c,k=0;while(k<c.length-1&&c[k+1]<cur.s)k++;
+    var vis=p.slice(0,k+1).map(function(q){return [X(q[0]),Y(q[1])];});pc.setAttribute('points',vis.map(function(q){return f1(q[0])+','+f1(q[1]);}).join(' '));dot.setAttribute('cx',f1(X(p[k][0])));dot.setAttribute('cy',f1(Y(p[k][1])));
+    if(k>=c.length-1){paths.push(p);if(paths.length>18)paths.shift();gO.innerHTML=paths.map(function(q){return PL(q.map(function(z){return [X(z[0]),Y(z[1])];}),'stroke="'+COL.a+'" stroke-width="1" opacity=".35"');}).join('');cur=null;}}
+  frame();count();
+  if(RM){for(var i=0;i<14;i++){spawn();paths.push(cur.p);}cur=null;gO.innerHTML=paths.map(function(q){return PL(q.map(function(z){return [X(z[0]),Y(z[1])];}),'stroke="'+COL.a+'" stroke-width="1" opacity=".45"');}).join('');}else loop(m.s,tick);}
+
+var LEVELS=[['Atom','10⁻¹⁰ m',1e5],['Atomkern','10⁻¹⁴ m',10],['Proton','10⁻¹⁵ m',1],['Quarks','kleiner als 10⁻¹⁸ m',1e-3]];
+function zoomLab(root){
+  var m=mkSim(root,'zoom');
+  var le=rangeCtl(m.c,'Energie E',-2,7,0.05,-1,function(v){return eFmt(Math.pow(10,v));},draw);
+  function icon(i,x,y,on){var c=on?'':' opacity=".35"',s='<g'+c+'>';
+    if(i===0){s+=CI(x,y,16,'fill="none" stroke="var(--muted)" stroke-dasharray="3 2"')+CI(x,y,2.5,'fill="'+COL.gold+'"')+CI(x+16,y,2.5,'fill="'+COL.b+'"')+CI(x-11,y-11,2.5,'fill="'+COL.b+'"');}
+    if(i===1){[[0,0,1],[-5,-4,0],[5,-4,1],[-5,5,1],[5,5,0],[0,-8,0],[0,8,1]].forEach(function(q){s+=CI(x+q[0],y+q[1],4.2,'fill="'+(q[2]?COL.p:COL.n)+'"');});}
+    if(i===2){s+=CI(x,y,15,'fill="'+COL.p+'" opacity=".35"')+CI(x-5,y-4,3,'fill="#d64545"')+CI(x+6,y-3,3,'fill="#3aa856"')+CI(x,y+6,3,'fill="#2c6fd1"');}
+    if(i===3){s+=CI(x,y,3.5,'fill="#3aa856"');}
+    return s+'</g>';}
+  function draw(){var E=Math.pow(10,le.get()),lf=1240/E,s='';
+    LEVELS.forEach(function(L,i){var y=20+i*46,on=lf<=L[2];s+=RC(10,y,250,40,'rx="6" fill="'+(on?'var(--good-soft)':'var(--surface)')+'" stroke="'+(on?'var(--good)':'var(--line)')+'"')+icon(i,36,y+20,on)+T(64,y+17,L[0],{f:12.5,w:600})+T(64,y+32,L[1],{f:11,c:'mut'})+T(252,y+25,on?'aufgelöst':'zu klein',{a:'end',f:11.5,w:on?600:400,fill:on?'var(--good)':'var(--muted)'});});
+    var x0=290,x1=450,lx=function(f){return x0+(Math.log10(f)+4)/10*(x1-x0);};
+    s+=T(x0,22,'Größen und Wellenlänge',{f:11.5,w:600})+LN(x0,110,x1,110,'class="ink"');
+    [-4,-2,0,2,4,6].forEach(function(e){s+=LN(lx(Math.pow(10,e)),106,lx(Math.pow(10,e)),114,'class="ink"')+T(lx(Math.pow(10,e)),128,'10'+'<tspan dy="-5" font-size="8">'+(e-15)+'</tspan>',{a:'middle',f:10,c:'mut'});});
+    s+=T(x1,145,'m',{a:'end',f:10,c:'mut'});
+    LEVELS.forEach(function(L,i){var x=lx(L[2]);s+=LN(x,86,x,106,'stroke="var(--muted)"')+T(x,80-(i%2)*14,L[0],{a:'middle',f:10,c:'mut'});});
+    var xl=Math.max(x0,Math.min(x1,lx(lf)));s+=AR(xl,170,xl,116,'#e0475c',2)+T(xl,186,'λ',{a:'middle',f:13,w:600,fill:'#e0475c'});
+    m.v.innerHTML=SV(460,205,s,'Welche Strukturen bei welcher Energie aufgelöst werden');
+    var lm=lf*1e-15,ex=Math.floor(Math.log10(lm)),mt=lm/Math.pow(10,ex);
+    m.o.innerHTML='<span>E = <b>'+eFmt(E)+'</b></span><span>λ ≈ <b>'+de(mt,1)+' · 10<sup>'+ex+'</sup> m</b></span>';}
+  draw();}
+
+var QK={u:['u',2,1,0],d:['d',-1,1,0],s:['s',-1,1,0],U:['ū',-2,-1,1],D:['d̄',1,-1,1],S:['s̄',1,-1,1]};
+var QNAME={duu:'Proton p',ddu:'Neutron n',uuu:'Delta Δ⁺⁺',ddd:'Delta Δ⁻',dsu:'Lambda Λ⁰ oder Sigma Σ⁰',suu:'Sigma Σ⁺',dds:'Sigma Σ⁻',ssu:'Xi Ξ⁰',dss:'Xi Ξ⁻',sss:'Omega Ω⁻',DUU:'Antiproton p̄',DDU:'Antineutron n̄',Du:'Pion π⁺',Ud:'Pion π⁻',Uu:'Pion π⁰',Dd:'Pion π⁰',Su:'Kaon K⁺',Us:'Kaon K⁻',Sd:'Kaon K⁰',Ds:'Antikaon K̄⁰',Ss:'Phi-Meson φ'};
+function quarkLab(root){
+  var m=mkSim(root,'quark'),q=['u','u','d'];
+  Object.keys(QK).forEach(function(k){var b=btnCtl(m.c,QK[k][0]+' <small>('+(QK[k][1]>0?'+':'−')+Math.abs(QK[k][1])+'/3)</small>',function(){if(q.length<3){q.push(k);draw();}});b.classList.add('qbtn');b.setAttribute('aria-label',(QK[k][3]?'Antiquark ':'Quark ')+QK[k][0]);});
+  btnCtl(m.c,'Leeren',function(){q=[];draw();});
+  function frac(n){return n%3===0?(n>0?'+':n<0?'−':'')+Math.abs(n/3):(n>0?'+':'−')+Math.abs(n)+'/3';}
+  function draw(){var s='',Q=0,B=0,na=0;q.forEach(function(k){Q+=QK[k][1];B+=QK[k][2];na+=QK[k][3];});
+    var key=q.slice().sort().join(''),ok=(q.length===3&&(na===0||na===3))||(q.length===2&&na===1),name=ok?(QNAME[key]||'kurzlebiges Teilchen'):null;
+    var cols=q.length===2?['#d64545','#2bb5b0']:['#d64545','#3aa856','#2c6fd1'];
+    s+=CI(110,100,ok?72:64,'fill="'+(ok?'var(--good-soft)':'var(--surface)')+'" stroke="'+(ok?'var(--good)':'var(--line)')+'" stroke-width="2"'+(q.length&&!ok?' stroke-dasharray="5 4"':''));
+    var pos=q.length===2?[[80,100],[140,100]]:[[110,62],[78,122],[142,122]];
+    if(!q.length)s+=T(110,104,'Quarks antippen',{a:'middle',f:12,c:'mut'});
+    if(q.length>1)for(var a=0;a<q.length;a++)for(var b=a+1;b<q.length;b++){var A=pos[a],Bq=pos[b],dx=Bq[0]-A[0],dy=Bq[1]-A[1],L=Math.hypot(dx,dy),nx=-dy/L,ny=dx/L,d='M'+A[0]+' '+A[1];for(var t=1;t<=40;t++){var f=t/40,amp=Math.sin(f*Math.PI*9)*4;d+=' L'+f1(A[0]+dx*f+nx*amp)+' '+f1(A[1]+dy*f+ny*amp);}s+='<path d="'+d+'" fill="none" stroke="#e0a800" stroke-width="2" opacity=".85"/>';}
+    q.forEach(function(k,i){var p=pos[i]||[110,100];s+=CI(p[0],p[1],21,'fill="'+cols[i]+'"')+T(p[0],p[1]+6,QK[k][0],{a:'middle',f:18,w:700,fill:'#fff'});});
+    if(q.length>1)s+=T(110,190,'Gluonen halten die Quarks zusammen',{a:'middle',f:10.5,c:'mut'});
+    s+=T(230,50,'Ladung',{f:11.5,c:'mut'})+T(230,72,q.length?frac(Q)+' e':'–',{f:17,w:600});
+    s+=T(330,50,'Baryonenzahl',{f:11.5,c:'mut'})+T(330,72,q.length?frac(B):'–',{f:17,w:600});
+    s+=T(230,112,'Ergebnis',{f:11.5,c:'mut'});
+    var msg=!q.length?'':ok?name+(q.length===3?(na?' (Antibaryon)':' (Baryon)'):' (Meson)'):q.length<2?'Ein einzelnes Quark kommt nie frei vor.':q.length===2?'Zwei Quarks: so nicht beobachtet.':'Quarks und Antiquarks gemischt: so nicht beobachtet.';
+    s+=T(230,134,msg,{f:13,w:600,fill:ok?'var(--good)':'var(--ink)'});
+    if(q.length&&!ok&&Q%3!==0)s+=T(230,154,'Die Ladung wäre kein Vielfaches von e.',{f:11.5,c:'mut'});
+    if(ok)s+=T(230,154,q.length===3?'Drei Farbladungen ergeben zusammen „weiß“.':'Farbe und Antifarbe heben sich auf.',{f:11.5,c:'mut'});
+    m.v.innerHTML=SV(460,198,s,'Hadron aus Quarks zusammensetzen');m.o.innerHTML='';}
+  draw();}
+
+var SMD=[['u','up','Quark',1,'+2/3 e','2,2 MeV','1968'],['c','charm','Quark',2,'+2/3 e','1,27 GeV','1974'],['t','top','Quark',3,'+2/3 e','173 GeV','1995'],['g','Gluon','Austauschteilchen der starken Wechselwirkung',0,'0','0','1979 bei DESY in Hamburg'],
+ ['d','down','Quark',1,'−1/3 e','4,7 MeV','1968'],['s','strange','Quark',2,'−1/3 e','93 MeV','1968'],['b','bottom','Quark',3,'−1/3 e','4,18 GeV','1977'],['γ','Photon','Austauschteilchen der elektromagnetischen Wechselwirkung',0,'0','0','1905 (Einstein)'],
+ ['e','Elektron','Lepton',1,'−1 e','0,511 MeV','1897'],['μ','Myon','Lepton',2,'−1 e','106 MeV','1936'],['τ','Tauon','Lepton',3,'−1 e','1,78 GeV','1975'],['Z','Z-Boson','Austauschteilchen der schwachen Wechselwirkung',0,'0','91 GeV','1983 am CERN'],
+ ['ν<sub>e</sub>','Elektron-Neutrino','Lepton',1,'0','unter 1 eV','1956'],['ν<sub>μ</sub>','Myon-Neutrino','Lepton',2,'0','unter 1 eV','1962'],['ν<sub>τ</sub>','Tau-Neutrino','Lepton',3,'0','unter 1 eV','2000'],['W','W-Boson','Austauschteilchen der schwachen Wechselwirkung',0,'±1 e','80 GeV','1983 am CERN'],
+ ['H','Higgs-Teilchen','verleiht den Teilchen ihre Masse',0,'0','125 GeV','2012 am CERN']];
+function smLab(root){
+  var s=el('div','sim smtab');root.appendChild(s);var g=el('div','smgrid');s.appendChild(g);
+  ['1. Familie','2. Familie','3. Familie','Kräfte'].forEach(function(h){g.appendChild(el('div','smh',h));});
+  var info=el('div','smi');
+  SMD.forEach(function(d,i){var b=el('button','smb '+(d[2]==='Quark'?'q':d[2]==='Lepton'?'l':d[0]==='H'?'h':'x'),'<b>'+d[0]+'</b><span>'+d[1]+'</span>');b.type='button';b.addEventListener('click',function(){Array.prototype.forEach.call(g.querySelectorAll('.smb'),function(x){x.removeAttribute('aria-pressed');});b.setAttribute('aria-pressed','true');
+      info.innerHTML='<b>'+d[1]+' ('+d[0]+')</b><span>'+d[2]+(d[3]?', '+d[3]+'. Familie':'')+'</span><span>Ladung: '+d[4]+' · Ruheenergie: '+d[5]+'</span><span>Nachgewiesen: '+d[6]+'</span>';});
+    g.appendChild(b);});
+  s.appendChild(info);info.innerHTML='<span>Tippt ein Teilchen an.</span>';
+  s.appendChild(el('p','hint','Violett: Quarks · Grün: Leptonen · Orange: Austauschteilchen · Grau: Higgs-Teilchen. Zu jedem Teilchen gibt es ein Antiteilchen.'));}
+
+var PT={'p':[1,1,0,938.3],'n':[0,1,0,939.6],'e⁻':[-1,0,1,.511],'e⁺':[1,0,-1,.511],'ν<sub>e</sub>':[0,0,1,0],'ν̄<sub>e</sub>':[0,0,-1,0],'μ⁻':[-1,0,1,105.7],'μ⁺':[1,0,-1,105.7],'ν<sub>μ</sub>':[0,0,1,0],'π⁺':[1,0,0,139.6],'π⁻':[-1,0,0,139.6],'π⁰':[0,0,0,135],'γ':[0,0,0,0],'p̄':[-1,-1,0,938.3]};
+var RX=[[['n'],['p','e⁻','ν̄<sub>e</sub>']],[['n'],['p','e⁻']],[['p'],['e⁺','γ']],[['μ⁻'],['e⁻','ν̄<sub>e</sub>','ν<sub>μ</sub>']],[['π⁺'],['μ⁺','ν<sub>μ</sub>']],[['n'],['p','π⁻']],[['p','p'],['p','p','π⁰']],[['p','ν̄<sub>e</sub>'],['n','e⁺']],[['p','p'],['p','p','p','p̄']]];
+function reactionLab(root){
+  var s=el('div','sim react');root.appendChild(s);var c=el('div','simctl');s.appendChild(c);var tb=el('div','tw');s.appendChild(tb);var out=el('div','simout');s.appendChild(out);
+  function txt(r){return r[0].join(' + ')+' → '+r[1].join(' + ');}
+  var sel=el('select');RX.forEach(function(r,i){var o=el('option',null,txt(r).replace(/<\/?sub>/g,''));o.value=i;sel.appendChild(o);});var lb=el('label');lb.appendChild(el('span',null,'Reaktion'));lb.appendChild(sel);c.appendChild(lb);
+  function sum(a,k){return a.reduce(function(x,p){return x+PT[p][k];},0);}
+  function f(v){return v>0?'+'+v:v<0?'−'+(-v):'0';}
+  function draw(){var r=RX[+sel.value],rows=[['Ladung Q',0],['Baryonenzahl B',1],['Leptonenzahl L',2]],ok=true,h='<table><thead><tr><th></th><th class="n">vorher</th><th class="n">nachher</th><th></th></tr></thead><tbody>';
+    rows.forEach(function(w){var a=sum(r[0],w[1]),b=sum(r[1],w[1]),g=a===b;ok=ok&&g;h+='<tr><td>'+w[0]+'</td><td class="n">'+f(a)+'</td><td class="n">'+f(b)+'</td><td class="'+(g?'okc':'noc')+'">'+(g?'✓ erhalten':'✗ verletzt')+'</td></tr>';});
+    var dec=r[0].length===1,ea=sum(r[0],3),eb=sum(r[1],3),ge=!dec||ea>eb;
+    h+='<tr><td>Ruheenergie in MeV</td><td class="n">'+de(ea,1)+'</td><td class="n">'+de(eb,1)+'</td><td class="'+(ge?'okc':'noc')+'">'+(dec?(ge?'✓ reicht':'✗ zu wenig'):'Bewegungsenergie muss den Rest liefern')+'</td></tr></tbody></table>';
+    tb.innerHTML='<p class="rx">'+txt(r)+'</p>'+h;
+    out.innerHTML='<span>Ergebnis: <b>'+(ok&&ge?'erlaubt':'verboten')+'</b></span>';}
+  sel.addEventListener('change',draw);draw();}
+
+/* ---------- Stunde 3: Ein einfaches Kernmodell ---------- */
+function nucleus(cx,cy,np,nn,r){var s='',tot=np+nn;for(var i=0;i<tot;i++){var an=i*2.39996,rr=r*1.05*Math.sqrt(i+.35),isP=Math.floor((i+1)*np/tot)>Math.floor(i*np/tot);
+  s+=CI(cx+Math.cos(an)*rr,cy+Math.sin(an)*rr,r,'fill="'+(isP?COL.p:COL.n)+'" stroke="var(--surface)" stroke-width="1"');}return s;}
+function figKern(){var s=nucleus(90,78,6,6,11);
+  s+=T(208,54,'12',{a:'end',f:14})+T(208,84,'6',{a:'end',f:14})+T(211,80,'C',{f:38,w:600});
+  s+=CI(270,44,7,'fill="'+COL.p+'"')+T(284,48,'Protonen: Z = 6',{f:12.5})+CI(270,70,7,'fill="'+COL.n+'"')+T(284,74,'Neutronen: N = 6',{f:12.5})+T(263,100,'Nukleonen: A = Z + N = 12',{f:12.5})+T(263,124,'Durchmesser: etwa 5 fm = 5·10⁻¹⁵ m',{f:11.5,c:'mut'});
+  return FIG(460,150,s,'Aufbau des Kohlenstoff-12-Kerns');}
+function figWaage(){var s='',a=-.12,cx=230,cy=48,L=150,lx=cx-L*Math.cos(a),ly=cy-L*Math.sin(a),rx=cx+L*Math.cos(a),ry=cy+L*Math.sin(a);
+  s+=LN(cx,cy,cx,150,'stroke="var(--ink)" stroke-width="3"')+'<polygon points="'+(cx-28)+',158 '+(cx+28)+',158 '+cx+',142" fill="var(--muted)"/>'+LN(lx,ly,rx,ry,'stroke="var(--ink)" stroke-width="4"')+CI(cx,cy,5,'fill="var(--ink)"');
+  [[lx,ly],[rx,ry]].forEach(function(p){s+=LN(p[0],p[1],p[0]-34,p[1]+46,'class="ink"')+LN(p[0],p[1],p[0]+34,p[1]+46,'class="ink"')+'<path d="M'+(p[0]-44)+' '+(p[1]+46)+' Q'+p[0]+' '+(p[1]+66)+' '+(p[0]+44)+' '+(p[1]+46)+'Z" fill="var(--bg)" stroke="var(--muted)"/>';});
+  s+=CI(lx-22,ly+38,8,'fill="'+COL.p+'"')+CI(lx-6,ly+38,8,'fill="'+COL.p+'"')+CI(lx+10,ly+38,8,'fill="'+COL.n+'"')+CI(lx+26,ly+38,8,'fill="'+COL.n+'"');
+  s+=nucleus(rx,ry+34,2,2,8);
+  s+=T(lx,ly+86,'2 Protonen + 2 Neutronen',{a:'middle',f:12})+T(lx,ly+102,'4,031 882 u',{a:'middle',f:12,w:600})+T(rx,ry+86,'Heliumkern',{a:'middle',f:12})+T(rx,ry+102,'4,001 506 u',{a:'middle',f:12,w:600});
+  return FIG(460,176,s,'Waage: Einzelteile sind schwerer als der Heliumkern');}
+
+var BE=[[2,'H-2',1.112],[4,'He-4',7.074],[6,'Li-6',5.332],[7,'Li-7',5.606],[9,'Be-9',6.463],[11,'B-11',6.928],[12,'C-12',7.680],[14,'N-14',7.476],[16,'O-16',7.976],[19,'F-19',7.779],[20,'Ne-20',8.032],[23,'Na-23',8.112],[24,'Mg-24',8.261],[28,'Si-28',8.448],[32,'S-32',8.493],[40,'Ca-40',8.551],[56,'Fe-56',8.790],[62,'Ni-62',8.795],[63,'Cu-63',8.752],[84,'Kr-84',8.717],[90,'Zr-90',8.710],[120,'Sn-120',8.505],[138,'Ba-138',8.393],[184,'W-184',8.005],[197,'Au-197',7.916],[208,'Pb-208',7.868],[235,'U-235',7.591],[238,'U-238',7.570]];
+function bindingLab(root){
+  var m=mkSim(root,'bind'),sel=12;
+  var sc=selCtl(m.c,'Kern',BE.map(function(b,i){return [i,b[1]];}),function(v){sel=+v;draw();});sc.set(12);
+  var ar=chkCtl(m.c,'Fusion und Spaltung einzeichnen',false,draw);
+  m.v.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-i]');if(t){sel=+t.getAttribute('data-i');sc.set(sel);draw();}});
+  function draw(){var s='',P=plot({x:44,y:20,w:400,h:160,x0:0,x1:240,y0:0,y1:9.5,xt:[0,40,80,120,160,200,240],yt:[0,2,4,6,8],xl:'Nukleonenzahl A',yl:'E<tspan dy="3" font-size="8">B</tspan><tspan dy="-3">/A in MeV</tspan>'});s+=P.s;
+    s+=PL(BE.map(function(b){return [P.X(b[0]),P.Y(b[2])];}),'stroke="var(--muted)" stroke-width="1" opacity=".6"');
+    if(ar.get())s+=AR(P.X(6),P.Y(3.4),P.X(46),P.Y(7.4),'#e0475c',2.2)+T(P.X(14),P.Y(2.6),'Fusion',{f:12,w:600,fill:'#e0475c'})+AR(P.X(232),P.Y(6.6),P.X(130),P.Y(7.6),'#2c6fd1',2.2)+T(P.X(235),P.Y(5.9),'Spaltung',{a:'end',f:12,w:600,fill:'#2c6fd1'});
+    BE.forEach(function(b,i){s+='<circle data-i="'+i+'" cx="'+f1(P.X(b[0]))+'" cy="'+f1(P.Y(b[2]))+'" r="'+(i===sel?6:4.2)+'" fill="'+(i===sel?'#e0475c':'var(--accent)')+'" style="cursor:pointer"><title>'+b[1]+'</title></circle>';});
+    var b=BE[sel];s+=T(Math.min(P.X(b[0])+9,400),P.Y(b[2])+(b[2]>8?16:-8),b[1],{f:11.5,w:600,fill:'#e0475c'});
+    m.v.innerHTML=SV(460,215,s,'Mittlere Bindungsenergie pro Nukleon');
+    m.o.innerHTML='<span>'+b[1]+': <b>E<sub>B</sub>/A = '+de(b[2],2)+' MeV</b></span><span>Bindungsenergie gesamt: <b>'+de(b[0]*b[2],0)+' MeV</b></span>';}
+  draw();}
+
+function wellLab(root){
+  var m=mkSim(root,'well');
+  var L=rangeCtl(m.c,'Breite L des Topfs',4,14,0.5,10,function(v){return de(v,1)+' fm';},draw);
+  var N=rangeCtl(m.c,'Nukleonen einer Sorte',0,10,1,0,function(v){return String(v);},draw);
+  function draw(){var l=L.get(),e1=1240*1240/(8*938.3*l*l),s='',w=l*12,cx=150,y0=200,ky=175/80,nn=N.get();
+    s+=LN(32,y0,32,18,'class="ink"')+T(36,16,'E in MeV',{f:11,c:'mut'});[0,20,40,60,80].forEach(function(e){s+=LN(28,y0-e*ky,32,y0-e*ky,'class="ink"')+T(25,y0-e*ky+4,e,{a:'end',f:10.5,c:'mut'});});
+    s+=LN(cx-w/2,y0,cx-w/2,14,'stroke="var(--ink)" stroke-width="4"')+LN(cx+w/2,y0,cx+w/2,14,'stroke="var(--ink)" stroke-width="4"')+LN(cx-w/2,y0,cx+w/2,y0,'stroke="var(--ink)" stroke-width="2"');
+    s+=LN(cx-w/2,y0+12,cx+w/2,y0+12,'class="ink"')+T(cx,y0+26,'L = '+de(l,1)+' fm',{a:'middle',f:11.5});
+    var out=[];
+    for(var n=1;n<=7;n++){var E=n*n*e1;if(E>80)break;var y=y0-E*ky,pts=[];for(var i=0;i<=40;i++){var x=i/40;pts.push([cx-w/2+x*w,y-9*Math.sin(n*Math.PI*x)]);}
+      s+=LN(cx-w/2,y,cx+w/2,y,'stroke="var(--muted)" stroke-dasharray="3 3"')+PL(pts,'stroke="var(--accent)" stroke-width="1.6"')+T(cx+w/2+8,y+4,'n = '+n+': '+de(E,1)+' MeV',{f:11});
+      var occ=Math.max(0,Math.min(2,nn-2*(n-1)));for(var k=0;k<occ;k++)s+=CI(cx-9+k*18,y,5.5,'fill="'+COL.n+'"')+T(cx-9+k*18,y+4,k?'↓':'↑',{a:'middle',f:9,fill:'#fff'});
+      out.push('E<sub>'+n+'</sub> = '+de(E,1)+' MeV');}
+    if(nn>2*out.length)s+=T(cx,30,'Weitere Nukleonen passen nicht unter 80 MeV.',{a:'middle',f:11,fill:'#e0475c'});
+    m.v.innerHTML=SV(460,232,s,'Nukleon im eindimensionalen Potentialtopf');
+    m.o.innerHTML='<span>'+out.slice(0,3).join(' · ')+'</span><span>Je Niveau höchstens zwei Nukleonen einer Sorte (Pauli-Prinzip)</span>';}
+  draw();}
+
+var ELS=['n','H','He','Li','Be','B','C','N','O','F','Ne'];
+var NUC={'1-0':['s'],'1-1':['s'],'1-2':['m','12,3 a'],'2-1':['s'],'2-2':['s'],'2-4':['m','0,81 s'],'2-6':['m','0,12 s'],'3-3':['s'],'3-4':['s'],'3-5':['m','0,84 s'],'3-6':['m','0,18 s'],
+ '4-3':['p','53 d'],'4-4':['a','8·10⁻¹⁷ s'],'4-5':['s'],'4-6':['m','1,4·10⁶ a'],'4-7':['m','14 s'],'5-3':['p','0,77 s'],'5-5':['s'],'5-6':['s'],'5-7':['m','20 ms'],'5-8':['m','17 ms'],
+ '6-3':['p','0,13 s'],'6-4':['p','19 s'],'6-5':['p','20 min'],'6-6':['s'],'6-7':['s'],'6-8':['m','5730 a'],'6-9':['m','2,4 s'],'6-10':['m','0,75 s'],
+ '7-5':['p','11 ms'],'7-6':['p','10 min'],'7-7':['s'],'7-8':['s'],'7-9':['m','7,1 s'],'7-10':['m','4,2 s'],
+ '8-5':['p','8,6 ms'],'8-6':['p','71 s'],'8-7':['p','2,0 min'],'8-8':['s'],'8-9':['s'],'8-10':['s'],'8-11':['m','27 s'],'8-12':['m','14 s'],
+ '9-8':['p','65 s'],'9-9':['p','110 min'],'9-10':['s'],'9-11':['m','11 s'],'9-12':['m','4,2 s'],
+ '10-8':['p','1,7 s'],'10-9':['p','17 s'],'10-10':['s'],'10-11':['s'],'10-12':['s'],'10-13':['m','37 s'],'10-14':['m','3,4 min']};
+var DEC={s:'stabil',m:'β⁻-Strahler',p:'β⁺-Strahler bzw. Elektroneneinfang',a:'α-Strahler'};
+var DCOL={s:'var(--ink)',m:'#3f7fd9',p:'#e0475c',a:'#f2c230'};
+function twoPots(root){
+  var m=mkSim(root,'pots');
+  var Zc=rangeCtl(m.c,'Protonen Z',1,10,1,6,function(v){return v+' ('+ELS[v]+')';},draw);
+  var Nc=rangeCtl(m.c,'Neutronen N',1,14,1,9,function(v){return String(v);},draw);
+  function draw(){var Z=Zc.get(),N=Nc.get(),s='',y0=210,k=3.35,lift=6+Z*.9,W=120;
+    function pot(cx,lab,col,ft){var fy=y0-ft;s+='<path d="M'+(cx-W/2-30)+' '+(fy-170+(ft?28:0))+(ft?' Q'+(cx-W/2-8)+' '+(fy-150)+' '+(cx-W/2)+' '+(fy-140):' L'+(cx-W/2)+' '+(fy-140))+' L'+(cx-W/2)+' '+fy+' L'+(cx+W/2)+' '+fy+' L'+(cx+W/2)+' '+(fy-140)+(ft?' Q'+(cx+W/2+8)+' '+(fy-150)+' '+(cx+W/2+30)+' '+(fy-142):' L'+(cx+W/2+30)+' '+(fy-170))+'" fill="none" stroke="var(--ink)" stroke-width="2.5"/>'+T(cx,y0+16,lab,{a:'middle',f:12,w:600,fill:col});}
+    pot(115,'Neutronen',COL.n,0);pot(330,'Protonen',COL.p,lift);
+    var topN=Math.ceil(N/2),freeP=Math.floor(Z/2)+1,topP=Math.ceil(Z/2),freeN=Math.floor(N/2)+1,pred=topN>freeP?'m':topP>freeN?'p':'';
+    function lev(cx,n,base){return base-n*n*k;}
+    for(var n=1;n<=7;n++){var yn=lev(115,n,y0),yp=lev(330,n,y0-lift);
+      if(yn>14)s+=LN(115-W/2+6,yn,115+W/2-6,yn,'stroke="var(--muted)" stroke-dasharray="3 3"');if(yp>14)s+=LN(330-W/2+6,yp,330+W/2-6,yp,'stroke="var(--muted)" stroke-dasharray="3 3"');
+      for(var j=0;j<2;j++){var iN=2*(n-1)+j,iP=2*(n-1)+j;if(iN<N&&yn>8)s+=CI(103+j*24,yn,6,'fill="'+COL.n+'"');if(iP<Z&&yp>8)s+=CI(318+j*24,yp,6,'fill="'+COL.p+'"');}}
+    if(pred==='m'){var a=[103+((N-1)%2)*24,lev(0,topN,y0)],b=[318+((Z)%2)*24,lev(0,freeP,y0-lift)];s+=CI(b[0],b[1],6,'fill="none" stroke="'+COL.p+'" stroke-dasharray="2 2"')+'<path d="M'+a[0]+' '+(a[1]-8)+' Q'+((a[0]+b[0])/2)+' '+(Math.min(a[1],b[1])-50)+' '+(b[0]-4)+' '+(b[1]-9)+'" fill="none" stroke="#2c6fd1" stroke-width="2"/>'+T((a[0]+b[0])/2,Math.min(a[1],b[1])-34,'β⁻',{a:'middle',f:13,w:700,fill:'#2c6fd1'});}
+    if(pred==='p'){var a2=[318+((Z-1)%2)*24,lev(0,topP,y0-lift)],b2=[103+((N)%2)*24,lev(0,freeN,y0)];s+=CI(b2[0],b2[1],6,'fill="none" stroke="'+COL.n+'" stroke-dasharray="2 2"')+'<path d="M'+a2[0]+' '+(a2[1]-8)+' Q'+((a2[0]+b2[0])/2)+' '+(Math.min(a2[1],b2[1])-50)+' '+(b2[0]+4)+' '+(b2[1]-9)+'" fill="none" stroke="#e0475c" stroke-width="2"/>'+T((a2[0]+b2[0])/2,Math.min(a2[1],b2[1])-34,'β⁺',{a:'middle',f:13,w:700,fill:'#e0475c'});}
+    m.v.innerHTML=SV(460,230,s,'Potentialtöpfe für Neutronen und Protonen');
+    var r=NUC[Z+'-'+N],nm=ELS[Z]+'-'+(Z+N);
+    m.o.innerHTML='<span>Kern: <b>'+nm+'</b> ('+Z+' p, '+N+' n)</span><span>Modell: <b>'+(pred==='m'?'β⁻-Zerfall zu erwarten':pred==='p'?'β⁺-Zerfall zu erwarten':'kein eindeutiger Übergang')+'</b></span><span>Tatsächlich: <b>'+(r?DEC[r[0]]+(r[1]?', T½ = '+r[1]:''):'nicht beobachtet oder sofort zerfallend')+'</b></span>';}
+  draw();}
+
+function figInelastic(){var s='',P=plot({x:40,y:22,w:250,h:120,x0:0,x1:11,y0:0,y1:1.1,xt:[0,2,4,6,8,10],yt:[],xl:'Energie der gestreuten Protonen in MeV',yl:'Anzahl'});s+=P.s;
+  var pts=[];for(var e=0;e<=11;e+=.05){var y=Math.exp(-Math.pow(e-10,2)/.02)+.45*Math.exp(-Math.pow(e-5.56,2)/.02)+.22*Math.exp(-Math.pow(e-2.35,2)/.02)+.02;pts.push([P.X(e),P.Y(y)]);}s+=PL(pts,'stroke="var(--accent)" stroke-width="1.8"');
+  s+=T(P.X(10),P.Y(1.02),'10,00',{a:'middle',f:10.5})+T(P.X(5.56),P.Y(.5),'5,56',{a:'middle',f:10.5})+T(P.X(2.35),P.Y(.28),'2,35',{a:'middle',f:10.5});
+  var x0=330,y0=150,ky=14;s+=T(x0,20,'Niveaus von C-12',{f:11.5,w:600});[[0,'Grundzustand 0'],[4.44,'4,44 MeV'],[7.65,'7,65 MeV']].forEach(function(l){var y=y0-l[0]*ky;s+=LN(x0,y,x0+40,y,'stroke="var(--ink)" stroke-width="2.5"')+T(x0+46,y+4,l[1],{f:11});});
+  s+=AR(x0+20,y0-4.44*ky+3,x0+20,y0-3,'#8a3fc4',2)+T(x0+4,y0-2.2*ky,'γ',{a:'end',f:13,w:700,fill:'#8a3fc4'});
+  return FIG(460,180,s,'Spektrum gestreuter Protonen und Energieniveaus von Kohlenstoff-12');}
+
+/* ---------- Stunde 4: Wie Kerne zerfallen ---------- */
+function radLab(root){
+  var m=mkSim(root,'rad'),ps=[],acc=0;
+  var src=selCtl(m.c,'Präparat',[['all','Mischpräparat α, β, γ'],['a','α-Strahler'],['b','β⁻-Strahler'],['g','γ-Strahler']],function(){ps=[];frame();});
+  var ab=selCtl(m.c,'Absorber',[['0','keiner'],['p','Papier'],['al','Aluminium, 5 mm'],['pb','Blei, 5 cm']],function(){ps=[];frame();});
+  var bf=chkCtl(m.c,'Magnetfeld',true,function(){ps=[];frame();});
+  m.v.innerHTML=SV(460,220,'<g class="fr"></g><g class="pp" filter="url(#kglow)"></g>','Ablenkung und Abschirmung von α-, β- und γ-Strahlung');
+  var svg=m.v.querySelector('svg'),gF=svg.querySelector('.fr'),gP=svg.querySelector('.pp');
+  function ypos(t,x){if(!bf.get()||x<130)return 110;var d=Math.min(x,330)-130,y=110+(t==='a'?-.0009:t==='b'?.0042:0)*d*d;if(x>330){var sl=(t==='a'?-.0018:t==='b'?.0084:0)*200;y+=sl*(x-330);}return y;}
+  function stopX(t){var a=ab.get();if(a==='0')return 999;if(t==='a')return 96;if(t==='b'&&a!=='p')return 96;return 999;}
+  function frame(){var s=RC(10,94,36,32,'fill="#4a5563" rx="4"')+RC(40,106,6,8,'fill="#e0475c"')+T(28,140,'Präparat',{a:'middle',f:10.5,c:'mut'})+LN(46,110,90,110,'stroke="var(--line)"');
+    var a=ab.get();if(a!=='0'){var w=a==='p'?3:a==='al'?7:16,c=a==='p'?'#f3efe2':a==='al'?'#b9c2cb':'#5d6670';s+=RC(92,76,w,68,'fill="'+c+'" stroke="var(--muted)"')+T(94,70,a==='p'?'Papier':a==='al'?'Aluminium':'Blei',{a:'middle',f:10.5,c:'mut'});}
+    if(bf.get()){s+=RC(130,22,200,180,'rx="6" fill="var(--accent)" opacity=".07"');for(var x=145;x<330;x+=30)for(var y=40;y<200;y+=30)s+=T(x,y,'×',{a:'middle',f:12,c:'mut'});s+=T(230,16,'Magnetfeld in die Bildebene hinein (α-Ablenkung vergrößert)',{a:'middle',f:10.5,c:'mut'});}
+    var t=src.get(),has=function(k){return (t==='all'||t===k)&&stopX(k)>400;},lab=[];
+    if(has('a'))lab.push(['α',COL.a,bf.get()?[430,38]:[430,96]]);if(has('g'))lab.push(['γ',COL.g,[430,bf.get()?104:112]]);if(has('b'))lab.push(['β⁻',COL.b,bf.get()?[268,214]:[430,128]]);
+    lab.forEach(function(l){s+=T(l[2][0],l[2][1],l[0],{f:15,w:700,fill:l[1]});});
+    gF.innerHTML=s;}
+  function tick(dt){acc+=dt;var t=src.get(),ty=t==='all'?['a','b','g']:[t];while(acc>.09){acc-=.09;var k=ty[Math.random()*ty.length|0];var pass=!(k==='g'&&ab.get()==='pb'&&Math.random()<.6);ps.push({t:k,x:46,y0:(Math.random()-.5)*6,stop:pass?stopX(k):100});}
+    var h='';ps=ps.filter(function(p){p.x+=dt*(p.t==='a'?140:p.t==='b'?240:300);if(p.x>p.stop)return false;var y=ypos(p.t,p.x)+p.y0;if(p.x>455||y>222||y<0)return false;
+      h+=p.t==='g'?LN(p.x-5,y,p.x+5,y,'stroke="'+COL.g+'" stroke-width="2.5"'):CI(p.x,y,p.t==='a'?4:2.5,'fill="'+(p.t==='a'?COL.a:COL.b)+'"');return true;});
+    gP.innerHTML=h;}
+  frame();if(RM){for(var i=0;i<60;i++)tick(.05);}else loop(m.s,tick);}
+
+function absorbLab(root){
+  var m=mkSim(root,'absorb'),pts=[],BG=10;
+  var CFG={g:{n:'γ-Strahlung (Cs-137) und Blei',u:'cm',max:4,st:.1,N0:900,mu:1.2,R:99,extra:0},b:{n:'β-Strahlung (Sr-90) und Aluminium',u:'mm',max:6,st:.25,N0:1500,mu:1.8,R:4,extra:6}};
+  var ty=selCtl(m.c,'Versuch',[['g',CFG.g.n],['b',CFG.b.n]],function(){pts=[];d.el.max=CFG[ty.get()].max;d.el.step=CFG[ty.get()].st;d.set(0);draw();});
+  var d=rangeCtl(m.c,'Absorberdicke d',0,4,0.1,0,function(v){return String(Math.round(v*100)/100).replace('.',',')+' '+CFG[ty.get()].u;},draw);
+  btnCtl(m.c,'30 s messen',function(){var c=CFG[ty.get()],x=d.get();pts.push([x,poisson(exp(c,x)+BG)]);draw();},true);
+  btnCtl(m.c,'Messreihe löschen',function(){pts=[];draw();});
+  var sub=chkCtl(m.c,'Nullrate abziehen',true,draw),th=chkCtl(m.c,'Erwartung einblenden',false,draw);
+  function exp(c,x){return (x<c.R?c.N0*Math.exp(-c.mu*x):0)+c.extra;}
+  function draw(){var c=CFG[ty.get()],x=d.get(),s='',sb=sub.get();
+    s+=RC(10,92,24,26,'fill="var(--muted)" rx="3"')+T(22,136,'Quelle',{a:'middle',f:10.5,c:'mut'});
+    var w=8+x/c.max*44;s+=RC(52,80,w,50,'fill="'+(ty.get()==='g'?'#5d6670':'#b9c2cb')+'" stroke="var(--muted)"')+T(52+w/2,150,'d',{a:'middle',f:11,c:'mut'});
+    s+=RC(118,96,46,18,'fill="var(--surface)" stroke="var(--ink)" rx="9"')+LN(120,105,162,105,'class="ink"')+T(141,136,'Zählrohr',{a:'middle',f:10.5,c:'mut'});
+    var ymax=c.N0*1.15,P=plot({x:214,y:20,w:234,h:150,x0:0,x1:c.max,y0:0,y1:ymax,xt:ty.get()==='g'?[0,1,2,3,4]:[0,2,4,6],yt:[0,Math.round(ymax/3/100)*100,Math.round(2*ymax/3/100)*100],xl:'d in '+c.u,yl:'Impulse in 30 s'});s+=P.s;
+    if(th.get()){var cu=[];for(var q=0;q<=c.max+1e-9;q+=c.max/120)cu.push([P.X(q),P.Y(exp(c,q)+(sb?0:BG))]);s+=PL(cu,'stroke="var(--accent)" stroke-width="1.5"');}
+    pts.forEach(function(p){s+=CI(P.X(p[0]),P.Y(Math.max(0,p[1]-(sb?BG:0))),3.4,'fill="#e0475c"');});
+    s+=LN(P.X(x),P.Y(0),P.X(x),P.Y(ymax),'stroke="var(--muted)" stroke-dasharray="2 3"');
+    m.v.innerHTML=SV(460,205,s,'Absorptionsmessung mit Zählrohr');
+    var last=pts.length?pts[pts.length-1]:null;
+    m.o.innerHTML='<span>Nullrate: <b>'+BG+' Impulse in 30 s</b></span>'+(last?'<span>Letzte Messung: <b>'+last[1]+(sb?' − '+BG+' = '+(last[1]-BG):'')+' Impulse</b></span>':'<span>Noch keine Messung</span>');}
+  draw();}
+
+function tFmt(sec){var a=sec/3.156e7;if(sec<1e-3)return de(sec*1e6,1)+' µs';if(sec<1)return de(sec*1e3,1)+' ms';if(sec<120)return de(sec,1)+' s';if(sec<7200)return de(sec/60,0)+' min';if(sec<172800)return de(sec/3600,0)+' h';if(a<2)return de(sec/86400,0)+' d';if(a<1e4)return de(a,0)+' a';var e=Math.floor(Math.log10(a));return de(a/Math.pow(10,e),1)+'·10<sup>'+e+'</sup> a';}
+function tunnelLab(root){
+  var m=mkSim(root,'tunnel'),R=9.3,K=259.2;
+  var E=rangeCtl(m.c,'Energie des α-Teilchens',4,9,0.05,4.27,function(v){return de(v,2)+' MeV';},draw);
+  function draw(){var e=E.get(),ra=K/e,s='',P=plot({x:44,y:16,w:400,h:170,x0:0,x1:90,y0:-35,y1:36,xt:[0,20,40,60,80],yt:[-30,-20,-10,0,10,20,30],xl:'Abstand r in fm',yl:'Energie in MeV'});s+=P.s;
+    var pot=[[P.X(0),P.Y(-30)],[P.X(R),P.Y(-30)]];for(var r=R;r<=90;r+=.5)pot.push([P.X(r),P.Y(Math.min(36,K/r))]);
+    var wall=[[P.X(R),P.Y(e)]];for(var r2=R;r2<=ra;r2+=.3)wall.push([P.X(r2),P.Y(Math.min(36,K/r2))]);wall.push([P.X(ra),P.Y(e)]);s+='<polygon points="'+wall.map(function(p){return f1(p[0])+','+f1(p[1]);}).join(' ')+'" fill="#e0475c" opacity=".14"/>';
+    s+=PL(pot,'stroke="var(--ink)" stroke-width="2.2"')+LN(P.X(0),P.Y(e),P.X(90),P.Y(e),'stroke="'+COL.a+'" stroke-width="1.3" stroke-dasharray="5 3"');
+    var amp=Math.max(.05,Math.exp(-(ra-R)*.05)),wv=[];
+    for(var x=0;x<=90;x+=.25){var y=x<R?Math.cos(1.6*(x-R)):x<ra?Math.exp(-(x-R)/(ra-R)*Math.log(1/amp)):amp*Math.cos(.9*(x-ra));wv.push([P.X(x),P.Y(e)-14*y]);}
+    s+=PL(wv,'stroke="'+COL.a+'" stroke-width="1.8"');
+    s+=T(P.X(R/2),P.Y(-30)-6,'Kern',{a:'middle',f:11,c:'mut'})+T(P.X((R+ra)/2),P.Y(e)+16,'Wall',{a:'middle',f:11,fill:'#e0475c'})+T(P.X(62),P.Y(29),'Coulombwall des Thorium-Kerns',{a:'middle',f:11,c:'mut'});
+    m.v.innerHTML=SV(460,214,s,'α-Teilchen im Kern vor dem Coulombwall');
+    var lg=1.498*90/Math.sqrt(e)-48.09,T12=Math.pow(10,lg);
+    m.o.innerHTML='<span>Wallbreite: <b>'+de(ra-R,0)+' fm</b></span><span>Halbwertszeit (Abschätzung): <b>'+tFmt(T12)+'</b></span><span>Beispiel U-238: 4,27 MeV, 4,5·10<sup>9</sup> a</span>';}
+  draw();}
+
+function figAlpha(){var s='';s+=nucleus(230,70,10,12,7)+T(230,124,'Ra-226 in Ruhe',{a:'middle',f:11.5,c:'mut'});
+  s+=LN(20,150,440,150,'class="grid"');
+  s+=nucleus(150,190,9,11,6.5)+AR(126,190,96,190,COL.n,3)+T(150,232,'Rn-222',{a:'middle',f:11.5})+T(150,248,'0,09 MeV',{a:'middle',f:11.5,w:600});
+  s+=nucleus(300,190,2,2,6.5)+AR(318,190,430,190,COL.a,3)+T(300,232,'α-Teilchen',{a:'middle',f:11.5})+T(300,248,'4,78 MeV',{a:'middle',f:11.5,w:600});
+  s+=T(230,272,'gleich große, entgegengesetzte Impulse',{a:'middle',f:11.5,c:'mut'});
+  return FIG(460,282,s,'Impulsbilanz beim α-Zerfall von Radium-226');}
+
+function betaLab(root){
+  var m=mkSim(root,'beta'),mode='m',t=0;
+  selCtl(m.c,'Zerfall',[['m','β⁻: n → p + e⁻ + ν̄ₑ'],['p','β⁺ im Kern: p → n + e⁺ + νₑ']],function(v){mode=v;t=0;frame();});
+  var tb=el('div','tw');m.s.appendChild(tb);
+  m.v.innerHTML=SV(460,200,'<g class="st"></g><g class="mv"></g>','Quarks beim β-Zerfall');
+  var svg=m.v.querySelector('svg'),gS=svg.querySelector('.st'),gM=svg.querySelector('.mv');
+  function q(x,y,l,c){return CI(x,y,13,'fill="'+c+'"')+T(x,y+5,l,{a:'middle',f:14,w:700,fill:'#fff'});}
+  function frame(){var mm=mode==='m',a=mm?['u','d','d']:['u','u','d'],b=mm?['u','u','d']:['u','d','d'],s='';
+    s+=RC(20,40,120,120,'class="box" rx="60"')+T(80,178,mm?'Neutron (udd)':'Proton (uud)',{a:'middle',f:12,w:600});
+    s+=RC(320,40,120,120,'class="box" rx="60"')+T(380,178,mm?'Proton (uud)':'Neutron (udd)',{a:'middle',f:12,w:600});
+    s+=q(60,80,a[0],'#d64545')+q(100,80,a[1],'#3aa856')+q(80,120,a[2],'#2c6fd1');
+    s+=q(360,80,b[0],'#d64545')+q(400,80,b[1],'#3aa856')+q(380,120,b[2],'#2c6fd1');
+    s+=AR(150,100,300,100,'var(--muted)',1.5)+T(225,92,mm?'d → u':'u → d',{a:'middle',f:12,w:600});
+    s+=T(225,132,mm?'W⁻ zerfällt in e⁻ und ν̄ₑ':'W⁺ zerfällt in e⁺ und νₑ',{a:'middle',f:11.5,c:'mut'});
+    gS.innerHTML=s;
+    var R2=mm?['n','p + e⁻ + ν̄ₑ','0','(+1) + (−1) + 0 = 0','+1 + 0 + 0 = 1','0 + 1 + (−1) = 0']:['p','n + e⁺ + νₑ','+1','0 + (+1) + 0 = +1','+1 + 0 + 0 = 1','0 + (−1) + 1 = 0'];
+    tb.innerHTML='<table><thead><tr><th></th><th>vorher: '+R2[0]+'</th><th>nachher: '+R2[1]+'</th></tr></thead><tbody><tr><td>Ladung</td><td>'+R2[2]+'</td><td>'+R2[3]+'</td></tr><tr><td>Baryonenzahl</td><td>1</td><td>'+R2[4]+'</td></tr><tr><td>Leptonenzahl</td><td>0</td><td>'+R2[5]+'</td></tr></tbody></table>';}
+  function mv(dt){t=(t+dt/3)%1;var mm=mode==='m',s='',ph=t<.25?0:t<.55?(t-.25)/.3:1,lp=t<.55?0:(t-.55)/.45,x=100+ph*125,y=118+ph*20;
+    if(t>=.25){var w=[];for(var i=0;i<=30;i++){var xx=100+i/30*(x-100);w.push([xx,118+(xx-100)/125*20+4*Math.sin(i*1.4)]);}s+=PL(w,'stroke="#8a3fc4" stroke-width="2"')+T(x,y+16,mm?'W⁻':'W⁺',{a:'middle',f:12,w:700,fill:'#8a3fc4'});}
+    if(lp>0){s+=AR(x,y,x+lp*80,y+lp*30,mm?COL.b:COL.pos,2)+T(x+lp*80+4,y+lp*30+14,mm?'e⁻':'e⁺',{f:12,w:700,fill:mm?COL.b:COL.pos});s+=AR(x,y,x+lp*90,y-lp*28,COL.nu,1.6)+T(x+lp*90+4,y-lp*28,mm?'ν̄ₑ':'νₑ',{f:12,w:700,fill:COL.nu});}
+    gM.innerHTML=s;}
+  frame();if(RM)mv(.8);else loop(m.s,mv);}
+
+function spectraLab(root){
+  var m=mkSim(root,'spec'),H={},last=null;
+  var S={a:{n:'α: Americium-241',x0:4.8,x1:5.8,bw:.01},b:{n:'β⁻: Caesium-137',x0:0,x1:.7,bw:.01},g:{n:'γ: Cobalt-60',x0:0,x1:1.6,bw:.01}};
+  var sr=selCtl(m.c,'Präparat',[['a',S.a.n],['b',S.b.n],['g',S.g.n]],function(){H={};last=null;draw();});
+  btnCtl(m.c,'1 Zerfall',function(){add(1);},false);btnCtl(m.c,'+500 Zerfälle',function(){add(500);},true);btnCtl(m.c,'Löschen',function(){H={};last=null;draw();});
+  function betaE(){var Q=.514,me=.511;for(;;){var E=Math.random()*Q,f=Math.sqrt(E*E+2*E*me)*(E+me)*(Q-E)*(Q-E);if(Math.random()*.04<f)return E;}}
+  function put(E){var c=S[sr.get()],k=Math.floor((E-c.x0)/c.bw);H[k]=(H[k]||0)+1;}
+  function add(n){var t=sr.get();for(var i=0;i<n;i++){if(t==='a'){var E=Math.random()<.86?5.486:5.443;put(E+gauss()*.012);last=null;}else if(t==='b'){var e=betaE();put(e);last=e;}else{put(1.173+gauss()*.012);put(1.332+gauss()*.012);last=null;}}draw();}
+  function draw(){var t=sr.get(),c=S[t],s='',mx=1,k;for(k in H)mx=Math.max(mx,H[k]);
+    var P=plot({x:44,y:44,w:400,h:132,x0:c.x0,x1:c.x1,y0:0,y1:mx*1.1,xt:t==='a'?[4.8,5,5.2,5.4,5.6,5.8]:t==='b'?[0,.1,.2,.3,.4,.5,.6,.7]:[0,.4,.8,1.2,1.6],yt:[],xl:'Energie in MeV',yl:'Anzahl'});s+=P.s;
+    for(k in H){var x=c.x0+k*c.bw;s+=RC(P.X(x),P.Y(H[k]),Math.max(1,P.X(x+c.bw)-P.X(x)-.4),P.Y(0)-P.Y(H[k]),'fill="'+(t==='a'?COL.a:t==='b'?COL.b:COL.g)+'"');}
+    if(t==='b'){var Q=.514,x0=44,w=400;s+=T(x0,16,'Letzter Zerfall: Aufteilung von Q = 0,514 MeV',{f:11.5,w:600});s+=RC(x0,22,w,12,'fill="var(--bg)" stroke="var(--line)"');
+      if(last!==null)s+=RC(x0,22,w*last/Q,12,'fill="'+COL.b+'"')+RC(x0+w*last/Q,22,w*(1-last/Q),12,'fill="'+COL.nu+'" opacity=".6"')+T(x0+4,32,'e⁻ '+de(last,3),{f:10,fill:'#fff'})+T(x0+w-4,32,'ν̄ₑ '+de(Q-last,3),{a:'end',f:10,fill:'var(--ink)'});}
+    else s+=T(44,24,t==='a'?'Zwei scharfe Linien: 5,49 und 5,44 MeV':'Zwei γ-Linien: 1,17 und 1,33 MeV',{f:11.5,w:600});
+    m.v.innerHTML=SV(460,210,s,'Energiespektrum');
+    var n=0;for(k in H)n+=H[k];m.o.innerHTML='<span>Gezählt: <b>'+de(n,0)+'</b></span>';}
+  draw();}
+
+var CHAIN=[[92,238,'U','a','4,5·10⁹ a'],[90,234,'Th','m','24 d'],[91,234,'Pa','m','1,2 min'],[92,234,'U','a','2,5·10⁵ a'],[90,230,'Th','a','7,5·10⁴ a'],[88,226,'Ra','a','1600 a'],[86,222,'Rn','a','3,8 d'],[84,218,'Po','a','3,1 min'],[82,214,'Pb','m','27 min'],[83,214,'Bi','m','20 min'],[84,214,'Po','a','0,16 ms'],[82,210,'Pb','m','22 a'],[83,210,'Bi','m','5,0 d'],[84,210,'Po','a','138 d'],[82,206,'Pb','s','stabil']];
+var HEAVY={81:'Tl',82:'Pb',83:'Bi',84:'Po',85:'At',86:'Rn',87:'Fr',88:'Ra',89:'Ac',90:'Th',91:'Pa',92:'U'};
+function chartLab(root,mode){
+  var m=mkSim(root,'chart'),sel=null,step=0,auto=0;
+  var heavy=mode==='chain';
+  if(heavy){btnCtl(m.c,'Nächster Zerfall',function(){if(step<CHAIN.length-1)step++;draw();},true);btnCtl(m.c,'Ganze Reihe',function(){step=CHAIN.length-1;draw();});btnCtl(m.c,'Von vorn',function(){step=0;draw();});}
+  m.v.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-k]');if(t){sel=t.getAttribute('data-k');draw();}});
+  function draw(){var s='';
+    if(!heavy){var cw=26,ch=18,x0=52,y0=196;
+      for(var Z=1;Z<=10;Z++){s+=T(x0-6,y0-(Z-1)*ch-5,ELS[Z]+' '+Z,{a:'end',f:10.5,c:'mut'});
+        for(var N=0;N<=14;N++){var k=Z+'-'+N,r=NUC[k];if(!r)continue;var x=x0+N*cw,y=y0-Z*ch;
+          s+='<g data-k="'+k+'" style="cursor:pointer">'+RC(x+.5,y+.5,cw-1,ch-1,'fill="'+DCOL[r[0]]+'" stroke="'+(sel===k?'#e0475c':'var(--surface)')+'" stroke-width="'+(sel===k?2.5:1)+'"')+T(x+cw/2,y+13,Z+N,{a:'middle',f:9.5,fill:r[0]==='a'?'#222':'#fff'})+'</g>';}}
+      for(var N2=0;N2<=14;N2+=2)s+=T(x0+N2*cw+cw/2,y0+14,N2,{a:'middle',f:10.5,c:'mut'});s+=T(x0+15*cw,y0+28,'Neutronenzahl N →',{a:'end',f:11,c:'mut'})+T(x0-6,12,'Z',{a:'end',f:11,c:'mut'});
+      if(sel){var p=sel.split('-').map(Number),r2=NUC[sel],z=p[0],n=p[1],to=r2[0]==='m'?[z+1,n-1]:r2[0]==='p'?[z-1,n+1]:r2[0]==='a'?[z-2,n-2]:null;
+        if(to&&to[0]>=1){var cx1=x0+n*cw+cw/2,cy1=y0-z*ch+ch/2,cx2=x0+to[1]*cw+cw/2,cy2=y0-to[0]*ch+ch/2;s+=AR(cx1,cy1,cx2+(cx1-cx2)*.25,cy2+(cy1-cy2)*.25,'#e0475c',2.2);}
+        m.o.innerHTML='<span><b>'+ELS[z]+'-'+(z+n)+'</b> ('+z+' p, '+n+' n)</span><span><b>'+DEC[r2[0]]+(r2[1]?', T½ = '+r2[1]:'')+'</b></span>'+(to&&to[0]>=1?'<span>Tochterkern: <b>'+(to[0]>0?ELS[to[0]]+'-'+(to[0]+to[1]):'')+'</b></span>':'');}
+      else m.o.innerHTML='<span>Tippt ein Feld an.</span>';
+      m.v.innerHTML=SV(460,232,s,'Ausschnitt der Nuklidkarte für leichte Kerne');return;}
+    var cw=16.5,ch=15.5,x0=56,y0=200,N0=123,Z0=81;
+    for(var Z3=81;Z3<=92;Z3++){s+=T(x0-6,y0-(Z3-Z0)*ch-4,HEAVY[Z3]+' '+Z3,{a:'end',f:10,c:'mut'});for(var N3=N0;N3<=146;N3++)s+=RC(x0+(N3-N0)*cw+.5,y0-(Z3-Z0+1)*ch+.5,cw-1,ch-1,'fill="var(--bg)" stroke="var(--line)" stroke-width=".6"');}
+    for(var N4=124;N4<=146;N4+=4)s+=T(x0+(N4-N0)*cw+cw/2,y0+13,N4,{a:'middle',f:10,c:'mut'});s+=T(x0+24*cw,y0+27,'Neutronenzahl N →',{a:'end',f:11,c:'mut'});
+    var na=0,nb=0;
+    CHAIN.forEach(function(c,i){var Nn=c[1]-c[0],x=x0+(Nn-N0)*cw,y=y0-(c[0]-Z0+1)*ch,vis=i<=step;s+=RC(x+.5,y+.5,cw-1,ch-1,'fill="'+(vis?DCOL[c[3]]:'var(--surface)')+'" stroke="'+(i===step?'#e0475c':'var(--muted)')+'" stroke-width="'+(i===step?2.2:.8)+'"');
+      if(i>0&&i<=step){var p=CHAIN[i-1],px=x0+(p[1]-p[0]-N0)*cw+cw/2,py=y0-(p[0]-Z0+1)*ch+ch/2;s+=AR(px,py,x+cw/2+(px-x-cw/2)*.3,y+ch/2+(py-y-ch/2)*.3,p[3]==='a'?'#b8860b':'#2c6fd1',1.8);if(p[3]==='a')na++;else nb++;}});
+    var c=CHAIN[step];
+    m.v.innerHTML=SV(460,230,s,'Uran-Radium-Zerfallsreihe in der Nuklidkarte');
+    m.o.innerHTML='<span>Jetzt: <b>'+c[2]+'-'+c[1]+'</b>, '+(c[3]==='s'?'<b>stabil, Ende der Reihe</b>':'<b>'+DEC[c[3]]+', T½ = '+c[4]+'</b>')+'</span><span>Bisher: <b>'+na+' α</b> und <b>'+nb+' β⁻</b></span>';}
+  draw();}
+
+/* ---------- Stunde 5: Radioaktivität und Kernenergie ---------- */
+function gmLab(root){
+  var m=mkSim(root,'gm'),tr=[],el2=[],io=[],av=[],pulses=[],cnt=0,time=0,acc=0,src=true,U=500,small=0;
+  var sc=chkCtl(m.c,'Präparat vor dem Fenster',true,function(v){src=v;});
+  var uc=rangeCtl(m.c,'Spannung am Draht',250,600,10,500,function(v){return v+' V';},function(v){U=v;});
+  btnCtl(m.c,'Zähler auf null',function(){cnt=0;time=0;});
+  var base=RC(30,58,226,104,'rx="14" fill="var(--bg)" stroke="var(--ink)" stroke-width="2"')+RC(26,70,8,80,'fill="#c9a86a" opacity=".8"')+T(30,186,'Fenster',{a:'middle',f:10.5,c:'mut'})+LN(40,110,252,110,'stroke="#e0475c" stroke-width="1.6"')+T(150,186,'Zählrohr mit Edelgas, Draht in der Mitte',{a:'middle',f:10.5,c:'mut'})+T(262,114,'+',{f:14,w:700,fill:'#e0475c'})+RC(300,30,150,78,'class="box" rx="6"')+RC(300,124,150,70,'fill="#0e1a14" rx="6"');
+  m.v.innerHTML=SV(460,200,base+'<g class="dyn"></g>','Geiger-Müller-Zählrohr');
+  var g=m.v.querySelector('.dyn');
+  function spawn(bg){var y=bg?70+Math.random()*80:80+Math.random()*60,dy=(Math.random()-.5)*40;tr.push({y1:y,y2:y+dy,t:0});for(var i=0;i<6;i++){var f=Math.random(),x=40+f*210,yy=y+dy*f;el2.push({x:x,y:yy,v:0});io.push({x:x,y:yy});}}
+  function tick(dt){time+=dt;acc+=dt;var rate=(src?1.0:0)+.33;if(Math.random()<rate*dt)spawn(!src);
+    tr=tr.filter(function(t){t.t+=dt;return t.t<.5;});
+    el2=el2.filter(function(e){e.v+=dt*900;var d=110-e.y,st=Math.sign(d)*Math.min(Math.abs(d),e.v*dt);e.y+=st;if(Math.abs(110-e.y)<3){if(U>=400){av.push({x:e.x,t:0});}else small+=1;return false;}return true;});
+    if(av.length&&!av.some(function(a){return a.t>0;})){cnt++;pulses.push({t:0,h:1});}
+    var anyNew=false;av=av.filter(function(a){if(a.t===0)anyNew=true;a.t+=dt;return a.t<.35;});
+    if(small>=6){small=0;pulses.push({t:0,h:.12});}
+    io.forEach(function(i){i.y+=(i.y<110?-1:1)*dt*25;});io=io.filter(function(i){return i.y>60&&i.y<160;});
+    pulses=pulses.filter(function(p){p.t+=dt;return p.t<2.5;});
+    var h='';tr.forEach(function(t){h+=LN(14,t.y1-(t.y2-t.y1)*.12,256,t.y2,'stroke="'+COL.b+'" stroke-width="1.5" opacity="'+f1(1-t.t*2)+'"');});
+    io.forEach(function(i){h+=CI(i.x,i.y,2.2,'fill="#e0475c"');});el2.forEach(function(e){h+=CI(e.x,e.y,2,'fill="'+COL.b+'"');});
+    av.forEach(function(a){for(var k=0;k<14;k++){var an=k*.9+a.t*9,r=3+a.t*30*((k%3)+1)/3;h+=CI(a.x+Math.cos(an)*r*1.6,110+Math.sin(an)*r*.5,1.6,'fill="'+COL.b+'" opacity="'+f1(1-a.t/.35)+'"');}});
+    h+=T(375,52,'Zähler',{a:'middle',f:11,c:'mut'})+T(375,82,String(cnt),{a:'middle',f:26,w:700})+T(375,100,time>2?de(cnt/time*60,0)+' pro Minute':'',{a:'middle',f:11,c:'mut'});
+    var sp=[[302,180]];pulses.forEach(function(p){var x=302+p.t/2.5*146;sp.push([x-.5,180],[x,180-48*p.h],[x+3,180]);});sp.push([448,180]);sp.sort(function(a,b){return a[0]-b[0];});h+=PL(sp,'stroke="#7cf08a" stroke-width="1.4"');
+    h+=T(375,142,U>=400?'Lawine: jedes Teilchen zählt':'keine Lawine',{a:'middle',f:10.5,fill:'#cfe9d3'});
+    g.innerHTML=h;}
+  if(RM){spawn(false);tick(.05);}else loop(m.s,tick);}
+
+function decayLab(root){
+  var m=mkSim(root,'decay'),N0=400,alive=[],els=[],run=false,t=0,rec=[],T12=10,lam=Math.LN2/10,acc=0;
+  var ns=selCtl(m.c,'Anzahl Kerne',[['400','400'],['40','40'],['1600','1600']],function(v){N0=+v;reset();});
+  var bs=btnCtl(m.c,'Start',function(){run=!run;bs.textContent=run?'Pause':'Weiter';},true);
+  btnCtl(m.c,'Neu',function(){reset();});
+  var th=chkCtl(m.c,'Kurve N₀·e<sup>−λt</sup>',true,function(){plotIt();});
+  m.v.innerHTML=SV(460,215,'<g class="gr"></g><g class="pl"></g>','Zufälliger Zerfall vieler Kerne');
+  var gG=m.v.querySelector('.gr'),gP=m.v.querySelector('.pl');
+  function reset(){run=false;bs.textContent='Start';t=0;acc=0;rec=[[0,N0]];var c=Math.ceil(Math.sqrt(N0)),sz=190/c,h='';alive=[];
+    for(var i=0;i<N0;i++){alive.push(true);h+='<circle cx="'+f1(12+(i%c+.5)*sz)+'" cy="'+f1(14+((i/c|0)+.5)*sz)+'" r="'+f1(sz*.36)+'" fill="'+COL.a+'"/>';}
+    gG.innerHTML=h;els=gG.querySelectorAll('circle');plotIt();}
+  function plotIt(){var P=plot({x:250,y:16,w:198,h:160,x0:0,x1:60,y0:0,y1:N0*1.05,xt:[0,10,20,30,40,50,60],yt:[0,N0/2,N0],xl:'t in s',yl:'noch vorhanden N'}),s=P.s;
+    if(th.get()){var c=[];for(var x=0;x<=60;x+=1)c.push([P.X(x),P.Y(N0*Math.exp(-lam*x))]);s+=PL(c,'stroke="var(--accent)" stroke-width="1.5"');}
+    rec.forEach(function(r){s+=CI(P.X(r[0]),P.Y(r[1]),2.6,'fill="#e0475c"');});
+    s+=LN(P.X(10),P.Y(0),P.X(10),P.Y(N0*1.05),'stroke="var(--muted)" stroke-dasharray="2 3"')+T(P.X(10)+3,P.Y(N0*.98),'T½',{f:10.5,c:'mut'});
+    gP.innerHTML=s;var n=rec[rec.length-1][1];m.o.innerHTML='<span>t = <b>'+de(t,0)+' s</b></span><span>N = <b>'+n+'</b> von '+N0+' ('+de(100*n/N0,0)+' %)</span><span>Halbwertszeit: <b>10 s</b></span>';}
+  function tick(dt){if(!run||t>=60)return;var st=dt*4;t+=st;acc+=st;var p=1-Math.exp(-lam*st),n=0;
+    for(var i=0;i<N0;i++){if(alive[i]&&Math.random()<p){alive[i]=false;els[i].setAttribute('fill','var(--line)');}if(alive[i])n++;}
+    if(acc>=1){acc-=1;rec.push([Math.min(60,Math.round(t)),n]);plotIt();}
+    if(t>=60){run=false;bs.textContent='Start';}}
+  reset();loop(m.s,tick);}
+
+var C14P=[['neu','Holz aus einem Neubau',100],['oetzi','Gletschermumie „Ötzi“',53],['kohle','Holzkohle aus einer Höhle',25],['knochen','Knochen aus der Eiszeit',6]];
+function c14Lab(root){
+  var m=mkSim(root,'c14');
+  var pr=selCtl(m.c,'Probe',C14P.map(function(p){return [p[0],p[1]];}),draw);
+  var tt=rangeCtl(m.c,'Alter t',0,30000,50,0,function(v){return de(v,0)+' a';},draw);
+  function draw(){var p=C14P.filter(function(q){return q[0]===pr.get();})[0],t=tt.get(),fr=100*Math.pow(.5,t/5730),s='',P=plot({x:46,y:18,w:400,h:160,x0:0,x1:30000,y0:0,y1:105,xt:[0,5730,11460,17190,22920,28650],xf:function(v){return v?(v/5730)+' T½':'0';},yt:[0,25,50,75,100],yf:function(v){return v+' %';},xl:'Alter t',yl:'C-14-Anteil'});s+=P.s;
+    var c=[];for(var x=0;x<=30000;x+=200)c.push([P.X(x),P.Y(100*Math.pow(.5,x/5730))]);s+=PL(c,'stroke="var(--accent)" stroke-width="1.8"');
+    s+=LN(P.X(0),P.Y(p[2]),P.X(30000),P.Y(p[2]),'stroke="#e0475c" stroke-dasharray="5 3"')+T(P.X(30000)-4,P.Y(p[2])-5,'Probe: '+p[2]+' %',{a:'end',f:11,fill:'#e0475c',w:600});
+    s+=LN(P.X(t),P.Y(0),P.X(t),P.Y(fr),'stroke="var(--ink)" stroke-dasharray="2 3"')+CI(P.X(t),P.Y(fr),4.5,'fill="var(--ink)"');
+    var hit=Math.abs(fr-p[2])<1;if(hit)s+=CI(P.X(t),P.Y(fr),9,'fill="none" stroke="var(--good)" stroke-width="2.5"');
+    m.v.innerHTML=SV(460,215,s,'Zerfallskurve von C-14');
+    m.o.innerHTML='<span>C-14-Anteil der Probe: <b>'+p[2]+' %</b></span><span>Kurve bei '+de(t,0)+' a: <b>'+de(fr,1)+' %</b></span>'+(hit?'<span><b>Passt.</b></span>':'');}
+  draw();}
+
+var ALLTAG=[['null','keine Probe (Nullrate)',0,0,0],['dung','Kaliumdünger',0,70,10],['nuss','Paranüsse',0,2,1],['granit','Granitstein',5,10,8],['uglas','Uranglas-Schale',60,120,15],['strumpf','alter Glühstrumpf mit Thorium',400,350,60],['banane','Banane',0,1,0]];
+function alltagLab(root){
+  var m=mkSim(root,'alltag'),rows=[],BG=20;
+  var pr=selCtl(m.c,'Probe',ALLTAG.map(function(a){return [a[0],a[1]];}),draw);
+  var ab=selCtl(m.c,'Dazwischen',[['0','nichts'],['p','ein Blatt Papier'],['al','3 mm Aluminium']],draw);
+  btnCtl(m.c,'1 Minute messen',function(){var a=ALLTAG.filter(function(q){return q[0]===pr.get();})[0],x=ab.get(),mu=BG+(x==='0'?a[2]+a[3]:x==='p'?a[3]:0)+a[4]*(x==='al'?.9:1);rows.unshift([a[1],x==='0'?'–':x==='p'?'Papier':'Aluminium',poisson(mu)]);if(rows.length>7)rows.pop();draw();},true);
+  btnCtl(m.c,'Tabelle leeren',function(){rows=[];draw();});
+  var tb=el('div','tw');m.s.insertBefore(tb,m.o);
+  function draw(){var a=ALLTAG.filter(function(q){return q[0]===pr.get();})[0],x=ab.get(),s='';
+    s+=RC(30,40,90,60,'rx="8" fill="var(--bg)" stroke="var(--muted)"')+T(75,120,a[0]==='null'?'leer':a[1].split(' ')[0],{a:'middle',f:11,c:'mut'});
+    if(a[0]!=='null')s+=CI(75,70,20,'fill="'+(a[0]==='uglas'?'#b8e04a':a[0]==='banane'?'#f2d24a':'#a7a29a')+'"');
+    if(x!=='0')s+=RC(140,34,x==='p'?4:9,72,'fill="'+(x==='p'?'#f3efe2':'#b9c2cb')+'" stroke="var(--muted)"');
+    s+=RC(165,56,140,28,'rx="14" fill="var(--surface)" stroke="var(--ink)"')+LN(170,70,300,70,'stroke="#e0475c"')+T(235,108,'Zählrohr',{a:'middle',f:11,c:'mut'});
+    s+=T(330,52,'Nullrate',{f:11,c:'mut'})+T(330,72,'etwa '+BG+' pro Minute',{f:12,w:600})+T(330,96,'Beispielwerte, Probe',{f:10.5,c:'mut'})+T(330,110,'direkt am Fenster',{f:10.5,c:'mut'});
+    m.v.innerHTML=SV(460,130,s,'Messaufbau für Alltagsproben');
+    tb.innerHTML=rows.length?'<table><thead><tr><th>Probe</th><th>dazwischen</th><th class="n">Impulse/min</th><th class="n">ohne Nullrate</th></tr></thead><tbody>'+rows.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td class="n">'+r[2]+'</td><td class="n">'+(r[2]-BG)+'</td></tr>';}).join('')+'</tbody></table>':'';
+    m.o.innerHTML=rows.length?'':'<span>Noch keine Messung</span>';}
+  draw();}
+
+function doseLab(root){
+  var m=mkSim(root,'dose'),GA=0.0333;
+  var r=rangeCtl(m.c,'Abstand',.1,2,.05,.2,function(v){return de(v,2)+' m';},draw);
+  var tm=rangeCtl(m.c,'Aufenthaltsdauer',1,120,1,30,function(v){return v+' min';},draw);
+  var pb=rangeCtl(m.c,'Bleiabschirmung',0,5,.5,0,function(v){return de(v,1)+' cm';},draw);
+  function draw(){var d=r.get(),t=tm.get(),b=pb.get(),rate=GA/(d*d)*Math.exp(-1.2*b),dose=rate*t/60,s='',x=62+d*118;
+    s+=CI(40,95,9,'fill="#e0475c"')+T(40,124,'Cs-137',{a:'middle',f:10.5,c:'mut'});
+    for(var k=1;k<=4;k++)s+=CI(40,95,k*38,'fill="none" stroke="#e0475c" stroke-opacity="'+f1(.35/k)+'"');
+    if(b>0)s+=RC(Math.min(x-30,70),60,6+b*4,70,'fill="#5d6670"');
+    s+=CI(x,62,9,'fill="var(--ink)"')+LN(x,71,x,108,'stroke="var(--ink)" stroke-width="4"')+LN(x,108,x-9,132,'stroke="var(--ink)" stroke-width="4"')+LN(x,108,x+9,132,'stroke="var(--ink)" stroke-width="4"')+LN(x-12,82,x+12,82,'stroke="var(--ink)" stroke-width="4"');
+    s+=LN(40,150,x,150,'class="ink"')+T((40+x)/2,166,de(d,2)+' m',{a:'middle',f:11});
+    var nat=5.8,mx=Math.max(nat,dose)*1.15,bx=316;s+=T(bx,20,'Dosis im Vergleich',{f:11.5,w:600});
+    s+=RC(bx,30,136,16,'rx="3" fill="var(--bg)"')+RC(bx,30,Math.max(2,(dose/mx)*136),16,'rx="3" fill="#e0475c"')+T(bx,62,'dieser Aufenthalt',{f:11,c:'mut'})+T(bx,77,de(dose,dose<10?2:0)+' µSv',{f:12,w:600});
+    s+=RC(bx,92,136,16,'rx="3" fill="var(--bg)"')+RC(bx,92,(nat/mx)*136,16,'rx="3" fill="var(--accent)"')+T(bx,124,'natürlich, ein Tag',{f:11,c:'mut'})+T(bx,139,'5,8 µSv',{f:12,w:600});
+    m.v.innerHTML=SV(460,180,s,'Dosis in Abhängigkeit von Abstand, Zeit und Abschirmung');
+    m.o.innerHTML='<span>Dosisleistung: <b>'+de(rate,rate<1?3:1)+' µSv/h</b></span><span>Dosis: <b>'+de(dose,dose<10?2:0)+' µSv</b></span><span>Schulpräparat, 370 kBq, Beispielwerte</span>';}
+  draw();}
+
+function chainLab(root){
+  var m=mkSim(root,'chain'),gen=[],run=false,acc=0,neut=0,cur=[],k=1;
+  var cr=rangeCtl(m.c,'Steuerstäbe eingefahren',0,100,5,50,function(v){return v+' %';},function(){});
+  function kf(){return 1.5-cr.get()/100;}
+  var bs=btnCtl(m.c,'Kettenreaktion starten',function(){gen=[];neut=10;run=true;acc=0;frame();},true);
+  btnCtl(m.c,'Stopp',function(){run=false;frame();});
+  var pos=[];for(var i=0;i<96;i++)pos.push([18+(i%16)*14.5,28+(i/16|0)*26]);
+  function frame(){var s='',kk=kf();
+    pos.forEach(function(p,i){var on=cur.indexOf(i)>=0;s+=on?CI(p[0]-3,p[1],4,'fill="'+COL.a+'"')+CI(p[0]+3,p[1],4,'fill="'+COL.a+'"')+LN(p[0],p[1],p[0]+8,p[1]-8,'stroke="'+COL.b+'" stroke-width="1.2"'):CI(p[0],p[1],5,'fill="#5a8f3c"');});
+    for(var r2=0;r2<4;r2++){var y0=12,hh=150*cr.get()/100;s+=RC(14+r2*62,y0,5,hh,'fill="var(--ink)" opacity=".75"');}
+    s+=T(10,190,'grün: U-235 · orange: gespalten · schwarz: Steuerstäbe',{f:10.5,c:'mut'});
+    var P=plot({x:282,y:20,w:166,h:150,x0:0,x1:12,y0:0,y1:4,xt:[0,4,8,12],yt:[0,1,2,3,4],yf:function(v){return v?'10'+'⁰¹²³⁴'[v]:'1';},xl:'Generation',yl:'Spaltungen'});s+=P.s;
+    gen.forEach(function(f,i){var h=f>0?Math.log10(f)+.15:0;s+=RC(P.X(i)+1,P.Y(Math.min(4,h)),P.X(1)-P.X(0)-2,P.Y(0)-P.Y(Math.min(4,h)),'fill="'+COL.a+'"');});
+    m.v.innerHTML=SV(460,200,s,'Kettenreaktion bei der Kernspaltung');
+    var last=gen.length?gen[gen.length-1]:0;
+    m.o.innerHTML='<span>Vermehrungsfaktor k ≈ <b>'+de(kk,2)+'</b> ('+(kk<.98?'unterkritisch':kk>1.02?'überkritisch':'kritisch')+')</span><span>Generation <b>'+gen.length+'</b>: <b>'+de(last,0)+'</b> Spaltungen</span>';}
+  function step(){var p=kf()/2.5,f=0,nn=0;for(var i=0;i<neut;i++)if(Math.random()<p){f++;nn+=Math.random()<.5?2:3;}gen.push(f);neut=Math.min(nn,20000);
+    cur=[];var shown=Math.min(f,96);while(cur.length<shown){var j=Math.random()*96|0;if(cur.indexOf(j)<0)cur.push(j);}
+    if(gen.length>=12||neut===0||f>=12000)run=false;frame();}
+  function tick(dt){if(!run)return;acc+=dt;if(acc>.6){acc=0;step();}}
+  frame();loop(m.s,tick);}
+
+function figReactor(){var s='';
+  s+=RC(20,30,110,140,'rx="30" fill="#2c6fd1" fill-opacity=".14" stroke="var(--ink)" stroke-width="2"');for(var i=0;i<5;i++)s+=RC(40+i*16,80,6,70,'fill="'+COL.a+'"');for(var j=0;j<4;j++)s+=RC(48+j*16,40,4,50,'fill="var(--ink)"');
+  s+=T(75,186,'Reaktordruckbehälter',{a:'middle',f:10.5,c:'mut'})+T(75,24,'Steuerstäbe',{a:'middle',f:10.5,c:'mut'});
+  s+=PL([[130,60],[190,60]],'stroke="#e0475c" stroke-width="4"')+PL([[190,140],[130,140]],'stroke="#e0475c" stroke-width="4" stroke-dasharray="6 3"');
+  s+=RC(190,40,50,120,'rx="10" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"')+T(215,186,'Dampferzeuger',{a:'middle',f:10.5,c:'mut'});
+  s+=PL([[240,60],[290,60]],'stroke="#9aa4ae" stroke-width="4"')+'<polygon points="290,46 330,34 330,86 290,74" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>'+T(310,24,'Turbine',{a:'middle',f:10.5,c:'mut'});
+  s+=LN(330,60,350,60,'stroke="var(--ink)" stroke-width="3"')+CI(372,60,22,'fill="var(--surface)" stroke="var(--ink)" stroke-width="2"')+T(372,64,'G',{a:'middle',f:13,w:700})+T(372,100,'Generator',{a:'middle',f:10.5,c:'mut'});
+  s+=PL([[310,86],[310,130]],'stroke="#9aa4ae" stroke-width="4"')+RC(280,130,60,34,'rx="6" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"')+T(310,182,'Kondensator',{a:'middle',f:10.5,c:'mut'});
+  s+=PL([[280,150],[240,150]],'stroke="#2c6fd1" stroke-width="4" stroke-dasharray="6 3"')+PL([[340,140],[440,140]],'stroke="#2c6fd1" stroke-width="2.5"')+PL([[440,156],[340,156]],'stroke="#2c6fd1" stroke-width="2.5" stroke-dasharray="4 3"')+T(445,130,'Kühlwasser',{a:'end',f:10.5,c:'mut'});
+  s+=T(160,52,'Primärkreis',{a:'middle',f:10,fill:'#e0475c'})+T(265,52,'Dampf',{a:'middle',f:10,c:'mut'});
+  return FIG(460,196,s,'Schema eines Druckwasserreaktors','big');}
+
+/* ---------- Inhalte ---------- */
+var lessons=[
+{t:'In die Materie hineinschauen',steps:[
+ {t:'Vier Wege ins Innere',h:'<p>Zu klein für jedes Mikroskop, trotzdem gut erforscht: dank vier Methoden.</p>'+figMethods(),
+  tasks:[{k:'cls',q:'Welche Methode steckt dahinter?',cats:['Interferenz','Energie','Streuung','Kollision'],items:[
+    {x:'Röntgenlicht erzeugt hinter einem Kristall ein Punktmuster.',c:0},
+    {x:'Ein leuchtendes Gas zeigt einzelne farbige Linien.',c:1},
+    {x:'α-Teilchen prallen an einer Goldfolie ab.',c:2},
+    {x:'Protonen prallen aufeinander, neue Teilchen entstehen.',c:3}]}]},
+ {t:'Bragg-Reflexion',h:['<p>Röntgenlicht wird an jeder Atomebene des Kristalls reflektiert.</p>',
+  '<p>Verstärkung, wenn der Umweg ein Vielfaches von λ ist:</p>'+F('2d · sin θ = n · λ')+'<p class="hint">θ Glanzwinkel, d Netzebenenabstand</p>',
+  D(['Kristall langsam drehen.','Kristall wechseln.'])],w:braggLab,
+  tasks:[{k:'num',tag:'Messung',q:'Kochsalz: Bei welchem Winkel liegt das erste Maximum?',a:7.24,sol:'7,2',tol:.03,u:'°',e:'sin θ = 71 pm/(2 · 282 pm) = 0,126, also θ = 7,2°.'},
+   {k:'mc',tag:'Beobachtung',q:'Lithiumfluorid hat das kleinere d. Wo liegen seine Maxima?',o:['Bei größeren Winkeln.','Bei kleineren Winkeln.','Bei denselben Winkeln.'],c:0,e:'Kleineres d, größeres sin θ. Umgekehrt bestimmt man so d.'}]},
+ {t:'Elektronen als Welle',h:['<p>Auch Elektronen werden am Kristall gebeugt.</p>'+F('λ = '+fr('h','√(2 · m · e · U)')),
+  '<p>Auf dem Schirm entstehen Ringe. Für kleine Winkel:</p>'+F('λ = d · '+fr('r','L')),
+  D(['Spannung verändern.','Ringe beobachten.'])],w:eBeugung,
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Die Spannung steigt. Was machen die Ringe?',o:['Sie werden kleiner.','Sie werden größer.','Sie bleiben gleich.'],c:0,e:'Höhere Spannung, kleineres λ, kleinerer Winkel.'},
+   {k:'num',q:'Bei 4,0 kV: r = 12,3 mm. Berechnet λ mit d = 213 pm und L = 135 mm.',a:19.41,sol:'19,4',tol:.03,u:'pm',e:'λ = 213 pm · 12,3/135 = 19,4 pm.'}]},
+ {t:'Linienspektren',h:['<p>Leuchtende Gase senden nur bestimmte Farben aus. Jede Linie gehört zu einem Sprung zwischen zwei Energieniveaus.</p>',
+  '<p>Das Gitter lenkt jede Farbe anders ab:</p>'+F('λ = g · sin α'),
+  D(['Lampe wählen, Linien suchen.','Unbekannte Lampe untersuchen.'])],w:spektroLab,
+  tasks:[{k:'num',tag:'Messen',q:'Rote Linie der unbekannten Lampe bei α = 23,2°, g = 1667 nm. Wellenlänge?',a:656.7,sol:'657',tol:.012,u:'nm',e:'λ = 1667 nm · sin 23,2° ≈ 657 nm: Wasserstoff.'},
+   {k:'mc',tag:'Deutung',q:'Warum nur einzelne Linien?',o:['Die Atome haben nur bestimmte Energieniveaus.','Das Gitter filtert Farben heraus.','Das Gas ist zu kalt.'],c:0}]},
+ {t:'Das Röntgenspektrum',h:['<p>Schnelle Elektronen treffen auf eine Metallanode. Das Spektrum hat zwei Teile.</p>',
+  '<p><b>Bremsstrahlung</b>: kontinuierlich, ab</p>'+F('λ<sub>min</sub> = '+fr('h · c','e · U')),
+  '<p><b>Charakteristische Linien</b>: Ein Elektron fällt in eine Lücke der innersten Schale.</p>',
+  D(['Spannung erhöhen.','Anoden vergleichen.'])],w:xrayLab,
+  tasks:[{k:'num',q:'Wo beginnt das Spektrum bei 25 kV? h·c = 1240 eV·nm.',a:49.6,sol:'49,6',tol:.02,u:'pm',e:'λ<sub>min</sub> = 1240 eV·nm / 25 000 eV = 49,6 pm.'},
+   {k:'mc',tag:'Deutung',q:'Was verrät das Material der Anode?',o:['Die charakteristischen Linien.','λ<sub>min</sub>.','Die Helligkeit.'],c:0,e:'λ<sub>min</sub> hängt nur von U ab.'}]},
+ {t:'Synchrotronstrahlung',h:['<p>Die Forschung braucht Röntgenlicht, das <b>intensiv</b>, <b>gebündelt</b> und <b>durchstimmbar</b> ist.</p>',
+  '<p>Im Speicherring PETRA III in Hamburg kreisen Elektronen mit 6 GeV. In den Magneten senden sie einen engen Lichtkegel aus, polarisiert.</p>',
+  D(['Energie verändern.','Lichtkegel beobachten.'])],w:synchroLab,
+  tasks:[{k:'mc',tag:'Deutung',q:'Warum strahlen die Elektronen?',o:['Sie werden auf eine Kreisbahn gezwungen, also beschleunigt.','Sie stoßen mit Gasatomen.','Sie zerfallen.'],c:0},
+   {k:'mc',tag:'Beobachtung',q:'Die Energie steigt. Was macht der Lichtkegel?',o:['Er wird enger.','Er wird breiter.','Nichts.'],c:0,e:'Öffnungswinkel ≈ 1/γ.'}]},
+ {t:'Ergebnis der Stunde 1',h:'<div class="merk"><ul><li>Vier Methoden: Interferenz, Energie, Streuung, Kollision.</li><li>Bragg: 2d · sin θ = n · λ</li><li>Elektronen werden gebeugt wie Wellen.</li><li>Gitter: λ = g · sin α</li><li>Röntgen: λ<sub>min</sub> = h·c/(e·U) und Linien der Anode.</li><li>Synchrotronlicht: intensiv, gebündelt, durchstimmbar.</li></ul></div>'}
+]},
+{t:'Teilchen und Kräfte',steps:[
+ {t:'Rutherfords Streuversuch',h:['<p>1909: α-Teilchen fliegen auf eine hauchdünne Goldfolie.</p>',
+  '<p>Erwartet: Alle fliegen fast geradeaus.</p>',
+  D(['Thomson-Modell zählen.','Rutherford-Modell zählen.'])],w:rutherfordLab,
+  tasks:[{k:'mc',tag:'Deutung',q:'Einige fliegen zurück. Was folgt?',o:['Fast die ganze Masse sitzt in einem winzigen, positiven Kern.','Gold ist besonders hart.','α-Teilchen sind negativ.'],c:0}]},
+ {t:'Schärferer Blick',h:['<p>Mehr Energie, kleinere Wellenlänge:</p>'+F('λ ≈ '+fr('1240 MeV · fm','E')),
+  '<p>Und aus Energie kann Masse werden:</p>'+F('E = m · c²'),
+  D(['Energie erhöhen.'])],w:zoomLab,
+  tasks:[{k:'num',q:'Wellenlänge bei 1240 MeV?',a:1,tol:.03,u:'fm',e:'Etwa die Größe eines Protons.'},
+   {k:'mc',tag:'Deutung',q:'Warum immer größere Beschleuniger?',o:['Feinere Auflösung und schwerere neue Teilchen.','Sie sind billiger.','Teilchen leben darin länger.'],c:0}]},
+ {t:'Quarks',h:['<p>Protonen und Neutronen bestehen aus Quarks.</p>'+F('u: +2/3 e&emsp;&emsp;d: −1/3 e'),
+  '<p><b>Baryonen</b>: drei Quarks.<br><b>Mesonen</b>: Quark und Antiquark.</p>',
+  D(['Neutron bauen.','Eigene Kombinationen testen.'])],w:quarkLab,
+  tasks:[{k:'cls',q:'Welches Teilchen?',cats:['Proton','Neutron','Pion π⁺'],items:[{x:'u u d',c:0},{x:'u d d',c:1},{x:'u und Anti-d',c:2}]},
+   {k:'mc',tag:'Deutung',q:'Warum gibt es kein freies „ud“?',o:['Ladung +1/3 e: nicht ganzzahlig.','Zu schwer.','Quarks stoßen sich ab.'],c:0}]},
+ {t:'Das Standardmodell',h:['<p>Sechs Quarks, sechs Leptonen, drei Familien.</p>',
+  '<p>Alles um euch herum: u, d und Elektron.</p>',
+  '<p>Kräfte wirken durch <b>Austauschteilchen</b>:</p><div class="tw"><table><tbody><tr><td>stark</td><td>Gluonen</td></tr><tr><td>elektromagnetisch</td><td>Photon</td></tr><tr><td>schwach</td><td>W, Z</td></tr></tbody></table></div>'],w:smLab,
+  tasks:[{k:'cls',q:'Ordnet zu.',cats:['Quark','Lepton','Austauschteilchen'],items:[{x:'Myon μ',c:1},{x:'top t',c:0},{x:'Gluon g',c:2},{x:'Photon γ',c:2},{x:'Elektron-Neutrino',c:1}]},
+   {k:'cls',q:'Welche Wechselwirkung?',cats:['stark','elektromagnetisch','schwach'],items:[{x:'Quarks im Proton halten zusammen.',c:0},{x:'Neutron wird zu Proton.',c:2},{x:'Elektronen bleiben beim Kern.',c:1}]}]},
+ {t:'Erhaltungssätze',h:['<p>Bei jeder Reaktion bleiben erhalten:</p><p><b>Ladung</b> · <b>Baryonenzahl</b> · <b>Leptonenzahl</b></p>',
+  D(['Reaktion wählen.','Bilanz prüfen.'])],w:reactionLab,
+  tasks:[{k:'cls',q:'Erlaubt oder verboten?',cats:['erlaubt','verboten'],items:[{x:'n → p + e⁻ + ν̄<sub>e</sub>',c:0},{x:'p → e⁺ + γ',c:1,e:'Baryonenzahl 1 → 0'},{x:'n → p + e⁻',c:1,e:'Leptonenzahl 0 → 1'}]}]},
+ {t:'Lohnt sich Grundlagenforschung?',h:'<p>CERN: 27 km Beschleunigerring, 2012 Higgs-Teilchen entdeckt.</p><p>Nebenbei entstanden: das World Wide Web (1989).</p>',
+  tasks:[{k:'cls',q:'Dafür oder dagegen?',cats:['dafür','dagegen'],items:[{x:'Wissen ist ein Wert an sich.',c:0},{x:'Das Geld fehlt anderswo.',c:1},{x:'Nebenprodukte nützen allen.',c:0},{x:'Der Nutzen ist lange unklar.',c:1}]},
+   {k:'rev',q:'Soll Deutschland sich weiter am LHC beteiligen? Zwei Sätze mit Begründung.',s:'Beispiel: Ja. Grundlagenforschung erweitert unser Wissen, und ihre Methoden finden oft später überraschende Anwendungen. Eine gut begründete Gegenposition ist genauso möglich.'}]},
+ {t:'Ergebnis der Stunde 2',h:'<div class="merk"><ul><li>Atome haben einen winzigen, schweren Kern.</li><li>Mehr Energie: feinere Auflösung, neue Teilchen.</li><li>p = uud, n = udd</li><li>Standardmodell: 6 Quarks, 6 Leptonen, Austauschteilchen.</li><li>Ladung, Baryonen- und Leptonenzahl bleiben erhalten.</li></ul></div>'}
+]},
+{t:'Ein einfaches Kernmodell',steps:[
+ {t:'Bausteine des Kerns',h:figKern()+'<p>Die <b>Kernkraft</b> hält den Kern zusammen: sehr stark, aber nur etwa 2 fm weit.</p>',
+  tasks:[{k:'num',q:'Wie viele Neutronen hat <sup>238</sup><sub>92</sub>U?',a:146,tol:.001,u:'',e:'N = A − Z = 146'}]},
+ {t:'Der Massendefekt',h:figWaage()+'<p>Der Kern ist leichter als seine Bausteine. Die fehlende Masse ist die Bindungsenergie:</p>'+F('E<sub>B</sub> = Δm · c²&emsp;&emsp;1 u ≙ 931,5 MeV'),
+  tasks:[{k:'num',q:'Berechnet Δm aus der Waage.',a:.030376,sol:'0,0304',tol:.01,u:'u',e:'4,031 882 u − 4,001 506 u = 0,030 376 u'},
+   {k:'num',q:'Welche Bindungsenergie gehört dazu?',a:28.30,sol:'28,3',tol:.01,u:'MeV',e:'0,030 376 · 931,5 MeV = 28,3 MeV'}]},
+ {t:'Die Bindungsenergiekurve',h:['<p>Je höher ein Kern in der Kurve liegt, desto fester ist er gebunden.</p>',
+  D(['Kerne antippen.','Fusion und Spaltung einblenden.'])],w:bindingLab,
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Wo liegt das Maximum?',o:['Bei Eisen.','Bei Wasserstoff.','Bei Uran.'],c:0},
+   {k:'cls',q:'Wird Energie frei?',cats:['ja','nein'],items:[{x:'Leichte Kerne verschmelzen.',c:0},{x:'Uran spaltet sich.',c:0},{x:'Eisen wird zerlegt.',c:1}]}]},
+ {t:'Der Kern als Potentialtopf',h:['<p>Wie das Elektron im Atom: Ein Nukleon sitzt in einem Topf. Nur stehende Wellen passen hinein.</p>',
+  F('E<sub>n</sub> = n² · '+fr('h²','8 · m · L²')),
+  D(['Breite verändern.','Nukleonen einfüllen.'])],w:wellLab,
+  tasks:[{k:'mc',tag:'Deutung',q:'Wie viele Neutronen pro Niveau?',o:['Zwei (Pauli-Prinzip).','Beliebig viele.','Eines.'],c:0},
+   {k:'mc',tag:'Deutung',q:'Warum MeV im Kern, aber eV in der Hülle?',o:['Der Kern ist viel kleiner: E ~ 1/L².','Nukleonen sind leichter.','Die Kernkraft reicht weit.'],c:0}]},
+ {t:'Zwei Töpfe',h:['<p>Protonen und Neutronen füllen getrennte Töpfe.</p>',
+  '<p>Freier Platz weiter unten im anderen Topf?</p><p>Neutron → Proton: <b>β⁻</b><br>Proton → Neutron: <b>β⁺</b></p>',
+  D(['Z und N wählen.','Modell und Wirklichkeit vergleichen.'])],w:twoPots,
+  tasks:[{k:'mc',q:'C-15: 6 Protonen, 9 Neutronen. Was sagt das Modell?',o:['β⁻','β⁺','stabil'],c:0},
+   {k:'mc',tag:'Deutung',q:'Warum haben schwere Kerne mehr Neutronen?',o:['Die Abstoßung hebt die Protonenniveaus an.','Neutronen sind leichter.','Protonen zerfallen.'],c:0}]},
+ {t:'Angeregte Kerne',h:figInelastic()+'<p>Protonen geben einen Teil ihrer Energie an den Kern ab. Er springt auf ein höheres Niveau und fällt unter γ-Emission zurück.</p>',
+  tasks:[{k:'num',q:'10,00 MeV vorher, 5,56 MeV nachher. Anregungsenergie?',a:4.44,sol:'4,44',tol:.01,u:'MeV',e:'Genau diese Energie hat danach das γ-Photon.'},
+   {k:'mc',tag:'Deutung',q:'Was zeigen die scharfen Linien?',o:['Feste Energieniveaus im Kern.','Der Kern ist rund.','Protonen sind schwer.'],c:0}]},
+ {t:'Ergebnis der Stunde 3',h:'<div class="merk"><ul><li>Kern: Z Protonen, N = A − Z Neutronen.</li><li>E<sub>B</sub> = Δm·c²</li><li>Maximum von E<sub>B</sub>/A bei Eisen: Fusion und Spaltung setzen Energie frei.</li><li>Potentialtopf: feste Niveaus, je zwei Nukleonen.</li><li>Zwei Töpfe erklären β-Zerfälle.</li></ul></div>'}
+]},
+{t:'Wie Kerne zerfallen',steps:[
+ {t:'Drei Strahlungsarten',h:['<p><b style="color:#e07b00">α</b>: Heliumkerne<br><b style="color:#2c6fd1">β</b>: Elektronen<br><b style="color:#8a3fc4">γ</b>: Photonen</p>',
+  D(['Präparat wählen.','Magnetfeld an und aus.','Absorber einsetzen.'])],w:radLab,
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Welche Strahlung wird am stärksten abgelenkt?',o:['β','α','γ'],c:0,e:'Elektronen sind sehr leicht.'},
+   {k:'cls',q:'Was hält sie auf?',cats:['Papier','Aluminium','Blei schwächt nur'],items:[{x:'α',c:0},{x:'β⁻',c:1},{x:'γ',c:2}]}]},
+ {t:'Absorption',h:['<p>Jede Halbwertsdicke halbiert die γ-Strahlung:</p>'+F('N = N<sub>0</sub> · e<sup>−μ·d</sup>'),
+  D(['γ und Blei: bei mehreren Dicken messen.','Dann β und Aluminium.'])],w:absorbLab,
+  tasks:[{k:'num',tag:'Messung',q:'Bei welcher Bleidicke ist die Zählrate halbiert?',a:.58,sol:'0,6',tol:.15,u:'cm',e:'d<sub>½</sub> = ln 2/μ ≈ 0,6 cm'},
+   {k:'mc',tag:'Beobachtung',q:'β-Strahlung in Aluminium?',o:['Sie hat eine größte Reichweite.','Sie wird wie γ geschwächt.','Sie geht durch.'],c:0}]},
+ {t:'Tunneleffekt',h:['<p>Vor dem Kern: ein Wall von fast 30 MeV.</p>',
+  '<p>Das α-Teilchen hat nur 4 bis 9 MeV. Trotzdem kommt es durch: <b>Tunneleffekt</b>.</p>',
+  D(['α-Energie verändern.','Halbwertszeit beobachten.'])],w:tunnelLab,
+  tasks:[{k:'mc',tag:'Beobachtung',q:'Mehr α-Energie: Was passiert mit der Halbwertszeit?',o:['Sie sinkt um viele Zehnerpotenzen.','Sie halbiert sich.','Nichts.'],c:0,e:'U-238 (4,3 MeV): 4,5 Mrd. Jahre. Po-214 (7,7 MeV): 0,16 ms.'}]},
+ {t:'Energiebilanz',h:figAlpha()+F('Q = (m<sub>Ra</sub> − m<sub>Rn</sub> − m<sub>He</sub>) · c²'),
+  tasks:[{k:'num',q:'m<sub>Ra</sub> = 226,025 410 u, m<sub>Rn</sub> = 222,017 578 u, m<sub>He</sub> = 4,002 603 u. Q = ?',a:4.871,sol:'4,87',tol:.01,u:'MeV',e:'Δm = 0,005 229 u, Q = 4,87 MeV'},
+   {k:'mc',tag:'Deutung',q:'Warum haben alle α-Teilchen dieselbe Energie?',o:['Nur zwei Teilchen: Impulserhaltung legt die Aufteilung fest.','Zufall.','Der Kern bremst sie.'],c:0}]},
+ {t:'β-Zerfall',h:[F('n → p + e<sup>−</sup> + ν̄<sub>e</sub>')+'<p>Ein d-Quark wird zum u-Quark, vermittelt durch ein W⁻.</p>',
+  '<p>Drei Teilchen teilen sich die Energie: Das β-Spektrum ist kontinuierlich.</p>',
+  D(['β⁻ und β⁺ ansehen.'])],w:betaLab,
+  tasks:[{k:'mc',q:'β⁻-Zerfall: Was ändert sich am Kern?',o:['Z + 1, A bleibt.','Z − 1.','A + 1.'],c:0,e:'C-14 → N-14'},
+   {k:'mc',tag:'Deutung',q:'Wozu schlug Pauli 1930 das Neutrino vor?',o:['Um die Energieerhaltung zu retten.','Für die α-Strahlung.','Für die Kernkraft.'],c:0}]},
+ {t:'Zerfallsreihe',h:['<p>Die Nuklidkarte: N nach rechts, Z nach oben.</p><p class="legend"><span class="chip bm"></span>β⁻: links oben <span class="chip al"></span>α: zwei Felder links unten</p>',
+  D(['Reihe durchgehen.','α und β⁻ zählen.'])],w:function(r){chartLab(r,'chain');},
+  tasks:[{k:'num',q:'Wie viele α-Zerfälle von U-238 bis Pb-206?',a:8,tol:.001,u:'',e:'A sinkt um 32 = 8 · 4.'},
+   {k:'num',q:'Wie viele β⁻-Zerfälle?',a:6,tol:.001,u:'',e:'8 α: Z = 76. Bis 82 fehlen 6.'}]},
+ {t:'Ergebnis der Stunde 4',h:'<div class="merk"><ul><li>α: Papier · β: Aluminium · γ: Blei schwächt</li><li>α-Zerfall durch den Tunneleffekt.</li><li>Zwei Teilchen: scharfe α-Energie.</li><li>β⁻: d → u über W⁻; Neutrino, kontinuierliches Spektrum.</li><li>Zerfallsreihen enden bei stabilen Kernen.</li></ul></div>'}
+]},
+{t:'Radioaktivität und Kernenergie',steps:[
+ {t:'Das Zählrohr',h:['<p>Strahlung ist <b>ionisierend</b>: Sie schlägt Elektronen aus Atomen.</p>',
+  '<p>Hohe Spannung: Die Elektronen lösen eine <b>Lawine</b> aus. Jeder Stromstoß wird gezählt.</p>',
+  D(['Spannung senken.','Präparat wegnehmen.'])],w:gmLab,
+  tasks:[{k:'mc',tag:'Deutung',q:'Wozu die hohe Spannung?',o:['Erst dann entsteht eine messbare Lawine.','Damit das Gas leuchtet.','Damit die Strahlung schneller wird.'],c:0},
+   {k:'mc',q:'Ohne Präparat: etwa 20 Impulse pro Minute. Woher?',o:['Natürliche Strahlung: die Nullrate.','Ein Defekt.','Licht im Raum.'],c:0}]},
+ {t:'Zerfallsgesetz',h:['<p>Wann ein Kern zerfällt, ist Zufall.</p>',
+  F('N(t) = N<sub>0</sub> · e<sup>−λ·t</sup>'),
+  F('T<sub>½</sub> = '+fr('ln 2','λ')+'&emsp;&emsp;τ = '+fr('1','λ')+'&emsp;&emsp;A = λ · N'),
+  D(['Mit 400 Kernen starten.','Mit 40 Kernen wiederholen.'])],w:decayLab,
+  tasks:[{k:'num',q:'Wie viel ist nach drei Halbwertszeiten übrig?',a:12.5,sol:'12,5',tol:.02,u:'%',e:'(1/2)³ = 1/8'},
+   {k:'num',q:'1,0·10<sup>12</sup> Kerne, λ = 1,0·10<sup>−6</sup> s<sup>−1</sup>. Aktivität?',a:1,sol:'1,0',tol:.03,u:'· 10<sup>6</sup> Bq',e:'A = λ · N'}]},
+ {t:'C-14-Methode',h:['<p>Lebewesen nehmen C-14 auf. Nach dem Tod zerfällt es mit T<sub>½</sub> = 5730 a.</p>',
+  D(['Probe wählen.','Alter verschieben, bis die Kurve trifft.'])],w:c14Lab,
+  tasks:[{k:'num',q:'Noch 25 % C-14. Wie alt?',a:11460,sol:'11 460',tol:.02,u:'a',e:'Zwei Halbwertszeiten.'},
+   {k:'mc',tag:'Bewertung',q:'Warum kaum über 50 000 Jahre?',o:['Dann ist zu wenig C-14 übrig.','Damals gab es kein C-14.','Kein Kohlenstoff mehr.'],c:0}]},
+ {t:'Radioaktivität im Alltag',h:['<p>Auch Alltagsdinge strahlen schwach: Kalium, Uran, Thorium.</p>',
+  D(['Nullrate messen.','Proben messen.','Mit Papier prüfen.'])],w:alltagLab,
+  tasks:[{k:'mc',tag:'Messung',q:'Welche Probe sendet deutlich α-Strahlung aus?',o:['Der Glühstrumpf.','Der Dünger.','Die Banane.'],c:0,e:'Mit Papier dazwischen sinkt die Zählrate stark.'},
+   {k:'mc',tag:'Handeln',q:'Alter Glühstrumpf mit Thorium: Was tun?',o:['Nicht mehr benutzen, Staub vermeiden, Hände waschen, verpackt entsorgen.','Weiter benutzen.','Verbrennen.'],c:0}]},
+ {t:'Strahlenschutz',h:['<p><b>Energiedosis</b> D in Gy (J/kg)<br><b>Äquivalentdosis</b> H = w<sub>R</sub> · D in Sv</p><p class="hint">w<sub>R</sub> = 1 für β, γ und 20 für α</p>',
+  '<p>Im Mittel etwa 3,8 mSv pro Jahr.</p><p><b>Abstand · Abschirmung · kurze Dauer</b></p>',
+  D(['Abstand, Zeit und Blei verändern.'])],w:doseLab,
+  tasks:[{k:'num',q:'70 kg nehmen durch γ-Strahlung 0,14 J auf. H = ?',a:2,tol:.02,u:'mSv',e:'D = 2 mGy, w<sub>R</sub> = 1'},
+   {k:'mc',tag:'Deutung',q:'Warum ist ein α-Strahler eingeatmet gefährlich?',o:['Die ganze Energie trifft auf kleinstem Raum Gewebe.','Er wird zu γ.','Er zerfällt erst im Körper.'],c:0,e:'Von außen hält schon die Haut α auf.'}]},
+ {t:'Kettenreaktion',h:[F('<sup>235</sup>U + n → <sup>141</sup>Ba + <sup>92</sup>Kr + 3 n')+'<p>Dabei werden etwa 200 MeV frei.</p>',
+  '<p>Vermehrungsfaktor k:</p><p>k &lt; 1 erlischt<br>k = 1 gleichmäßig<br>k &gt; 1 lawinenartig</p>',
+  D(['Steuerstäbe einstellen, starten.'])],w:chainLab,
+  tasks:[{k:'mc',q:'Was bedeutet k = 1?',o:['Jede Spaltung löst genau eine weitere aus.','Keine Spaltung.','Verdopplung.'],c:0},
+   {k:'mc',tag:'Deutung',q:'Wozu der Moderator?',o:['Er bremst die Neutronen.','Er schluckt alle Neutronen.','Er macht Uran schwerer.'],c:0}]},
+ {t:'Kernenergie',h:figReactor()+'<p>Deutschland: letzte Kernkraftwerke am 15. April 2023 abgeschaltet.</p>',
+  tasks:[{k:'cls',q:'Chance oder Risiko?',cats:['Chance','Risiko'],items:[{x:'Kaum CO₂ im Betrieb.',c:0},{x:'Abfall muss sehr lange sicher lagern.',c:1},{x:'Strom unabhängig vom Wetter.',c:0},{x:'Seltene, schwere Unfälle.',c:1}]},
+   {k:'rev',q:'Welche Rolle sollte die Kernenergie spielen? Zwei Sätze mit Begründung.',s:'Es gibt keine einzig richtige Antwort. Eine gute Stellungnahme wägt CO₂-Bilanz und Versorgungssicherheit gegen Endlager, Unfallrisiko und Kosten ab.'}]},
+ {t:'Rückblick',h:'<div class="merk"><ul><li>Zählrohr: Lawine; Nullrate abziehen.</li><li>N = N<sub>0</sub>·e<sup>−λt</sup>, T<sub>½</sub> = ln 2/λ, A = λN</li><li>C-14: Alter aus dem Restanteil.</li><li>Schutz: Abstand, Abschirmung, kurze Dauer.</li><li>Spaltung: etwa 200 MeV, Reaktor bei k = 1.</li></ul></div><p>Geschafft: vom Kristallgitter bis zum Kernreaktor.</p>'}
+]}
+];
+
+
+/* ---------- Zustand ---------- */
+var KEY='lernpfad-kp13-v1';
+/* Nur übernehmen, was zum Kurs passt: bekannte Stationen, ganze Zahlen, plausible Messwerte */
+function cleanState(o){var st={done:{},L:0,S:0,P:0,meas:{},td:{},ft:{},name:'',free:false,view:'step',fin:null},k;
+  if(!o||typeof o!=='object'||Array.isArray(o))return st;
+  function idx(v){return typeof v==='number'&&isFinite(v)&&v>=0?Math.floor(v):0;}
+  if(o.done&&typeof o.done==='object'&&!Array.isArray(o.done))for(k in o.done){var m=/^(\d+)-(\d+)$/.exec(k);if(m&&o.done[k]&&lessons[+m[1]]&&lessons[+m[1]].steps[+m[2]])st.done[k]=1;}
+  st.L=idx(o.L);if(st.L>=lessons.length)st.L=0;
+  st.S=idx(o.S);if(st.S>=lessons[st.L].steps.length)st.S=0;
+  st.P=idx(o.P);
+  if(o.td&&typeof o.td==='object'&&!Array.isArray(o.td))for(k in o.td){var m3=/^(\d+)-(\d+)-(\d+)$/.exec(k),ls=m3&&lessons[+m3[1]],ss=ls&&ls.steps[+m3[2]];if(o.td[k]&&ss&&(ss.tasks||[])[+m3[3]])st.td[k]=1;}
+  if(o.ft&&typeof o.ft==='object'&&!Array.isArray(o.ft))for(k in o.ft)if(st.td[k])st.ft[k]=o.ft[k]?1:0;
+  if(typeof o.name==='string')st.name=o.name.slice(0,60);
+  st.free=o.free===true;st.cs=o.cs===1;st.view=o.view==='cert'?'cert':'step';
+  if(typeof o.fin==='string'&&!isNaN(Date.parse(o.fin)))st.fin=o.fin;
+  return st;}
+var state=cleanState(null);
+if(!SOLUTION)try{var raw=localStorage.getItem(KEY);if(raw)state=cleanState(JSON.parse(raw));}catch(e){state=cleanState(null);}
+function save(){if(SOLUTION)return;try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+var total=0;lessons.forEach(function(l){total+=l.steps.length;});
+function sid(L,S){return L+'-'+S;}
+function markDone(L,S){if(SOLUTION)return;if(!state.done[sid(L,S)]){state.done[sid(L,S)]=1;if(allDone()&&!state.fin)state.fin=new Date().toISOString();save();header();}}
+/* ---------- Sperre ---------- */
+var order=[];lessons.forEach(function(l,L){l.steps.forEach(function(_,S){order.push([L,S]);});});
+function gidx(L,S){var n=0;for(var i=0;i<L;i++)n+=lessons[i].steps.length;return n+S;}
+function locked(){return LOCK&&!SOLUTION&&!state.free;}
+/* Jede Stunde ist frei wählbar. Innerhalb einer Stunde geht es der Reihe nach. */
+function frontierIn(L){var n=lessons[L].steps.length;for(var j=0;j<n;j++)if(!state.done[sid(L,j)])return j;return n;}
+function reachable(L,S){return !locked()||S<=frontierIn(L);}
+function allDone(){for(var i=0;i<lessons.length;i++)if(frontierIn(i)<lessons[i].steps.length)return false;return true;}
+function openLessons(){var o=[];for(var i=0;i<lessons.length;i++)if(frontierIn(i)<lessons[i].steps.length)o.push(i+1);return o;}
+function wouldComplete(L,S){for(var i=0;i<order.length;i++){var o=order[i];if((o[0]!==L||o[1]!==S)&&!state.done[sid(o[0],o[1])])return false;}return true;}
+function toFrontier(){state.S=Math.min(frontierIn(state.L),lessons[state.L].steps.length-1);state.P=0;}
+if(locked()&&!reachable(state.L,state.S))toFrontier();
+function toast(m){var t=document.getElementById('toast');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(toast.id);toast.id=setTimeout(function(){t.classList.remove('show');},3400);}
+function countDone(L){var n=0;lessons[L].steps.forEach(function(_,i){if(state.done[sid(L,i)])n++;});return n;}
+
+/* ---------- Aufgaben ---------- */
+function taskMC(t,done,seed){
+  var box=el('div','task');box.appendChild(el('p','tag',t.tag||'Frage'));box.appendChild(el('p','q',t.q));
+  var opts=el('div','opts'),fb=el('div');box.appendChild(opts);box.appendChild(fb);
+  var order=orderFor(t.o.length,seed),wrong=0;
+  order.forEach(function(i){var b=el('button',null,t.o[i]);b.type='button';b.setAttribute('data-i',i);
+    b.addEventListener('click',function(){
+      if(i===t.c){b.className='right';Array.prototype.forEach.call(opts.children,function(x){x.disabled=true;});fb.className='fb good';fb.innerHTML='<b>Richtig.</b> '+(t.e||'');done(wrong===0);}
+      else{wrong++;b.className='wrong';b.disabled=true;fb.className='fb bad';fb.innerHTML=(t.w&&t.w[i])?t.w[i]:'Das trifft es noch nicht. Prüft die Aussage an den Beobachtungen.';}
+    });opts.appendChild(b);});
+  return box;
+}
+function taskNum(t,done,idp){
+  var box=el('div','task');box.appendChild(el('p','tag',t.tag||'Rechnung'));box.appendChild(el('p','q',t.q));
+  var row=el('div','numrow'),inp=el('input');inp.type='text';inp.id=idp;inp.setAttribute('inputmode','text');inp.setAttribute('autocomplete','off');inp.setAttribute('aria-label','Ergebnis');
+  var btn=el('button','btn small','Prüfen');btn.type='button';
+  row.appendChild(inp);if(t.u)row.appendChild(el('span','unit',t.u));row.appendChild(btn);box.appendChild(row);
+  box.appendChild(el('p','hint','Eingabe mit Komma oder Punkt, dann „Prüfen“ oder Eingabetaste.'));
+  var fb=el('div');box.appendChild(fb);var tries=0,fin=false,sol=null;
+  var right=(t.sol||t.a.toLocaleString('de-DE',{maximumSignificantDigits:3}))+(t.u?' '+t.u:'');
+  function shown(){var d=document.createElement('span');d.textContent=inp.value.trim();return d.innerHTML;}
+  /* ok: richtig gelöst. Sonst wird die Lösung gezeigt, damit es weitergeht. */
+  function finish(ok,own){fin=true;inp.disabled=true;btn.disabled=true;if(sol)sol.remove();fb.className=ok?'fb good':'fb neutral';
+    fb.innerHTML=ok?'<b>Richtig.</b> '+(t.e||''):(own?'Eure Eingabe '+own+' passt nicht. ':'')+'<b>Richtig ist '+right+'.</b> '+(t.e||'');done(ok&&tries===0);}
+  function check(){if(fin)return;var v=parseNum(inp.value);
+    if(isNaN(v)){fb.className='fb bad';fb.innerHTML=inp.value.trim()===''?'Tragt zuerst einen Wert ein.':'„'+shown()+'“ wurde nicht als Zahl erkannt. Gebt nur die Zahl ein, zum Beispiel 0,75.';inp.focus();return;}
+    if(numOK(v,t.a,t.tol)){finish(true);return;}
+    tries++;
+    if(tries>=2){finish(false,shown());return;}
+    var msg=(v>t.a?'Der Wert ist zu groß. ':'Der Wert ist zu klein. ')+(t.hint||'Prüft Ansatz, Umrechnungen und Rundung.');
+    if(t.a!==0&&v!==0){var lg=Math.log10(Math.abs(v/t.a));if(Math.abs(lg-Math.round(lg))<0.02&&Math.round(lg)!==0)msg='Die Ziffernfolge stimmt, die Zehnerpotenz oder die Einheit noch nicht.';}
+    fb.className='fb bad';fb.innerHTML='<b>'+shown()+' stimmt noch nicht.</b> '+msg+' Ihr habt noch einen Versuch.';
+    if(!sol){sol=el('button','btn small','Lösung anzeigen');sol.type='button';sol.addEventListener('click',function(){finish(false);});box.appendChild(sol);}
+    inp.focus();if(inp.select)inp.select();
+  }
+  btn.addEventListener('click',check);inp.addEventListener('keydown',function(e){if(e.key==='Enter')check();});
+  return box;
+}
+function taskRev(t,done){
+  var box=el('div','task');box.appendChild(el('p','tag',t.tag||'Formulieren'));box.appendChild(el('p','q',t.q));
+  var b=el('button','btn small',t.btn||'Vergleichslösung zeigen');b.type='button';var fb=el('div');
+  b.addEventListener('click',function(){b.remove();fb.className='fb neutral';fb.innerHTML=t.s;done(true);});
+  box.appendChild(b);box.appendChild(fb);return box;
+}
+function taskCls(t,done){
+  var box=el('div','task');box.appendChild(el('p','tag',t.tag||'Zuordnen'));box.appendChild(el('p','q',t.q));
+  var list=el('div','cls'),left=t.items.length,miss=false;box.appendChild(list);
+  t.items.forEach(function(it){var item=el('div','item');item.appendChild(el('div',null,it.x));var ch=el('div','choices'),fb=el('div');
+    t.cats.forEach(function(c,ci){var b=el('button','btn small',c);b.type='button';b.setAttribute('data-ci',ci);b.addEventListener('click',function(){
+      if(ci===it.c){item.className='item ok';Array.prototype.forEach.call(ch.children,function(x){x.disabled=true;});fb.className='';fb.innerHTML='<b>'+c+'.</b> '+(it.e||'');left--;if(left===0)done(!miss);}
+      else{miss=true;fb.className='fb bad';fb.innerHTML='Das passt nicht. Prüft die Aussage noch einmal.';}
+    });ch.appendChild(b);});
+    item.appendChild(ch);item.appendChild(fb);list.appendChild(item);});
+  return box;
+}
+
+function taskMeas(t,done){
+  var box=el('div','task');box.appendChild(el('p','tag','Messung'));box.appendChild(el('p','q',t.q));
+  var stat=el('div','fb neutral'),fin=false;box.appendChild(stat);
+  function upd(){if(!box.isConnected)return;var n=measCount();
+    if(n>=5){stat.className='fb good';stat.innerHTML='<b>Messreihe vollständig.</b> Alle fünf Linien sind gemessen.';if(!fin){fin=true;done(true);}}
+    else stat.innerHTML=n+' von 5 Linien gemessen. Wählt eine Linie, sucht U<sub>G</sub> und übernehmt den Wert.';}
+  measSubs.push({n:box,f:upd});setTimeout(upd,0);
+  return box;
+}
+
+/* ---------- Darstellung ---------- */
+function header(){
+  var d=0,k;for(k in state.done)d++;
+  document.getElementById('overallText').textContent=d+' von '+total+' Stationen bearbeitet';
+  document.getElementById('overallBar').style.width=(100*d/total)+'%';
+  var nav=document.getElementById('nav');nav.innerHTML='';
+  lessons.forEach(function(l,i){var b=el('button',null,'<b><span class="sw">Stunde </span>'+(i+1)+'</b><span>'+(SOLUTION?l.steps.length+' Stat.':countDone(i)+'/'+l.steps.length)+'</span>');b.type='button';b.style.setProperty('--lc','var(--hg'+(i+1)+')');
+    if(i===state.L&&state.view!=='cert')b.setAttribute('aria-current','true');b.addEventListener('click',function(){var f=0;for(var j=0;j<l.steps.length;j++){if(!state.done[sid(i,j)]){f=j;break;}}go(i,f);});nav.appendChild(b);});
+  var lh=document.getElementById('lessonhead'),L=lessons[state.L];
+  lh.innerHTML='<h2>Stunde '+(state.L+1)+': '+L.t+'</h2><p>'+L.steps.length+' Stationen · etwa 45 Minuten</p>';
+  var dots=el('div','dots');L.steps.forEach(function(s,i){var b=el('button',state.done[sid(state.L,i)]?'done':null,String(i+1));b.type='button';b.setAttribute('aria-label','Station '+(i+1)+': '+s.t);
+    if(i===state.S)b.setAttribute('aria-current','true');if(!reachable(state.L,i)){b.disabled=true;b.title='Erst die vorige Station bearbeiten';}b.addEventListener('click',function(){go(state.L,i);});dots.appendChild(b);});
+  lh.appendChild(dots);
+  var cb=document.getElementById('certBtn');if(cb)cb.hidden=SOLUTION||!(allDone()||!locked());
+}
+function go(L,S,scroll,P){if(locked()&&!reachable(L,S))return;state.view='step';state.L=L;state.S=S;state.P=P||0;save();render();if(scroll!==false&&!(window.matchMedia&&window.matchMedia('(min-width:1000px) and (min-height:560px)').matches)){var c=document.getElementById('lessonhead');if(c.scrollIntoView)c.scrollIntoView({block:'start'});}}
+var curParts=null;
+/* Bis zu welcher Folie darf man gehen? Bis zur ersten ungelösten Pflichtaufgabe. */
+function maxPart(){var c=curParts;if(!c||!c.els.length)return 0;if(!locked()||state.done[sid(state.L,state.S)])return c.els.length-1;
+  for(var i=0;i<c.els.length;i++)if(c.block[i]&&!c.solved[i])return i;return c.els.length-1;}
+function refreshNav(){var c=curParts;if(!c)return;var p=state.P,mx=maxPart(),L=state.L,S=state.S;
+  c.pills.forEach(function(b,i){b.disabled=i>mx;b.title=i>mx?'Erst die vorige Aufgabe lösen':'';});
+  var lastSt=S===lessons[L].steps.length-1,lastP=p>=c.els.length-1,end=lastSt&&L===lessons.length-1;
+  var blocked=locked()&&!state.done[sid(L,S)]&&!!c.block[p]&&!c.solved[p];
+  c.prev.disabled=(L===0&&S===0&&p===0);c.next.disabled=blocked;
+  var fin=lastSt&&!SOLUTION&&!state.cs&&wouldComplete(L,S);
+  c.next.textContent=blocked?'Weiter nach der Lösung':!lastP?'Weiter':fin?'Lernpfad abschließen':end?(SOLUTION?'Ende':(locked()&&!allDone()?'Stunde '+(L+1)+' abschließen':'Lernpfad abschließen')):lastSt?'Weiter zu Stunde '+(L+2):'Nächste Station';}
+function showPart(p){
+  var c=curParts;if(!c)return;p=Math.max(0,Math.min(c.els.length-1,p,maxPart()));state.P=p;save();
+  c.els.forEach(function(e,i){e.hidden=i!==p;});
+  c.pills.forEach(function(b,i){if(i===p)b.setAttribute('aria-current','true');else b.removeAttribute('aria-current');});
+  refreshNav();
+  if(window.matchMedia&&!window.matchMedia('(min-width:1000px) and (min-height:560px)').matches){var e=c.els[p];if(e&&e.scrollIntoView&&c.moved)e.scrollIntoView({block:'nearest'});}
+  c.moved=true;
+}
+/* Bereits gelöste Aufgaben nach dem Neuladen wieder als gelöst zeigen */
+function restore(b,t){try{
+  if(t.k==='mc'){var x=b.querySelector('.opts button[data-i="'+t.c+'"]');if(x)x.click();}
+  else if(t.k==='num'){var inp=b.querySelector('input');inp.value=String(t.a).replace('.',',');b.querySelector('.numrow .btn').click();}
+  else if(t.k==='cls'){Array.prototype.forEach.call(b.querySelectorAll('.cls .item'),function(it,k){var y=it.querySelector('button[data-ci="'+t.items[k].c+'"]');if(y)y.click();});}
+  else if(t.k==='rev'){var z=b.querySelector('.btn');if(z)z.click();}
+}catch(e){}}
+function showMain(on){['nav','lessonhead','card','foot'].forEach(function(x){document.getElementById(x).hidden=!on;});document.getElementById('cert').hidden=on;document.body.classList.toggle('certmode',!on);}
+function render(){
+  if(state.view==='cert'&&!SOLUTION){if(!locked()||allDone())return renderCert();state.view='step';}
+  showMain(true);
+  header();
+  var L=state.L,S=state.S,step=lessons[L].steps[S],card=document.getElementById('card');
+  card.innerHTML='';liveFns=alive(liveFns);measSubs=alive(measSubs);card.style.setProperty('--lc','var(--hg'+(L+1)+')');
+  var chead=el('div','chead');chead.appendChild(el('p','eyebrow','Stunde '+(L+1)+' · Station '+(S+1)+' von '+lessons[L].steps.length));chead.appendChild(el('h3',null,step.t));card.appendChild(chead);
+  var tasks=step.tasks||[],hasTasks=tasks.length>0,colA=el('div','col colA'),colB=el('div','col colB'),colC=el('div','col colC');
+  var withsim=!!step.w;
+  card.classList.toggle('single',!withsim&&!hasTasks&&!step.post);card.classList.toggle('nosim',!withsim&&(hasTasks||!!step.post));card.classList.toggle('withsim',withsim);
+  card.appendChild(colA);card.appendChild(colB);card.appendChild(colC);
+  var els=[],labels=[],block=[],todo=[],pcol=withsim?colC:colB;
+  // Einführungstext: neben dem Experiment als eigene Folie, sonst dauerhaft links
+  var hs=[].concat(step.h),intro=el('div',withsim?'body o1 part':'body o1',hs[0]),intros=[intro];
+  if(step.h2)intro.appendChild(el('div','body',step.h2));
+  if(!withsim)for(var hi=1;hi<hs.length;hi++)intro.appendChild(el('div','body',hs[hi]));
+  else for(var hj=1;hj<hs.length;hj++)intros.push(el('div','body o1 part',hs[hj]));
+  if(withsim){intros.forEach(function(x,xi){pcol.appendChild(x);els.push(x);block.push(false);labels.push(intros.length>1?'Einführung '+(xi+1):'Einführung');});var wr=el('div','o2');colB.appendChild(wr);try{step.w(wr);}catch(e){wr.innerHTML='<div class="sim"><p class="hint">Das Experiment konnte auf diesem Gerät nicht gestartet werden. Ladet die Seite neu oder nutzt einen aktuellen Browser.</p></div>';if(window.console&&console.error)console.error(e);}}
+  else colA.appendChild(intro);
+  var nd=0,need=tasks.filter(function(t){return !t.opt;}).length;
+  tasks.forEach(function(t,i){
+    var b;
+    if(SOLUTION)b=solTask(t,L,S,i);
+    else{var tk=L+'-'+S+'-'+i,pi=els.length;
+      var done=function(first){
+        if(!state.td[tk]){state.td[tk]=1;if(/^(mc|num|cls)$/.test(t.k)&&!t.opt&&!(tk in state.ft))state.ft[tk]=first?1:0;save();}
+        if(!t.opt)nd++;if(nd===need)markDone(L,S);
+        if(curParts){curParts.solved[pi]=true;var pl=curParts.pills[pi];if(pl)pl.classList.add('done');refreshNav();}};
+      b=t.k==='mc'?taskMC(t,done,seedOf(L,S,i)):t.k==='num'?taskNum(t,done,'in-'+L+'-'+S+'-'+i):t.k==='rev'?taskRev(t,done):t.k==='meas'?taskMeas(t,done):taskCls(t,done);}
+    b.classList.add('o4','part');pcol.appendChild(b);els.push(b);block.push(!t.opt&&!SOLUTION);labels.push(t.opt?'+':String(i+1));if(!SOLUTION&&state.td[L+'-'+S+'-'+i])todo.push([b,t]);});
+  var posts=step.post?[].concat(step.post):[];posts.forEach(function(ph,pi){var pb=el('div','task post o5 part','<p class="tag">Erklärung'+(posts.length>1?' '+(pi+1)+' von '+posts.length:'')+'</p><div class="body">'+ph+'</div>');pcol.appendChild(pb);els.push(pb);block.push(false);labels.push(posts.length>1?'Erklärung '+(pi+1):'Erklärung');});
+  // Folienleiste
+  var pills=[];
+  if(els.length>1){var pr=el('div','parts');labels.forEach(function(lb,i){var b=el('button',null,lb);b.type='button';b.setAttribute('aria-label','Folie '+(i+1)+' von '+els.length);b.addEventListener('click',function(){showPart(i);});pr.appendChild(b);pills.push(b);});chead.appendChild(pr);}
+  var foot=document.getElementById('foot');foot.innerHTML='';
+  var prev=el('button','btn','Zurück');prev.type='button';
+  var next=el('button','btn primary','Weiter');next.type='button';
+  curParts={els:els,pills:pills,prev:prev,next:next,moved:false,block:block,solved:block.map(function(){return false;})};
+  prev.addEventListener('click',function(){if(state.P>0)return showPart(state.P-1);if(S>0)go(L,S-1,true,99);else if(L>0)go(L-1,Math.min(frontierIn(L-1),lessons[L-1].steps.length-1),true,99);});
+  next.addEventListener('click',function(){if(next.disabled)return;if(state.P<els.length-1)return showPart(state.P+1);
+    if(!hasTasks||need===0)markDone(L,S);var last=S===lessons[L].steps.length-1;
+    if(last&&!SOLUTION&&!state.cs&&allDone()){state.view='cert';save();render();return;}
+    if(last&&L===lessons.length-1){if(SOLUTION){header();next.textContent='Abgeschlossen';return;}
+      if(locked()&&!allDone()){var op=openLessons();header();refreshNav();toast('Stunde '+(L+1)+' ist abgeschlossen. Für die Urkunde '+(op.length===1?'fehlt noch Stunde '+op[0]:'fehlen noch die Stunden '+op.slice(0,-1).join(', ')+' und '+op[op.length-1])+'.');return;}
+      state.view='cert';save();render();return;}
+    if(last)go(L+1,0);else go(L,S+1);});
+  foot.appendChild(prev);foot.appendChild(next);
+  todo.forEach(function(x){restore(x[0],x[1]);});
+  showPart(els.length?Math.min(state.P||0,els.length-1):0);
+}
+/* ---------- Urkunde ---------- */
+function certStats(){var N=0,M=0;lessons.forEach(function(l,L){l.steps.forEach(function(s,S){(s.tasks||[]).forEach(function(t,i){if(t.opt||!/^(mc|num|cls)$/.test(t.k))return;N++;if(state.ft[L+'-'+S+'-'+i])M++;});});});return {N:N,M:M};}
+function renderCert(){
+  if(allDone()&&!state.cs){state.cs=1;save();}
+  curParts=null;showMain(false);header();
+  var host=document.getElementById('cert'),open=0,k;for(k=0;k<order.length;k++)if(!state.done[sid(order[k][0],order[k][1])])open++;
+  var cols=['#0f7c8a','#7a2fc0','#c4561a','#3a8a1e','#b08900'],st=certStats(),d=state.fin?new Date(state.fin):new Date();
+  var date=d.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'});
+  var motif='<svg class="umotiv" viewBox="0 0 160 100" aria-hidden="true"><ellipse cx="80" cy="50" rx="70" ry="20" fill="none" stroke="#586574" stroke-width="1.5"/><ellipse cx="80" cy="50" rx="70" ry="20" fill="none" stroke="#586574" stroke-width="1.5" transform="rotate(60 80 50)"/><ellipse cx="80" cy="50" rx="70" ry="20" fill="none" stroke="#586574" stroke-width="1.5" transform="rotate(-60 80 50)"/>'+
+    '<circle cx="74" cy="46" r="7" fill="#d64545"/><circle cx="86" cy="46" r="7" fill="#4f7fa8"/><circle cx="74" cy="56" r="7" fill="#4f7fa8"/><circle cx="86" cy="56" r="7" fill="#d64545"/><circle cx="150" cy="50" r="4" fill="#2c6fd1"/><circle cx="45" cy="20" r="4" fill="#2c6fd1"/></svg>';
+  var key=['2d · sin θ = n · λ','p = uud','E<sub>B</sub> = Δm · c²','n → p + e⁻ + ν̄<sub>e</sub>','N = N<sub>0</sub> · e<sup>−λt</sup>'];
+  var list='';lessons.forEach(function(l,i){list+='<li style="--c:'+cols[i]+'"><b>Stunde '+(i+1)+'</b>'+l.t+'<em>'+(key[i]||'')+'</em></li>';});
+  host.innerHTML='<div class="certctl">'+(open?'<p class="fb neutral"><b>Vorschau.</b> Noch '+(open===1?'ist eine Station':'sind '+open+' Stationen')+' offen.</p>':'')+
+    '<p>Tragt euren Namen in die Urkunde ein. Beim Drucken erscheint nur die Urkunde im Querformat. Als PDF speichert ihr sie, indem ihr im Druckdialog „Als PDF speichern“ wählt.</p>'+
+    '<div class="row"><button type="button" class="btn primary" id="certPrint">Urkunde drucken oder als PDF speichern</button><button type="button" class="btn" id="certBack">Zurück zum Lernpfad</button></div></div>'+
+    '<div class="urkunde"><div class="ubar">'+cols.map(function(c){return '<i style="background:'+c+'"></i>';}).join('')+'</div>'+motif+
+    '<p class="ukicker">Physik 13 · erhöhtes Anforderungsniveau · Lernbereiche 3 bis 5</p><h2 class="utitle">Urkunde</h2><p class="ufor">für</p>'+
+    '<input class="uname" id="certName" maxlength="60" autocomplete="off" placeholder="Vor- und Nachname" aria-label="Name auf der Urkunde">'+
+    '<p class="utext">hat den <b>Lernpfad Kern- und Teilchenphysik</b> vollständig bearbeitet: '+order.length+' Stationen in fünf Unterrichtsstunden, vom Kristallgitter bis zum Kernreaktor.</p>'+
+    '<ol class="ulist">'+list+'</ol>'+
+    '<p class="ustat">Von '+st.N+' Aufgaben wurden '+st.M+' im ersten Versuch richtig gelöst.</p>'+
+    '<div class="usign"><div><span>'+date+'</span><i></i><small>Datum</small></div><div><span></span><i></i><small>Lehrkraft</small></div></div></div>';
+  var nm=document.getElementById('certName');nm.value=state.name||'';
+  nm.addEventListener('input',function(){state.name=nm.value.slice(0,60);save();});
+  document.getElementById('certPrint').addEventListener('click',function(){nm.blur();window.print();});
+  document.getElementById('certBack').addEventListener('click',function(){state.view='step';var t=order[order.length-1];state.L=t[0];state.S=t[1];state.P=0;save();render();});
+  var u=host.querySelector('.urkunde');
+  function scale(){var w=host.clientWidth||1000;u.style.zoom=w<1000?String(Math.max(0.3,w/1000)):'';}
+  onLayout(host,scale);scale();
+  if(typeof fitSoon==='function')fitSoon();
+}
+/* ---------- Lösungsansicht ---------- */
+function solNote(h){return el('div','solnote',h);}
+function solTask(t,L,S,i){
+  var tags={mc:'Frage',num:'Rechnung',rev:'Formulieren',cls:'Zuordnen',meas:'Messung'};
+  var box=el('div','task');box.appendChild(el('p','tag',t.tag||tags[t.k]));box.appendChild(el('p','q',t.q));
+  if(t.k==='mc'){var opts=el('div','opts');orderFor(t.o.length,seedOf(L,S,i)).forEach(function(k){var b=el('button',k===t.c?'solopt':null,t.o[k]);b.type='button';b.disabled=true;opts.appendChild(b);});box.appendChild(opts);if(t.e)box.appendChild(solNote(t.e));}
+  else if(t.k==='num'){var row=el('div','numrow');row.appendChild(el('span','solval',t.sol||t.a.toLocaleString('de-DE',{maximumSignificantDigits:3})));if(t.u)row.appendChild(el('span','unit',t.u));box.appendChild(row);if(t.e)box.appendChild(solNote(t.e));}
+  else if(t.k==='rev'){box.appendChild(solNote(t.s));}
+  else if(t.k==='meas'){box.appendChild(solNote('U<sub>G</sub> ≈ 0,21 V (gelb, 578 nm) · 0,34 V (grün, 546 nm) · 0,91 V (blau, 436 nm) · 1,13 V (violett, 405 nm) · 1,46 V (ultraviolett, 365 nm)'));}
+  else{var list=el('div','cls');t.items.forEach(function(it){var item=el('div','item');item.appendChild(el('div',null,it.x));var ch=el('div','choices');t.cats.forEach(function(c,ci){var b=el('button','btn small'+(ci===it.c?' solopt':''),c);b.type='button';b.disabled=true;ch.appendChild(b);});item.appendChild(ch);if(it.e)item.appendChild(solNote(it.e));list.appendChild(item);});box.appendChild(list);}
+  return box;
+}
+window.__lernpfad={parseNum:parseNum,numOK:numOK,lessons:lessons,orderFor:orderFor,seedOf:seedOf};
+/* ---------- Bildschirm: Station an die Fensterhöhe anpassen ---------- */
+var DESK=window.matchMedia?window.matchMedia('(min-width:1000px) and (min-height:560px)'):null,fitRaf=0;
+var fitKey='',fitZ=1;
+function fitView(){var w=document.querySelector('.wrap'),docEl=document.documentElement,z=1;if(!w)return;
+  if(DESK&&DESK.matches){
+    var key=(state.view==='cert'?'cert':state.L+'-'+state.S+'-'+state.P)+'|'+window.innerWidth+'x'+window.innerHeight;
+    if(key===fitKey)z=fitZ;
+    fitKey=key;w.style.zoom=z<1?String(z):'';
+    /* Innerhalb einer Folie wird nur verkleinert, nie wieder vergrößert. */
+    while(z>0.7&&docEl.scrollHeight>docEl.clientHeight+1){z=Math.max(0.7,Math.round((z-0.02)*100)/100);w.style.zoom=String(z);}
+    fitZ=z;
+  }else{fitKey='';if(w.style.zoom)w.style.zoom='';}
+  if(Math.abs(z-curZoom)>0.001){curZoom=z;window.dispatchEvent(new Event('resize'));}}
+function fitSoon(){cancelAnimationFrame(fitRaf);fitRaf=requestAnimationFrame(fitView);}
+window.addEventListener('resize',fitSoon);
+if(window.ResizeObserver){var fro=new ResizeObserver(fitSoon);fro.observe(document.getElementById('card'));}
+document.addEventListener('click',function(){setTimeout(fitSoon,30);});
+if(SOLUTION){var ov=document.querySelector('.overall');if(ov)ov.hidden=true;}
+document.getElementById('certBtn').addEventListener('click',function(){state.view='cert';save();render();});
+if(LOCK&&!SOLUTION){var taps=[];document.querySelector('header h1').addEventListener('click',function(){var n=Date.now();taps=taps.filter(function(t){return n-t<3000;});taps.push(n);
+  if(taps.length>=5){taps=[];state.free=!state.free;if(!state.free&&!reachable(state.L,state.S))toFrontier();save();
+    toast(state.free?'Lehrkraft-Modus: Alle Stationen und Folien sind frei.':'Lehrkraft-Modus beendet. Die Sperre gilt wieder.');render();}});}
+render();
+fitSoon();
+})();
+</script>
+</body>
+</html>
