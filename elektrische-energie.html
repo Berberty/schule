@@ -783,6 +783,24 @@ table.mini td{font:700 1.125rem var(--f-display)}
 .sunr{fill:none;stroke:#ffd75e;stroke-width:3;stroke-dasharray:7 6;stroke-linecap:round}
 .irr{fill:none;stroke:#ff8a7a;stroke-width:3;stroke-dasharray:3 6;stroke-linecap:round}
 .lbg{paint-order:stroke;stroke:#12204a;stroke-width:5px;stroke-linejoin:round}
+
+/* ===================== Magnet-Werkstatt ===================== */
+.mN{fill:#e0524a;stroke:#0d1630;stroke-width:1.6}
+.mS{fill:#2f9e5a;stroke:#0d1630;stroke-width:1.6}
+.mt{font:700 18px var(--f-display);fill:#fff}
+.nd{stroke-linecap:round}
+.fline{fill:none;stroke:#8f9cc0;stroke-width:1.4;stroke-dasharray:4 5}
+.coil{fill:none;stroke:#dc8f50;stroke-width:3.5}
+
+/* ===================== Induktions-Werkstatt ===================== */
+.core{fill:none;stroke:#8f9cc0;stroke-width:22;stroke-linejoin:round}
+.turn{stroke:#dc8f50;stroke-width:3;stroke-linecap:round}
+.dial{fill:#0a1228;stroke:#c8d2ea;stroke-width:2}
+.ndl{stroke:#ffc94a;stroke-width:3;stroke-linecap:round}
+.hv{fill:none;stroke:#ffc94a;stroke-width:2.4;stroke-dasharray:6 6}
+.bld{fill:#8f9cc0;stroke:#0d1630;stroke-width:1.4;stroke-linejoin:round}
+.skin{stroke:#7a4a22;stroke-width:1.7;stroke-linejoin:round}
+.crease{fill:none;stroke:#b27a4c;stroke-width:1.4;stroke-linecap:round}
 </style>
 </head>
 <body>
@@ -1379,7 +1397,7 @@ function showStart() {
     right.append(card);
   }
   const left = el('div', { style: 'display:flex;flex-direction:column;gap:16px' },
-    el('div', {}, el('a', { class: 'eyebrow backlink', href: 'physik9.html', text: CH.back }), el('h1', { html: CH.h1 }),
+    el('div', {}, el('a', { class: 'eyebrow backlink', href: CH.home || 'physik9.html', text: CH.back }), el('h1', { html: CH.h1 }),
       el('p', { class: 'lead', text: CH.lead }),
       el('div', { class: 'facts' }, el('span', { text: `${COURSE.length} Stationen` }), el('span', { text: CH.mins }), el('span', { text: `${t.m} Punkte` }))), hero);
   main.append(el('div', { class: 'start' }, left, right));
@@ -1396,6 +1414,16 @@ function tiles(host, label, defs) {
 }
 function benchBtn(row, text, fn) { const b = el('button', { class: 'btn onbench small', type: 'button', text }); b.addEventListener('click', fn); row.append(b); return b; }
 function blocks(svg, x, y, n, c) { const rs = []; for (let k = 0; k < n; k++) { const r = sv('rect', { x: x + k * 16, y, width: 13, height: 13, rx: 2.5, class: 'blk', fill: c }); svg.append(r); rs.push(r); } return v => rs.forEach((r, k) => r.style.opacity = k < v ? 1 : 0.12); }
+function needle(len = 18) { const g = sv('g', {}, sv('path', { d: `M${-len / 2} 0H0`, stroke: '#e8ecf6', 'stroke-width': 3, class: 'nd' }), sv('path', { d: `M0 0H${len / 2}`, stroke: '#ff5a4f', 'stroke-width': 3, class: 'nd' }), sv('path', { d: `M${len / 2 + 4} 0l-6 -3.5v7z`, fill: '#ff5a4f' })); return g; }
+function curSym(svg, x, y, out, r = 11) { const g = sv('g', {}, sv('circle', { cx: x, cy: y, r, fill: '#dc8f50', stroke: '#0d1630', 'stroke-width': 1.6 })); if (out === 1) g.append(sv('circle', { cx: x, cy: y, r: r * 0.28, fill: '#0d1630' })); if (out === -1) g.append(sv('path', { d: `M${x - r * 0.5} ${y - r * 0.5}l${r} ${r}M${x + r * 0.5} ${y - r * 0.5}l${-r} ${r}`, stroke: '#0d1630', 'stroke-width': 2.2 })); svg.append(g); return g; }
+
+/* ---------- Gewickelte Spule: ein durchgehender Draht, vorderer und hinterer Teil getrennt ---------- */
+function helix(a0, c, R, n, len, e, vert, mir) {
+  let f = '', b = '', pf = null; const N = Math.ceil(n * 28), sg = mir ? -1 : 1;
+  for (let i = 0; i <= N; i++) { const t = i / N * n * 6.2832, u = a0 + len * i / N + e * Math.sin(t), w = vert ? c - sg * R * Math.cos(t) : c + R * Math.cos(t), p = vert ? w.toFixed(1) + ' ' + u.toFixed(1) : u.toFixed(1) + ' ' + w.toFixed(1);
+    if (pf) { const front = Math.sin(t - 3.1416 * n / N) > 0; if (front) f += `M${pf}L${p}`; else b += `M${pf}L${p}`; } pf = p; }
+  return { f, b };
+}
 
 /* ===== Bilder: Ladungsportionen, Zählstelle, Höhenmodell, Schaltungen, Energiefluss ===== */
 function poly(pts) {
@@ -1565,6 +1593,30 @@ class EClock {
 }
 
 /* ===== Energie im Stromkreis: sechs Stationen (LehrplanPLUS Ph9 1.2 Elektrische Energie) ===== */
+/* ---------- Messen im Stromkreis: Stromstärke-Messgerät in Reihe, Spannungs-Messgerät parallel ---------- */
+class Meters {
+  constructor(host, o = {}) {
+    this.at = o.at || 'R1'; this.seen = { [this.at]: 1 }; this.s = 0; const W = 420, H = 250, svg = this.svg = stage(host, W, H, 'Reihenschaltung aus zwei Widerständen mit einem Stromstärke-Messgerät im Stromkreis und einem Spannungs-Messgerät parallel zu einem Bauteil'); panel(svg, W, H);
+    const L = 78, T = 62, B = 204, R = 350; svg.append(sv('path', { d: `M${L} ${T}H${R}V${B}H${L}Z`, class: 'cw' })); const dots = sv('g'); svg.append(dots);
+    this.p = poly([[L, T], [L, B], [R, B], [R, T]]); this.cs = []; for (let k = 0; k < Math.floor(this.p.L / 26); k++) { const c = sv('circle', { r: 4.5, class: 'cdot' }); dots.append(c); this.cs.push(c); }
+    svg.append(sv('rect', { x: L - 9, y: 121, width: 18, height: 24, class: 'cgap' }), sv('path', { d: `M${L - 15} 123H${L + 15}`, class: 'cpl', 'stroke-width': 3 }), sv('path', { d: `M${L - 8} 143H${L + 8}`, class: 'cpl', 'stroke-width': 6 }), tlab(L + 22, 129, '+', 't2'), tlab(L + 22, 150, '−', 't2'));
+    [[160, 'R1'], [270, 'R2']].forEach(([x, n]) => svg.append(sv('rect', { x: x - 28, y: T - 11, width: 56, height: 22, rx: 3, class: 'cres' }), tlab(x, T + 28, n, 't2')));
+    const meter = (x, y, ch, col) => sv('g', {}, sv('circle', { cx: x, cy: y, r: 15, style: `fill:#0d1630;stroke:${col};stroke-width:3` }), (() => { const t = tlab(x, y + 6, ch, 't2'); t.setAttribute('style', `fill:${col};font-size:17px`); return t; })());
+    svg.append(meter(R, 133, 'A', '#5cd2ff'), tlab(R + 22, 128, '0,5 A', 't2', 'start')); this.vg = sv('g'); svg.append(this.vg);
+    svg.append(tlab(214, 150, 'A: Stromstärke-Messgerät, in Reihe', 't1'), tlab(214, 168, 'V: Spannungs-Messgerät, parallel', 't1')); this.meter = meter; this.rd = tlab(214, 232, '', 't2'); svg.append(this.rd);
+    if (!o.fix) benchChips(host, 'Spannung messen an', ['R1', 'R2', 'Bat'], this.at, v => v === 'Bat' ? 'Batterie' : v, v => { this.at = v; this.seen[v] = 1; this.draw(); });
+    this.draw(); this.tick(0);
+  }
+  draw() {
+    const g = this.vg, c = '#ffc94a', w = d => sv('path', { d, style: `fill:none;stroke:${c};stroke-width:2.5;stroke-linejoin:round` }); g.innerHTML = '';
+    if (this.at === 'Bat') g.append(w('M78 100H36V118M78 166H36V148'), this.meter(36, 133, 'V', c)); else { const x = this.at === 'R1' ? 160 : 270; g.append(w(`M${x - 40} 62V26H${x - 15}M${x + 40} 62V26H${x + 15}`), this.meter(x, 26, 'V', c)); }
+    this.rd.textContent = 'Das Spannungs-Messgerät zeigt ' + { R1: '4 V', R2: '2 V', Bat: '6 V' }[this.at];
+  }
+  fill() { this.all = 1; }
+  tick(dt) { this.s += dt * 55; this.cs.forEach((c, k) => { const [x, y] = this.p.at(this.s + k * this.p.L / this.cs.length); setAttrs(c, { cx: x.toFixed(1), cy: y.toFixed(1) }); }); }
+  destroy() { this.svg.remove(); }
+}
+
 const SER = (o = {}) => Object.assign({ mode: 'ser', I: [0.5], items: [{ n: 'R1', l: ['4 V'], h: ['0,5 A'] }, { n: 'R2', l: ['2 V'], h: ['0,5 A'] }] }, o);
 const PAR = (o = {}) => Object.assign({ mode: 'par', I: [0.2, 0.3], batH: ['0,5 A'], items: [{ n: 'R1', l: ['0,2 A'], h: ['6 V'] }, { n: 'R2', l: ['0,3 A'], h: ['6 V'] }] }, o);
 const GL = { n: 'Glühlampe', pin: 60, use: 3 }, LED = { n: 'LED-Lampe', pin: 6, use: 3 };
@@ -1740,11 +1792,43 @@ const COURSE = [
       scene: ctx => add(ctx, new Eff(ctx.sceneEl, { items: [{ n: 'Elektromotor', pin: 100, use: 80, lab: 'Bewegung' }] })),
       ui: rev(withHint('80 : 100', Task.table({ list: [{ pre: 'Wirkungsgrad =', a: 80, unit: '%' }], ok: '80 W : 100 W = 0,8 = 80 %. Die übrigen 20 W erwärmen den Motor und die Umgebung.' }))) }
   ]
+},
+/* ---------------------------------------------------------------- 7 */
+{
+  title: 'Messen im Stromkreis', sub: 'Station 7 · Messgeräte richtig anschließen', min: 6, acc: '#0b7285', acc2: '#d9f2f6',
+  steps: [
+    { id: 's7a', ref: 'Stromstärke messen', pts: 3,
+      q: 'Das Stromstärke-Messgerät (A) soll alle Ladungen zählen, die durch den Stromkreis fließen. Wie muss es angeschlossen sein?',
+      scene: ctx => add(ctx, new Meters(ctx.sceneEl, { fix: 1 })),
+      ui: Task.mc({ opts: [{ t: 'in Reihe: Der Stromkreis wird aufgetrennt und das Messgerät eingefügt', ok: 1 }, { t: 'parallel zum Bauteil', fb: 'Dann fließt ein Teil der Ladungen am Messgerät vorbei.' }, { t: 'irgendwo neben dem Stromkreis', fb: 'Die Ladungen müssen durch das Messgerät fließen.' }],
+        ok: '<b>Stromstärke misst man in Reihe.</b> In der Reihenschaltung ist die Stromstärke überall gleich, hier 0,5 A.' }) },
+    { id: 's7b', ref: 'Spannung messen', pts: 3,
+      q: 'Die Spannung ist die Potentialdifferenz zwischen zwei Punkten. Wie muss das Spannungs-Messgerät (V) deshalb angeschlossen sein?',
+      scene: ctx => add(ctx, new Meters(ctx.sceneEl, { fix: 1 })),
+      ui: Task.mc({ opts: [{ t: 'parallel: je ein Kabel vor und hinter dem Bauteil', ok: 1 }, { t: 'in Reihe wie das Stromstärke-Messgerät', fb: 'Es soll zwei Punkte vergleichen, vor und hinter dem Bauteil.' }, { t: 'nur mit einem Kabel', fb: 'Für einen Unterschied braucht man zwei Punkte.' }],
+        ok: '<b>Spannung misst man parallel.</b> Das Messgerät vergleicht das Potential vor und hinter dem Bauteil.' }) },
+    { id: 's7c', ref: 'Messwerte', pts: 5,
+      q: 'Schließe das Spannungs-Messgerät nacheinander an R<sub>1</sub>, an R<sub>2</sub> und an der Batterie an. Trage die Messwerte ein.',
+      scene: ctx => add(ctx, new Meters(ctx.sceneEl)),
+      ui: Task.table({ gate: ctx => ctx.scene.all || ['R1', 'R2', 'Bat'].every(k => ctx.scene.seen[k]), gateMsg: 'Zuerst an allen drei Stellen messen.', list: [{ pre: 'an R<sub>1</sub>:', a: 4, unit: 'V' }, { pre: 'an R<sub>2</sub>:', a: 2, unit: 'V' }, { pre: 'an der Batterie:', a: 6, unit: 'V' }],
+        ok: '4 V + 2 V = 6 V. Die Messung bestätigt: In der Reihenschaltung teilt sich die Spannung der Batterie auf.' }) },
+    { id: 's7d', ref: 'Leistung aus Messwerten', pts: 4,
+      q: 'Aus den beiden Messwerten folgt die Leistung. Wie groß ist die Leistung an R<sub>1</sub>?', how: 'Spannung an R1 mal Stromstärke.',
+      scene: ctx => add(ctx, new Meters(ctx.sceneEl)),
+      ui: Task.table({ list: [{ pre: '<i>P</i><sub>1</sub> =', a: 2, unit: 'W' }], ok: '<i>P</i><sub>1</sub> = 4 V · 0,5 A = 2 W. So bestimmt ihr im Schülerexperiment die Leistung jedes Bauteils.' }) },
+    { id: 's7e', ref: 'Sicher messen', pts: 4,
+      q: 'Was gehört zum richtigen Umgang mit Messgeräten?',
+      scene: ctx => add(ctx, new Meters(ctx.sceneEl, { fix: 1 })),
+      ui: Task.classify({ cats: ['richtig', 'falsch'], items: [
+        { t: 'mit dem größten Messbereich beginnen', a: 0, fb: 'So wird das Messgerät nicht überlastet.' }, { t: 'auf Plus und Minus achten', a: 0, fb: 'Sonst zeigt das Messgerät in die falsche Richtung oder ein Minuszeichen.' },
+        { t: 'Schaltung erst prüfen lassen, dann einschalten', a: 0, fb: 'Ein zweiter Blick verhindert Schäden.' }, { t: 'das Stromstärke-Messgerät direkt an beide Pole der Batterie halten', a: 1, fb: 'Das ist ein Kurzschluss: Es fließt ein sehr großer Strom.' }],
+        ok: 'Großer Messbereich zuerst, Polung beachten, Schaltung prüfen. Ein Stromstärke-Messgerät gehört nie allein an die Batterie.' }) }
+  ]
 }
 ];
 
 const CH = { key: 'elektrische-energie', name: 'Energie im Stromkreis', back: '← Physik 9 · Kapitel 2 · Elektrische Energie', h1: 'Energie im <span>Stromkreis</span>',
-  lead: 'Die Batterie gibt den Ladungen Energie, in Lampe und Motor geben sie sie wieder ab. Hier lernt ihr Ladung, Spannung, elektrische Leistung und Wirkungsgrad kennen.', mins: 'rund 35 Minuten',
+  lead: 'Die Batterie gibt den Ladungen Energie, in Lampe und Motor geben sie sie wieder ab. Hier lernt ihr Ladung, Spannung, elektrische Leistung und Wirkungsgrad kennen.', mins: 'rund 40 Minuten',
   hero: h => new Hill(h), cap: 'Die Batterie hebt die Ladungen auf 6 V. In der Lampe fallen sie auf 0 V und geben ihre Energie ab.',
   verdict: 'Stark: Ladung, Spannung, Leistung und Wirkungsgrad sitzen.' };
 
@@ -1895,7 +1979,7 @@ function showSum() {
   const d = S.date ? new Date(S.date) : new Date();
   const again = el('button', { class: 'btn ghost small', type: 'button', text: 'Zurück zu den Stationen' }); again.addEventListener('click', () => gotoStation(0));
   main.append(
-    el('section', { class: 'st-head' }, el('div', { class: 'st-tt' }, el('div', { class: 'eyebrow', text: CH.name + ' · Physik 9' }), el('h1', { text: 'Auswertung' }))),
+    el('section', { class: 'st-head' }, el('div', { class: 'st-tt' }, el('div', { class: 'eyebrow', text: CH.name + ' · Physik ' + (CH.grade || 9) }), el('h1', { text: 'Auswertung' }))),
     el('div', { class: 'sum' },
       el('div', { class: 'card score' }, ring, el('p', { class: 'who', text: who }),
         el('p', { class: 'note', text: `${d.toLocaleDateString('de-DE')} · Arbeitszeit ${clock(S.secs)} min · ${Math.round(pct * 100)} %` }), el('p', { text: verdict })),
