@@ -967,7 +967,7 @@ Task.num = o => ctx => {
   });
   check.addEventListener('click', go);
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
-  ctx.ui.append(el('div', { class: 'numrow' }, el('label', { for: id, html: o.sym + '&nbsp;=' }), inp, o.post ? el('span', { class: 'mx', html: o.post }) : null, pm, o.units ? chips : null), check);
+  ctx.ui.append(el('div', { class: 'numrow' }, el('label', { for: id, html: o.sym + '&nbsp;=' }), inp, o.post ? el('span', { class: 'mx', html: o.post }) : null, o.nopm ? null : pm, o.units ? chips : null), check);
 };
 
 /* Lücken füllen: Karte antippen, dann Lücke antippen */
@@ -1699,7 +1699,7 @@ const COURSE = [
       {
         id: 'i1', pts: 2,
         q: 'Verschiebe die Spitze des Dreiecks parallel zur Grundseite. Was geschieht mit dem Flächeninhalt?',
-        scene: ctx => { const G = gboard(ctx, 10, 5, 36, 'Dreieck mit verschiebbarer Spitze'), t = poly(G.s, G.P([[3, 0.5], [7, 0.5], [5, 4.5]]), 'shp on'); G.s.append(sv('line', { class: 'as2', x1: G.X(0), y1: G.Y(4.5), x2: G.X(10), y2: G.Y(4.5) })); const rd = readout(ctx, 'Grundseite <b>4</b> · Höhe <b>4</b>'); ctx.sx = slider(ctx, { label: 'Spitze verschieben', min: 0, max: 10, step: .5, value: 5, fmt: () => '', on: v => t.setAttribute('points', G.P([[3, 0.5], [7, 0.5], [v, 4.5]]).map(p => p.join(',')).join(' ')) }); return G; },
+        scene: ctx => { const G = gboard(ctx, 10, 5, 36, 'Dreieck mit verschiebbarer Spitze'), t = poly(G.s, G.P([[3, 0.5], [7, 0.5], [5, 4.5]]), 'shp on'); G.s.append(sv('line', { class: 'as2', x1: G.X(0), y1: G.Y(4.5), x2: G.X(10), y2: G.Y(4.5) })); const rd = readout(ctx, 'Grundseite <b>4</b> &nbsp;|&nbsp; Höhe <b>4</b>'); ctx.sx = slider(ctx, { label: 'Spitze verschieben', min: 0, max: 10, step: .5, value: 5, fmt: () => '', on: v => t.setAttribute('points', G.P([[3, 0.5], [7, 0.5], [v, 4.5]]).map(p => p.join(',')).join(' ')) }); return G; },
         ui: Task.mc({
           opts: [{ t: 'Er bleibt gleich, weil sich weder Grundseite noch Höhe ändern.', ok: 1 }, { t: 'Er wird größer, weil die Seiten länger werden.', fb: 'Die Seiten werden länger, aber in die Flächenformel gehen nur Grundseite und Höhe ein.' }, { t: 'Er wird kleiner, weil das Dreieck schmaler aussieht.', fb: 'Der Eindruck täuscht: Grundseite und Höhe sind unverändert.' }],
           ok: `Immer ${ZF([1, 2], ' · 4 · 4 = 8')} Kästchen. Alle Dreiecke mit gleicher Grundseite und gleicher Höhe haben denselben Flächeninhalt, so verschieden sie aussehen.` })
@@ -1865,7 +1865,7 @@ const COURSE = [
       {
         id: 'm4', pts: 2,
         q: 'Fünf Kinder haben 3, 7, 5, 9 und 6 Bücher gelesen. Verschiebe die Linie so, dass die Überschüsse darüber genau die Lücken darunter füllen.',
-        scene: ctx => { const s = board(ctx, 420, 230, 'Fünf Säulen mit einer verschiebbaren Ausgleichslinie'), Y = v => 200 - v * 19, l = sv('line', { class: 'as2', x1: 40, x2: 384 }); for (let v = 0; v <= 10; v += 2) { s.append(sv('line', { class: 'gr2', x1: 50, y1: Y(v), x2: 380, y2: Y(v) })); tx(s, 42, Y(v) + 4, v, 'dim sm', 'end'); } DATA5.forEach((v, i) => { s.append(sv('rect', { class: 'fill-b', x: 70 + i * 62, y: Y(v), width: 44, height: v * 19, rx: 3 })); tx(s, 92 + i * 62, 218, v, 'sm'); }); s.append(l); const rd = readout(ctx, ''); const upd = L => { setAttrs(l, { y1: Y(L), y2: Y(L) }); const up = DATA5.reduce((a, v) => a + Math.max(0, v - L), 0), dw = DATA5.reduce((a, v) => a + Math.max(0, L - v), 0); rd.innerHTML = `über der Linie: <b>${dn(up, 1)}</b> · unter der Linie fehlt: <b>${dn(dw, 1)}</b>`; }; ctx.sl = slider(ctx, { label: 'Linie verschieben', min: 3, max: 9, step: .5, value: 4, fmt: () => '', on: upd }); upd(4); return s; },
+        scene: ctx => { const s = board(ctx, 420, 230, 'Fünf Säulen mit einer verschiebbaren Ausgleichslinie'), Y = v => 200 - v * 19, l = sv('line', { class: 'as2', x1: 40, x2: 384 }); for (let v = 0; v <= 10; v += 2) { s.append(sv('line', { class: 'gr2', x1: 50, y1: Y(v), x2: 380, y2: Y(v) })); tx(s, 42, Y(v) + 4, v, 'dim sm', 'end'); } DATA5.forEach((v, i) => { s.append(sv('rect', { class: 'fill-b', x: 70 + i * 62, y: Y(v), width: 44, height: v * 19, rx: 3 })); tx(s, 92 + i * 62, 218, v, 'sm'); }); s.append(l); const rd = readout(ctx, ''); const upd = L => { setAttrs(l, { y1: Y(L), y2: Y(L) }); const up = DATA5.reduce((a, v) => a + Math.max(0, v - L), 0), dw = DATA5.reduce((a, v) => a + Math.max(0, L - v), 0); rd.innerHTML = `über der Linie: <b>${dn(up, 1)}</b> &nbsp;|&nbsp; unter der Linie fehlt: <b>${dn(dw, 1)}</b>`; }; ctx.sl = slider(ctx, { label: 'Linie verschieben', min: 3, max: 9, step: .5, value: 4, fmt: () => '', on: upd }); upd(4); return s; },
         ui: Task.goal({ check: ctx => ctx.sl.v === 6, diag: ctx => ctx.sl.v < 6 ? 'Über der Linie liegt mehr, als darunter fehlt. Die Linie muss höher.' : 'Unter der Linie fehlt mehr, als darüber liegt. Die Linie muss tiefer.', solve: ctx => ctx.sl.set(6),
           ok: `Die Linie liegt bei 6: Würden alle gleich viele Bücher lesen, wären es je 6. Gerechnet: ${Z('(3 + 7 + 5 + 9 + 6) : 5 = 30 : 5 = 6')}. Das ist das arithmetische Mittel.` })
       },
