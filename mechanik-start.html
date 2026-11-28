@@ -1633,10 +1633,13 @@ function vecGrid(host, o = {}) {
   for (let y = 22; y < H - 10; y += q) s.append(sv('path', { d: `M14 ${y}H${W - 14}`, class: 'vg' }));
   s.append(arrow(s, x0, y0, x0 + 3 * q, y0, COL.v), tlab(x0 + 1.5 * q, y0 + 22, '<tspan class="it">v</tspan><tspan class="sub" dy="4">vorher</tspan> · 3 Kästchen', 'lab-d'),
     arrow(s, x0 + 3 * q, y0, x0 + 3 * q, y0 - 4 * q, COL.dv), tlab(x0 + 3 * q + 12, y0 - 2 * q, 'Δ<tspan class="it">v</tspan> · 4 Kästchen', 'lab-d', 'start'));
-  const res = sv('g'); res.style.opacity = 0; res.style.transition = 'opacity .6s';
-  res.append(arrow(s, x0, y0, x0 + 3 * q, y0 - 4 * q, COL.v2, 4), tlab(x0 + 0.6 * q, y0 - 2.6 * q, '<tspan class="it">v</tspan><tspan class="sub" dy="4">nachher</tspan>', 'lab-d', 'end'));
+  const res = sv('g'), Q = (l, w) => [x0 + 0.6 * l - 0.8 * w, y0 - 0.8 * l - 0.6 * w], pt = p => p[0].toFixed(1) + ' ' + p[1].toFixed(1), rd = `M${pt(Q(0, 4))}L${pt(Q(5 * q, 4))}L${pt(Q(5 * q, 20))}L${pt(Q(0, 20))}Z`;
+  res.append(sv('path', { d: rd, style: 'fill:#f1f4fc;opacity:.16' }), sv('path', { d: rd, style: 'fill:none;stroke:#f1f4fc;stroke-width:1.2' }));
+  for (let k = 0; k <= 5; k++) { const a = Q(k * q, 4), b = Q(k * q, 20), c = Q(k * q, 31); res.append(sv('path', { d: `M${pt(a)}L${pt(b)}`, style: 'fill:none;stroke:#f1f4fc;stroke-width:1.8' })); if (o.nums || k < 5) res.append(tlab(c[0], c[1] + 5, String(k), 'lab-d')); }
+  const five = tlab(Q(5 * q, 31)[0], Q(5 * q, 31)[1] + 5, '5', 'lab-d'); five.style.opacity = 0; five.style.transition = 'opacity .6s';
+  res.append(five, arrow(s, x0, y0, x0 + 3 * q, y0 - 4 * q, COL.v2, 4), tlab(x0 + 3 * q + 12, y0 - 4 * q + 6, '<tspan class="it">v</tspan><tspan class="sub" dy="4">nachher</tspan>', 'lab-d', 'start'));
   s.append(res);
-  return { show() { res.style.opacity = 1; } };
+  return { show() { five.style.opacity = 1; } };
 }
 
 /* ---------- Zwei Wagen werden gleich angeschoben ---------- */
@@ -1931,10 +1934,10 @@ const COURSE = [
     },
     {
       id: 'm3c', ref: 'Pfeile aneinanderhängen', pts: 2,
-      q: it('Vorher war der Pfeil v 3 Kästchen lang. Der Stoß fügt Δv mit 4 Kästchen nach oben hinzu. Wie lang ist der neue Pfeil?'),
-      how: 'Der neue Pfeil geht vom Anfang des ersten bis zur Spitze des zweiten Pfeils. Miss ihn mit den Kästchen.',
+      q: it('Vorher war der Pfeil v 3 Kästchen lang. Der Stoß fügt Δv mit 4 Kästchen nach oben hinzu. Der neue Pfeil liegt schräg, deshalb liegt ein Lineal mit Kästchen-Einteilung an ihm. Wie lang ist der neue Pfeil?'),
+      how: 'Der neue Pfeil geht vom Anfang des ersten bis zur Spitze des zweiten Pfeils. Lies seine Länge am Lineal ab.',
       scene: ctx => { const g = vecGrid(ctx.sceneEl); ctx.cap('Die Pfeile werden aneinandergehängt.'); return { g }; },
-      ui: withHint('3, 4, … das ist ein besonderes Dreieck. Zähle notfalls schräg die Kästchendiagonalen: Der Pfeil endet genau auf einer Gitterecke.', Task.table({ list: [{ pre: it('v<sub>nachher</sub> ='), a: 5, unit: 'Kästchen' }],
+      ui: withHint('Zähle die Teilstriche am Lineal vom Anfang bis zur Pfeilspitze. Der letzte Teilstrich ist nicht beschriftet.', Task.table({ list: [{ pre: it('v<sub>nachher</sub> ='), a: 5, unit: 'Kästchen' }],
         onCheck: (ctx, ok) => { if (ok[0]) ctx.scene.g.show(); },
         ok: 'Der neue Pfeil ist 5 Kästchen lang. Der Puck ist also schneller geworden und fliegt schräg nach rechts oben.' }))
     },
