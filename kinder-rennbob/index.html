@@ -3,17 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kinder-Rennbob – Schwarz. Flach. Spurtreu.</title>
+<title>Kinder-Rennbob – Rot. Flach. Spurtreu.</title>
 <meta name="description" content="Ein Rennbob für Kinder: 3D-gedruckte Schale, Edelstahlkufen und bündige Bremsen. Konstruktionsplan und Druckdateien zum Nachbauen.">
 <meta property="og:title" content="Kinder-Rennbob">
 <meta property="og:description" content="3D-gedruckter Kinder-Rennbob mit Edelstahlkufen und bündigen Bremsen – Pläne zum Nachbauen.">
-<meta property="og:image" content="img/seite-v3.webp">
+<meta property="og:image" content="img/seite-v5.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#F2F2EF}
 a{color:#111214}a:hover{color:#000}
 h1,h2,h3{font-family:'Space Grotesk',system-ui,sans-serif;margin:0}
+.hero-row{display:flex;align-items:flex-end;gap:12px}.hero-sled{flex:1 1 auto;min-width:0;width:100%;height:auto;display:block}.hero-kids{flex:0 0 auto;height:clamp(85px,10.5vw,150px);width:auto;display:block;margin:0 1vw clamp(48px,7vw,105px) 0;filter:saturate(.6) contrast(.8) brightness(1.12)}
+@media (max-width:720px){.hero-row{flex-direction:column-reverse;align-items:center;gap:0}.hero-kids{height:105px;margin:0 0 -26px 40%}}
 </style>
 <style>html{scroll-behavior:smooth}img{max-width:100%}</style>
 </head>
@@ -44,15 +46,16 @@ h1,h2,h3{font-family:'Space Grotesk',system-ui,sans-serif;margin:0}
 </nav>
 </header>
 
-<div style="max-width: 1240px; margin: 0 auto; padding: 200px 32px 48px">
-<img src="img/seite-v3.webp" alt="Der schwarze Kinder-Rennbob in der Seitenansicht, mit oranger Sitzplatte und Tragegurten" style="width: 100%; height: auto; display: block">
+<div class="hero-row" style="max-width: 1240px; margin: 0 auto; padding: 90px 32px 48px">
+<img class="hero-sled" src="img/seite-v5.webp" alt="Der rote Kinder-Rennbob in der Seitenansicht, mit schwarzer Sitzplatte und blauen Tragegurten">
+<img class="hero-kids" src="img/kinder-v4.webp" alt="Zwei Kinder gehen nebeneinander, jedes trägt einen Rennbob auf dem Rücken">
 </div>
 </div>
 </div>
 <section id="top" style="max-width: 1240px; margin: 0 auto; padding: 48px 32px 24px; display: flex; flex-wrap: wrap; gap: 40px 56px; align-items: flex-end">
 <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
 <p style="margin: 0; font-size: 14px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #4A4C50">Kinder-Rennbob · Jugend forscht</p>
-<h1 style="font-size: clamp(44px, 6vw, 76px); line-height: 1.0; font-weight: 700; letter-spacing: -0.02em">Schwarz.<br>Flach.<br>Spurtreu.</h1>
+<h1 style="font-size: clamp(44px, 6vw, 76px); line-height: 1.0; font-weight: 700; letter-spacing: -0.02em">Rot.<br>Flach.<br>Spurtreu.</h1>
 </div>
 <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
 <p style="margin: 0; font-size: 19px; line-height: 1.55; color: #33353A; max-width: 470px">Ein Rennbob für Kinder bis etwa 1,55 m – gedruckt aus einer einzigen 4-mm-Schale, mit Edelstahlkufen. Die Bremsgriffe liegen glatt in der Seitenwand und klappen erst heraus, wenn man daran zieht.</p>
@@ -91,7 +94,7 @@ h1,h2,h3{font-family:'Space Grotesk',system-ui,sans-serif;margin:0}
 
 <section id="technik" style="max-width: 1240px; margin: 0 auto; padding: 96px 32px 40px; display: flex; flex-direction: column; gap: 40px">
 <h2 style="font-size: clamp(34px, 4vw, 52px); line-height: 1.05; font-weight: 700; max-width: 760px">Durchdacht bis zur letzten Rille.</h2>
-<img src="img/schraeg-v3.webp" alt="Der Rennbob schräg von oben: Querrillen in der Nase, Sitzplatte, bündige Bremsgriffe" style="width: 100%; max-width: 1000px; height: auto; display: block; margin: 0 auto">
+<img src="img/schraeg-v5.webp" alt="Der Rennbob schräg von oben: Querrillen in der Nase, Sitzplatte, bündige Bremsgriffe" style="width: 100%; max-width: 1000px; height: auto; display: block; margin: 0 auto">
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px">
 <div style="background: #FFFFFF; border-radius: 20px; padding: 28px; font-size: 16px; line-height: 1.55; color: #33353A"><h3 style="color: #111214; font-size: 22px; margin-bottom: 10px">Läuft geradeaus</h3>Die Kufen sitzen hinten. Ihr Seitenführungspunkt liegt 75 mm hinter dem Schwerpunkt – wie die Federn am Pfeil.</div>
 <div style="background: #FFFFFF; border-radius: 20px; padding: 28px; font-size: 16px; line-height: 1.55; color: #33353A"><h3 style="color: #111214; font-size: 22px; margin-bottom: 10px">Edelstahl, wo es zählt</h3>Fest eingesetzte Schienen 4 × 10 mm beißen auf Eis und harter Piste und schleifen sich nicht rund.</div>
@@ -107,8 +110,8 @@ h1,h2,h3{font-family:'Space Grotesk',system-ui,sans-serif;margin:0}
 <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #33353A">Sitzplatte zum Rücken, Nase nach oben. Zwei Schultergurte und ein Hüftgurt an vier angeformten Gurtbrücken halten den Bob ruhig am Körper. Am Heck polstert ein Gummi-Kantenschutz – und die aufgebogene Nase schirmt den Kopf ein wenig vor Schnee ab.</p>
 </div>
 <div style="flex: 1.3 1 480px; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px">
-<figure style="margin: 0; background: #E6E7E3; border-radius: 20px; padding: 20px"><img src="img/sitz-v3.webp" alt="Sitzbereich mit Schultergurten, Hüftgurt und Sitzplatte" style="width: 100%; height: auto; display: block"><figcaption style="font-size: 14px; color: #4A4C50; margin-top: 10px">Gurte liegen beim Fahren flach auf der Sitzplatte</figcaption></figure>
-<figure style="margin: 0; background: #E6E7E3; border-radius: 20px; padding: 20px"><img src="img/unten.webp" alt="Unterseite mit Edelstahlkufen" style="width: 100%; height: auto; display: block"><figcaption style="font-size: 14px; color: #4A4C50; margin-top: 10px">Unterseite: geschlossen, Kufen aus Edelstahl</figcaption></figure>
+<figure style="margin: 0; background: #E6E7E3; border-radius: 20px; padding: 20px"><img src="img/sitz-v5.webp" alt="Sitzbereich mit Schultergurten, Hüftgurt und Sitzplatte" style="width: 100%; height: auto; display: block"><figcaption style="font-size: 14px; color: #4A4C50; margin-top: 10px">Gurte liegen beim Fahren flach auf der Sitzplatte</figcaption></figure>
+<figure style="margin: 0; background: #E6E7E3; border-radius: 20px; padding: 20px"><img src="img/unten-v5.webp" alt="Unterseite mit Edelstahlkufen" style="width: 100%; height: auto; display: block"><figcaption style="font-size: 14px; color: #4A4C50; margin-top: 10px">Unterseite: geschlossen, Kufen aus Edelstahl</figcaption></figure>
 </div>
 </section>
 
