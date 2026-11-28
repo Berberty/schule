@@ -939,7 +939,7 @@ Task.goal = o => ctx => {
     if (over) return;
     tries++;
     if (o.check(ctx)) { over = true; check.disabled = true; (ctx.sliders || []).forEach(s => s.lock()); ctx.finish(scoreTries(ctx.max, tries), T(o.ok), 'ok'); if (o.after) o.after(ctx, true); }
-    else if (tries >= 2) { over = true; check.disabled = true; if (o.solve) o.solve(ctx); (ctx.sliders || []).forEach(s => s.lock()); ctx.finish(0, T((o.diag && o.diag(ctx)) || '') + ' ' + T(o.ok), 'no'); if (o.after) o.after(ctx, false); }
+    else if (tries >= 2) { over = true; check.disabled = true; const dg = T((o.diag && o.diag(ctx)) || ''); if (o.solve) o.solve(ctx); (ctx.sliders || []).forEach(s => s.lock()); ctx.finish(0, dg + ' ' + T(o.ok), 'no'); if (o.after) o.after(ctx, false); }
     else { ctx.note('no', T((o.diag && o.diag(ctx)) || 'Das passt noch nicht.') + ' ' + SECOND); ctx.tried(); }
   });
   ctx.onSolve(() => { if (over) return; over = true; check.disabled = true; if (o.solve) o.solve(ctx); (ctx.sliders || []).forEach(s => s.lock()); ctx.finish(0, T(o.ok), 'info', SHOWN); if (o.after) o.after(ctx, false); });
