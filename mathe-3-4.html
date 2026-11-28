@@ -604,6 +604,12 @@ html.fit .scene > .sc-panels{flex:0 1 auto;min-height:0}
 .fd .tilt{transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
 .fd .tok{stroke:#0d1630;stroke-width:2}.fd .tok.p{fill:#ffc52e}.fd .tok.m{fill:#ff8a80}.fd .tok.dim{opacity:.28}
 .fd .thl{fill:#ff8a80;transition:height .2s,y .2s}.fd .thl.cold{fill:#7fb0ff}
+.fd .sec2{stroke:#d4dcf0;stroke-width:1.5}.fd .sec2.e{fill:#131f44}
+.fd .shp.on2{fill:rgba(127,176,255,.85);stroke:#7fb0ff;transition:transform .25s}
+.fd .shp.on3{fill:rgba(79,212,148,.85);stroke:#4fd494}
+/* Bruchstrich so lang wie der längere von Zähler und Nenner */
+.fr{align-items:stretch}
+.fr > span{padding:0 .3em}
 </style>
 </head>
 <body>
@@ -958,7 +964,7 @@ Task.num = o => ctx => {
   };
   ctx.onSolve(() => {
     if (over) return; over = true;
-    inp.value = Number.isInteger(o.v) ? String(o.v).replace('-', '−') : dn(o.v, o.tol && o.tol > 0.02 ? 1 : 2);
+    inp.value = o.show != null ? o.show : Number.isInteger(o.v) ? String(o.v).replace('-', '−') : dn(o.v, o.tol && o.tol > 0.02 ? 1 : 2);
     if (o.units) { unit = o.unit; [...chips.children].forEach(c => c.setAttribute('aria-pressed', String(c.textContent === o.unit))); }
     lock(); ctx.finish(0, T(o.ok), 'info', SHOWN); if (o.after) o.after(ctx, false);
   });
